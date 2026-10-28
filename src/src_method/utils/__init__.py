@@ -29,7 +29,7 @@ from ._backend import (
     use_device,
     use_stream,
 )
-from .linalg import truncated_qr
+from .linalg import thin_svd, truncated_qr
 
 __all__ = [
     "Array",
@@ -52,6 +52,7 @@ __all__ = [
     "pinned_empty",
     "release_cached_blocks",
     "sketch_dtype",
+    "thin_svd",
     "to_device_async",
     "to_host_async",
     "to_numpy",

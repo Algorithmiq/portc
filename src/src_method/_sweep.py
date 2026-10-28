@@ -47,6 +47,7 @@ from .utils import (
     gaussian_sketch,
     new_stream,
     release_cached_blocks,
+    thin_svd,
     to_numpy,
     truncated_qr,
     use_device,
@@ -264,20 +265,19 @@ def _truncate(
     for j in range(len(sites) - 1):
         left, right, up, down = centre.shape
         matrix = centre.transpose(0, 2, 3, 1).reshape(left * up * down, right)
-        # A tall matrix is reduced by QR first, so the SVD sees a small square. It
-        # runs on the host, as in `truncated_qr`: device SVDs are slow at this size.
+        # A tall matrix is reduced by QR first, so the SVD sees a small square.
         Q, R = xp.linalg.qr(matrix) if matrix.shape[0] > right else (None, matrix)
-        U, S, Vh = np.linalg.svd(to_numpy(R), full_matrices=False)
+        U, S, Vh = thin_svd(R)
         rank = min(chi_out, S.size)
         if cutoff > 0:
             rank = min(rank, max(1, int((cutoff * S[0] <= S).sum())))
-        U = xp.asarray(U[:, :rank])
+        U = U[:, :rank]
         U = U if Q is None else Q @ U
         sites[j] = to_numpy(
             xp.ascontiguousarray(U.reshape(left, up, down, rank).transpose(0, 3, 1, 2))
         )
         centre = xp.tensordot(
-            xp.asarray(S[:rank, None] * Vh[:rank]), xp.asarray(sites[j + 1]), axes=1
+            xp.asarray(S[:rank, None]) * Vh[:rank], xp.asarray(sites[j + 1]), axes=1
         )
     sites[-1] = to_numpy(centre)
     return sites

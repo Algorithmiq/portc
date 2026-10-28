@@ -23,6 +23,8 @@ from src_method._plan import (
     make_plan,
 )
 from src_method._sites import padded_shapes, site_bytes
+from src_method.utils import thin_svd
+from src_method.utils.linalg import DEVICE_SVD_MIN
 
 cupy = pytest.importorskip("cupy")
 
@@ -508,3 +510,17 @@ def test_two_gpus_run_on_their_own_streams() -> None:
         return rank, stream.device_id
 
     assert group.run(fn) == [(0, 0), (1, 1)]
+
+
+@pytest.mark.parametrize("n", [DEVICE_SVD_MIN // 2, DEVICE_SVD_MIN + 8])
+def test_thin_svd_matches_host_on_either_side_of_the_threshold(n: int) -> None:
+    """Below the threshold the SVD runs on the host, above it on the device."""
+    rng = np.random.default_rng(3)
+    host = rng.standard_normal((n + 5, n)) + 1j * rng.standard_normal((n + 5, n))
+    U, S, Vh = thin_svd(cupy.asarray(host))
+    assert isinstance(U, cupy.ndarray)
+    assert isinstance(Vh, cupy.ndarray)
+    assert isinstance(S, np.ndarray)
+    np.testing.assert_allclose(S, np.linalg.svd(host, compute_uv=False), rtol=1e-10)
+    rebuilt = cupy.asnumpy((U * cupy.asarray(S)) @ Vh)
+    np.testing.assert_allclose(rebuilt, host, atol=1e-10 * np.abs(host).max())
