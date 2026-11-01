@@ -18,17 +18,21 @@ then runs out of memory is computed in smaller pieces (`_SplittingKernels`).
 
 With several devices (`DeviceGroup`), each owns a contiguous block of the sketch
 columns. The left-to-right pass needs no communication: the columns are
-independent. At every site of the right-to-left pass, the blocks of the sketch are
-gathered on rank 0, which runs the QR and scatters blocks of rows of the output
-core; each device projects its rows of the new ``S``, and the rows are gathered on
-every device. The random draws, and hence the result, are those of one device.
+independent. At every site of the right-to-left pass, the sketch is factored by
+`cholesky_qr` where it is large and tall enough: an all-to-all turns the blocks of
+columns into blocks of rows, the devices exchange only Gram matrices, and a second
+all-to-all hands each device its block of rows of the output core. Elsewhere, and
+where CholeskyQR finds the sketch too ill-conditioned, the blocks are gathered on
+rank 0, which runs a Householder QR and scatters the rows. Each device then
+projects its rows of the new ``S``, and the rows are gathered on every device. The
+random draws, and hence the result, are those of one device.
 """
 
 from __future__ import annotations
 
 import logging
 import threading
-from math import ceil
+from math import ceil, prod
 from time import perf_counter_ns
 from typing import TYPE_CHECKING
 
@@ -42,12 +46,15 @@ from ._sites import SiteSource, padded_shapes, site_bytes, sweep_order
 from ._store import EnvironmentStore
 from ._tensor_train import unpad
 from .utils import (
+    cholesky_qr,
+    current_stream,
     device_pool_bytes,
     device_pool_limit,
     gaussian_sketch,
     new_stream,
     release_cached_blocks,
     thin_svd,
+    to_host_async,
     to_numpy,
     truncated_qr,
     use_device,
@@ -64,6 +71,19 @@ if TYPE_CHECKING:
     from .utils import Array
 
 logger = logging.getLogger(__name__)
+
+# Smallest sketch size factored by `cholesky_qr` on several devices; below it the
+# Householder QR on rank 0 is cheaper than the extra exchanges. On four A100s
+# (NVLink), compressing a 127-site complex128 MPO stack with CholeskyQR took 1.25x
+# as long at chi_out = 512, and 0.72x, 0.68x and 0.76x as long at 1024, 2048 and
+# 4096.
+DISTRIBUTED_QR_MIN = 1024
+# Numerical rank deficiency follows the bond profile of the operator, so it spans
+# runs of neighbouring sites (all of them early in an evolution at cutoff 0, where
+# the bonds are padded to chi_out), and a CholeskyQR that falls back costs almost as
+# much as one that succeeds. From the second consecutive fallback on, the next 2,
+# 4, 8, ... sites, at most this many, go straight to the Householder QR.
+CHOLESKY_QR_MAX_SKIP = 16
 
 
 def _ranges(n: int, batch: int) -> Iterator[tuple[int, int]]:
@@ -311,6 +331,33 @@ class _Sketches:
         return omega
 
 
+class _Backoff:
+    """Whether to try `cholesky_qr` at the next site (see `CHOLESKY_QR_MAX_SKIP`).
+
+    Every rank sees the same outcomes, so every rank takes the same decisions.
+    """
+
+    def __init__(self) -> None:
+        self.tried = self.fallbacks = self.skipped = 0
+        self._failed = self._skip = 0
+
+    def attempt(self) -> bool:
+        """Whether to try at this site; counts the attempt or the skip."""
+        if self._skip:
+            self._skip -= 1
+            self.skipped += 1
+            return False
+        self.tried += 1
+        return True
+
+    def record(self, *, succeeded: bool) -> None:
+        """Record the outcome of an attempt."""
+        self._failed = 0 if succeeded else self._failed + 1
+        self.fallbacks += not succeeded
+        if self._failed > 1:
+            self._skip = min(2 ** (self._failed - 1), CHOLESKY_QR_MAX_SKIP)
+
+
 class _Sweep:
     """The per-device part of a sweep; `run` executes it on one rank."""
 
@@ -332,6 +379,10 @@ class _Sweep:
         self.chi_out, self.cutoff, self.sketches = chi_out, cutoff, sketches
         self.work, self.depth, self.optimize = work, depth, optimize
         self.columns = blocks(chi_out, group.size)
+        # The host output cores of the right-to-left pass, by site, written by rank
+        # 0 or, after `cholesky_qr`, by every rank in its own block of rows.
+        self._cores: dict[int, np.ndarray] = {}
+        self._lock = threading.Lock()
 
     def _tag(self, rank: int) -> str:
         if self.group.size == 1:
@@ -408,7 +459,7 @@ class _Sweep:
         root = rank == 0
         col_lo, col_hi = self.columns[rank]
         n_local = col_hi - col_lo
-        eta_reversed: list[np.ndarray] = []
+        backoff = _Backoff()
         proj = xp.ones((1,) * (self.depth + 1), dtype=dtype)
         for j in range(len(source) - 1, 0, -1):
             cores = source.next(rank)
@@ -422,24 +473,15 @@ class _Sweep:
                 part = kernels.sketch(store.get(j, lo, hi), cores, proj)
                 local[lo:hi] = xp.moveaxis(part, -1, 0)
             store.drop(j)
-            sketch = group.gather(rank, local)
+            shape = (proj.shape[0], up, down)
+            eta_local = None
+            tall = prod(shape) >= self.chi_out >= DISTRIBUTED_QR_MIN
+            if group.size > 1 and tall and backoff.attempt():
+                eta_local = self._cholesky_qr(rank, j, local, shape)
+                backoff.record(succeeded=eta_local is not None)
+            if eta_local is None:
+                eta_local = self._householder_qr(rank, j, local, shape)
             del local
-            eta_full = None
-            if root:
-                assert sketch is not None  # noqa: S101  (gathered on rank 0)
-                rows = proj.shape[0] * up * down
-                Q = truncated_qr(
-                    xp.reshape(sketch, (self.chi_out, rows)).T, self.cutoff
-                )
-                del sketch
-                eta_full = xp.reshape(
-                    xp.ascontiguousarray(Q.T), (-1, proj.shape[0], up, down)
-                )
-                del Q
-            eta_local = group.scatter(rank, eta_full)
-            if eta_full is not None:
-                eta_reversed.append(to_numpy(eta_full))
-                del eta_full
             new_local = xp.empty(
                 (eta_local.shape[0], *(c.shape[0] for c in cores)), dtype=dtype
             )
@@ -454,10 +496,102 @@ class _Sweep:
         cores = source.next(rank)
         if not root:
             return None
+        if backoff.tried:
+            logger.debug(
+                "%sCholeskyQR at %d sites, %d of them too ill-conditioned for it; "
+                "%d sites skipped",
+                self._tag(rank),
+                backoff.tried,
+                backoff.fallbacks,
+                backoff.skipped,
+            )
         up, down = cores[0].shape[2], cores[-1].shape[3]
         first = xp.empty((proj.shape[0], up, down), dtype=dtype)
         for lo, hi in _ranges(proj.shape[0], plan.sites[0].project_batch):
             first[lo:hi] = xp.reshape(
                 kernels.first(cores, proj[lo:hi]), (hi - lo, up, down)
             )
-        return [to_numpy(first)[None], *reversed(eta_reversed)]
+        # The other ranks' blocks of the cores are complete once `run` returns.
+        return [to_numpy(first)[None], *(self._cores[j] for j in range(1, len(source)))]
+
+    def _householder_qr(
+        self, rank: int, j: int, local: Array, shape: tuple[int, ...]
+    ) -> Array:
+        """Factor the sketch of site ``j`` on rank 0; return this rank's rows of eta.
+
+        Args:
+            rank: The calling rank.
+            j: The site.
+            local: This rank's columns of the sketch, ``(columns, *shape)``.
+            shape: The bonds of the output core but its left one.
+
+        Returns:
+            This rank's block of rows of the output core, ``(rows, *shape)``.
+        """
+        xp, group = self.group.xp, self.group
+        sketch = group.gather(rank, local)
+        eta_full = None
+        if rank == 0:
+            assert sketch is not None  # noqa: S101  (gathered on rank 0)
+            Q = truncated_qr(
+                xp.reshape(sketch, (self.chi_out, prod(shape))).T, self.cutoff
+            )
+            del sketch
+            eta_full = xp.reshape(xp.ascontiguousarray(Q.T), (-1, *shape))
+            del Q
+        eta_local = group.scatter(rank, eta_full)
+        if eta_full is not None:
+            self._cores[j] = to_numpy(eta_full)
+        return eta_local
+
+    def _cholesky_qr(
+        self, rank: int, j: int, local: Array, shape: tuple[int, ...]
+    ) -> Array | None:
+        """Factor the sketch of site ``j`` by `cholesky_qr`, on every rank.
+
+        Args:
+            rank: The calling rank.
+            j: The site.
+            local: This rank's columns of the sketch, ``(columns, *shape)``.
+            shape: The bonds of the output core but its left one.
+
+        Returns:
+            This rank's block of rows of the output core, ``(rows, *shape)``, which
+            it also copied into the host core. ``None`` on every rank if the sketch
+            is too ill-conditioned for CholeskyQR.
+        """
+        xp, group = self.group.xp, self.group
+        rows = prod(shape)
+        flat = xp.reshape(local, (local.shape[0], rows))
+        block = group.alltoall(
+            rank,
+            [
+                xp.ascontiguousarray(flat[:, lo:hi])
+                for lo, hi in blocks(rows, group.size)
+            ],
+        )
+        del flat
+
+        def gram(part: Array) -> Array:
+            parts = group.allgather(rank, part)
+            # Summed in rank order on every rank, so the ranks see the same bits.
+            return xp.sum(xp.reshape(parts, (group.size, *part.shape)), axis=0)
+
+        Qt = cholesky_qr(block, rows, self.cutoff, gram)
+        del block
+        if Qt is None:
+            return None
+        out_rows = blocks(Qt.shape[0], group.size)
+        mine = group.alltoall(
+            rank, [xp.ascontiguousarray(Qt[lo:hi].T) for lo, hi in out_rows]
+        )
+        del Qt
+        eta_local = xp.reshape(xp.ascontiguousarray(mine.T), (-1, *shape))
+        del mine
+        with self._lock:
+            if j not in self._cores:
+                self._cores[j] = np.empty((out_rows[-1][1], *shape), dtype=self.work)
+            core = self._cores[j]
+        lo, hi = out_rows[rank]
+        to_host_async(eta_local, core[lo:hi], current_stream(xp))
+        return eta_local

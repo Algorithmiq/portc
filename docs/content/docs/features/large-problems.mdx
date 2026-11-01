@@ -93,8 +93,8 @@ out = src(
 )
 ```
 
-`devices` is a count, for the first `n` visible GPUs, or a list of device ids;
-the first one gathers the sketches and runs the QR. Everything runs in the calling
+`devices` is a count, for the first `n` visible GPUs, or a list of device ids,
+the first one leading. Everything runs in the calling
 process, one thread per GPU, so nothing changes for the caller: the call returns
 the output cores as with one GPU, errors are raised as usual, and the inputs are
 read once and shared. Each thread runs on a non-blocking CUDA stream of its own GPU,
@@ -106,11 +106,20 @@ current stream, so inputs given as CuPy arrays may still be in flight.
 The sketch index is split: each GPU owns a contiguous block of the `chi_out`
 sketch columns and computes only those columns of every environment and of every
 sketch, so the environments, the dominant memory, are split among the GPUs too.
-At every site of the right-to-left pass, the first GPU gathers the sketch, runs
-the QR and gives each GPU a block of rows of the output core; each GPU projects
-its rows of the next projected environment, and those rows are gathered on every
-GPU. The random draws are those of one GPU, so the result is that of one GPU up to
-rounding.
+At every site of the right-to-left pass, the sketch is orthonormalized where it
+lies when `chi_out` is at least 1024: the GPUs swap their blocks of columns for
+blocks of rows, and a shifted CholeskyQR (at most three passes, each exchanging
+one `chi_out x chi_out` Gram matrix per GPU) builds their rows of the orthonormal
+basis without moving the sketch again. Below that size, and at the sites whose
+sketch is too ill-conditioned for CholeskyQR (numerically rank-deficient, as at
+small bonds or early in an evolution), the first GPU gathers the sketch and runs a
+Householder QR instead. Either way, each GPU then has a block of rows of the output
+core, projects its rows of the next projected environment, and those rows are
+gathered on every GPU. The random draws are those of one GPU, so the result is that
+of one GPU up to rounding and a gauge: the two QRs span the same basis but may
+pick a different orthonormal frame of it, which changes the cores, not the
+operator they represent. With `DEBUG` logging, each sweep reports
+at how many sites it tried CholeskyQR and how many of those fell back.
 
 What is not split:
 
@@ -120,7 +129,8 @@ What is not split:
   GPUs reach each other directly (NVLink, or PCIe peer-to-peer), each uploads a
   slice of the core and gathers the rest from the others; otherwise each uploads
   the whole core;
-- the QR runs on the first GPU while the others wait.
+- below `chi_out = 1024`, and where CholeskyQR falls back, the QR runs on the
+  first GPU while the others wait.
 
 These costs grow more slowly with the problem than the contractions do, so large
 problems, the ones this is for, scale close to linearly, while small ones may run
