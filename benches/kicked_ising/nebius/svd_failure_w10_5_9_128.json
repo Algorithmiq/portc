@@ -1,0 +1,18 @@
+{
+ "config": "w10:5:9:src-k1:128:0",
+ "cutoff": 1e-12,
+ "calls": 2761,
+ "failed_call": 2761,
+ "shape": [
+  128,
+  128
+ ],
+ "dtype": "complex128",
+ "finite": true,
+ "max_abs": 3.717326712829784e+19,
+ "gesvd_converged": true,
+ "s_max": 7.863569254957616e+19,
+ "s_min": 0.5074842364658416,
+ "n_below_cutoff": 84,
+ "error": "SVD did not converge"
+}
