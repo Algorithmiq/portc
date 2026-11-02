@@ -1,0 +1,3 @@
+Filesystem        1B-blocks        Used    Available Use% Mounted on
+/dev/vda1      310911414272 40431284224 270463352832  14% /
+tmpfs          921576927232           0 921576927232   0% /dev/shm
