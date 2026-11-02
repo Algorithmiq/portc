@@ -21,6 +21,9 @@ Commands:
 - ``run``: Heisenberg evolutions for a list of configurations, one JSON line per
   Trotter step;
 - ``report``: tables and plots.
+
+``--dtype`` (any command) sets the precision of every array, src-method's and
+quimb's alike; ``KI_PLATFORM`` names the output folder (``leonardo`` by default).
 """
 
 from __future__ import annotations
@@ -30,17 +33,21 @@ import json
 import logging
 import math
 import os
+import re
+import resource
 import socket
+import subprocess
 import sys
 from contextlib import contextmanager
 from functools import cache
 from pathlib import Path
 from statistics import median
 from time import perf_counter
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Annotated, Any, Literal
 
 import cyclopts
 import numpy as np
+from cyclopts import Parameter
 
 import src_method
 from src_method import Resources, src
@@ -52,7 +59,7 @@ logger = logging.getLogger(__name__)
 app = cyclopts.App(help="Kicked Ising Heisenberg MPO: src-method against quimb.")
 
 HERE = Path(__file__).parent
-OUT = HERE / "leonardo"
+OUT = HERE / os.environ.get("KI_PLATFORM", "leonardo")
 REFERENCE = HERE / "reference"
 N_QUBITS = 127
 THETA_J = -np.pi / 2
@@ -65,6 +72,28 @@ PX = np.array([[0, 1], [1, 0]], dtype=complex)
 PY = np.array([[0, -1j], [1j, 0]], dtype=complex)
 PZ = np.array([[1, 0], [0, -1]], dtype=complex)
 PAULI = {"I": I2, "X": PX, "Y": PY, "Z": PZ}
+DType = Literal["complex128", "complex64"]
+# Set once per process by `--dtype`, before any array is built.
+DTYPE: type[np.complexfloating] = np.complex128
+DTYPE_TAG = {"complex128": "c128", "complex64": "c64"}
+
+
+def set_dtype(name: DType) -> None:
+    """Make every gate, observable and diagnostic of this process ``name``."""
+    global DTYPE, I2, PX, PY, PZ  # noqa: PLW0603
+    DTYPE = np.dtype(name).type
+    I2, PX, PY, PZ = (m.astype(DTYPE) for m in (I2, PX, PY, PZ))
+    PAULI.update(I=I2, X=PX, Y=PY, Z=PZ)
+    if DTYPE is np.complex64:
+        # Strict FP32 in cuBLAS and cuSOLVER, as in benches/large/nebius.
+        os.environ["CUPY_TF32"] = "0"
+        os.environ["NVIDIA_TF32_OVERRIDE"] = "0"
+
+
+def dtype_name() -> str:
+    """The name of ``--dtype``, as recorded in every output."""
+    return np.dtype(DTYPE).name
+
 
 # Kim et al., Figs. 3b, 3c and 4b; the same strings in Begušić-Gray-Chan, Fig. 3.
 OBSERVABLES = {
@@ -153,7 +182,7 @@ def bonds(train: Sequence[Any]) -> list[int]:
 
 def rx(theta: float) -> np.ndarray:
     """``R_X(theta) = exp(-i theta X / 2)``."""
-    return np.cos(theta / 2) * I2 - 1j * np.sin(theta / 2) * PX
+    return (np.cos(theta / 2) * I2 - 1j * np.sin(theta / 2) * PX).astype(DTYPE)
 
 
 def pauli_mpo(n: int, string: dict[str, Sequence[int]]) -> Train:
@@ -185,7 +214,7 @@ def layer_mpo(
         lg = owner[s - 1] if s > 0 else None
         rg = owner[s] if s < n - 1 else None
         dl, dr = (1 if lg is None else 2), (1 if rg is None else 2)
-        w = np.zeros((dl, dr, 2, 2), dtype=complex)
+        w = np.zeros((dl, dr, 2, 2), dtype=DTYPE)
         if lg is not None and lg == rg:
             w[0, 0] = w[1, 1] = I2
         else:
@@ -250,13 +279,13 @@ def kron_site(op: np.ndarray, k: int, n: int) -> np.ndarray:
 def dense_step(n: int, edges: Sequence[tuple[int, int]], theta_h: float) -> np.ndarray:
     """``U_s = prod R_ZZ . prod R_X`` as a dense matrix (diagonal ZZ part)."""
     z = np.array([1, -1])
-    diag = np.ones(2**n, dtype=complex)
+    diag = np.ones(2**n, dtype=DTYPE)
     for i, j in edges:
         zz = np.kron(np.ones(2**i), np.kron(z, np.ones(2 ** (n - i - 1)))) * np.kron(
             np.ones(2**j), np.kron(z, np.ones(2 ** (n - j - 1)))
         )
         diag *= np.cos(THETA_J / 2) - 1j * np.sin(THETA_J / 2) * zz
-    xlayer = np.array([[1.0]], dtype=complex)
+    xlayer = np.array([[1.0]], dtype=DTYPE)
     for _ in range(n):
         xlayer = np.kron(xlayer, rx(theta_h))
     return diag[:, None] * xlayer
@@ -269,7 +298,7 @@ def host(train: Sequence[Any]) -> Train:
 
 def zero_expectation(mpo: Sequence[Any]) -> complex:
     """``<0...0|O|0...0>``, on the host."""
-    env = np.ones(1, dtype=complex)
+    env = np.ones(1, dtype=DTYPE)
     for w in full([np.asarray(t) for t in mpo]):
         env = env @ w[:, :, 0, 0]
     return complex(env[0])
@@ -410,8 +439,8 @@ def diagnostics(mpo: Sequence[Any]) -> tuple[complex, float]:
     cp = _cupy()
     saved = dict(FLOPS)
     with analysis_pool():
-        env = cp.ones(1, dtype=complex)
-        norm = cp.ones((1, 1), dtype=complex)
+        env = cp.ones(1, dtype=DTYPE)
+        norm = cp.ones((1, 1), dtype=DTYPE)
         for w in full(list(mpo)):
             w = cp.asarray(w)
             env = env @ w[:, :, 0, 0]
@@ -453,6 +482,24 @@ def provenance() -> dict[str, Any]:
         "python": sys.version.split()[0],
         "host": socket.gethostname(),
         "slurm_job": os.environ.get("SLURM_JOB_ID"),
+        "git": subprocess.run(
+            ["git", "rev-parse", "HEAD"],  # noqa: S607
+            capture_output=True,
+            text=True,
+            cwd=HERE,
+            check=False,
+        ).stdout.strip(),
+        "dtype": dtype_name(),
+        "env": {
+            v: os.environ.get(v)
+            for v in (
+                "CUDA_VISIBLE_DEVICES",
+                "CUPY_TF32",
+                "NVIDIA_TF32_OVERRIDE",
+                "CUPY_CUDA_PER_THREAD_DEFAULT_STREAM",
+                "TMPDIR",
+            )
+        },
     }
 
 
@@ -510,8 +557,9 @@ def _quimb_on_device() -> None:
 
     ``src`` draws its sketch noise, and ``fit`` its initial guess, with numpy
     whatever the arrays of the network, which then fails inside CuPy's tensordot.
-    The wrappers move those random tensors to the device; the distributions,
-    dtypes and shapes are quimb's own.
+    The wrappers move those random tensors to the device; the distributions and
+    shapes are quimb's own. ``src``'s real noise is cast to the real type of
+    ``--dtype``, so that float64 noise does not promote a complex64 network.
     """
     from quimb.tensor.tn1d import compress as qc  # noqa: PLC0415
 
@@ -521,7 +569,7 @@ def _quimb_on_device() -> None:
     def noise_on_device(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
         tws = noise(*args, **kwargs)
         for t in tws:
-            t.modify(data=cp.asarray(t.data))
+            t.modify(data=cp.asarray(t.data, dtype=np.finfo(DTYPE).dtype))
         return tws
 
     def matching_on_device(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
@@ -770,7 +818,7 @@ def _check_dense(seed: int) -> dict[str, Any]:
     steps = 2
     string = "".join(rng.choice(list("IXYZ"), size=n))
     O0 = trim([PAULI[p][None, None].copy() for p in string])
-    U = np.eye(2**n, dtype=complex)
+    U = np.eye(2**n, dtype=DTYPE)
     for _ in range(steps):
         U = dense_step(n, edges, theta) @ U
     want = U.conj().T @ dense_operator(O0) @ U
@@ -996,7 +1044,8 @@ def clifford_checks(
 def _run_path(cfg: str, cutoff: float) -> Path:
     obs, steps, theta_k, method, chi, seed = cfg.split(":")
     cut = f"_cut{cutoff:g}" if cutoff else ""
-    name = f"{obs}_n{steps}_k{theta_k}_{method}_chi{chi}{cut}_s{seed}.jsonl"
+    tag = DTYPE_TAG[dtype_name()]
+    name = f"{obs}_n{steps}_k{theta_k}_{method}_chi{chi}{cut}_{tag}_s{seed}.jsonl"
     return OUT / "runs" / name
 
 
@@ -1014,6 +1063,52 @@ def _done(path: Path) -> bool:
 
 
 SVD_FALLBACKS = {"count": 0}
+
+
+class _Records(logging.Handler):
+    """Keep src-method's DEBUG messages (plan, tiers, sweep times)."""
+
+    def __init__(self) -> None:
+        super().__init__(level=logging.DEBUG)
+        self.messages: list[str] = []
+
+    def emit(self, record: logging.LogRecord) -> None:
+        self.messages.append(record.getMessage())
+
+
+def record_src_debug() -> _Records:
+    """Collect src-method's DEBUG messages from now on."""
+    records = _Records()
+    src_logger = logging.getLogger("src_method")
+    src_logger.setLevel(logging.DEBUG)
+    src_logger.addHandler(records)
+    return records
+
+
+_CQR = re.compile(
+    r"CholeskyQR at (\d+) sites, (\d+) of them too ill-conditioned for it; "
+    r"(\d+) sites skipped"
+)
+
+
+def cqr_counts(messages: Sequence[str]) -> dict[str, int]:
+    """Distributed CholeskyQR statistics summed over the compressions logged.
+
+    Rank 0 of a multi-device sweep logs one line per compression, and only when
+    it tried CholeskyQR (``chi_out >= DISTRIBUTED_QR_MIN``), so single-device
+    runs count zeros.
+    """
+    out = {"cqr_tried": 0, "cqr_fallbacks": 0, "cqr_skipped": 0}
+    for m in messages:
+        if match := _CQR.search(m):
+            for key, value in zip(out, match.groups(), strict=True):
+                out[key] += int(value)
+    return out
+
+
+def host_peak_gb() -> float:
+    """Peak resident memory of this process so far, in GB."""
+    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6
 
 
 def install_svd_fallback() -> None:
@@ -1075,6 +1170,7 @@ def run(
     install_flop_counters()
     if svd_fallback:
         install_svd_fallback()
+    records = record_src_debug()
     t_start = perf_counter()
     meta = provenance()
     edges = eagle_edges()
@@ -1120,6 +1216,7 @@ def run(
             "k": pipe.k,
             "n_sublayers": len(layers),
             "cutoff": cutoff,
+            "dtype": dtype_name(),
             "svd_fallback": svd_fallback,
             "reference": None if ref is None else {"value": ref[0], "source": ref[1]},
             "provenance": meta,
@@ -1134,6 +1231,7 @@ def run(
             started += 1
             t0 = perf_counter()
             stopped = None
+            records.messages.clear()
             try:
                 for n, O in enumerate(
                     evolve(pipe, pauli_mpo(N_QUBITS, OBSERVABLES[obs]), layers, steps),
@@ -1155,7 +1253,10 @@ def run(
                         "flops_contract": flops["contract"],
                         "flops_decomp": flops["decomp"],
                         "svd_fallbacks": SVD_FALLBACKS["count"],
+                        "host_peak_gb": host_peak_gb(),
+                        **cqr_counts(records.messages),
                     }
+                    records.messages.clear()
                     rows.append(row)
                     fh.write(json.dumps(row) + "\n")
                     fh.flush()
@@ -1283,7 +1384,7 @@ def mpo_inner(a: Sequence[Any], b: Sequence[Any]) -> complex:
     """Hilbert-Schmidt ``Tr(A^dag B)``, on the GPU's analysis pool."""
     cp = _cupy()
     with analysis_pool():
-        env = cp.ones((1, 1), dtype=complex)
+        env = cp.ones((1, 1), dtype=DTYPE)
         for x, y in zip(full(list(a)), full(list(b)), strict=True):
             x, y = cp.asarray(x), cp.asarray(y)
             tmp = cp.tensordot(env, x.conj(), axes=(0, 0))  # (b, a', u, d)
@@ -1349,6 +1450,7 @@ def sandwich_test(
         "chi": chi,
         "sublayer": sublayer,
         "cutoff": cutoff,
+        "dtype": dtype_name(),
         "input_bond": max(bonds(host(O))),
         "exact_bond": max(bonds(exact)),
         "exact_value": value.real,
@@ -1393,6 +1495,7 @@ def sandwich_test(
             [f"{r['rel_frob_error']:.3e}" for r in rows],
             [f"{r['value_error']:.1e}" for r in rows],
         )
+    result["svd_fallbacks"] = SVD_FALLBACKS["count"]
     output.write_text(json.dumps(result, indent=1))
 
 
@@ -1412,19 +1515,8 @@ def random_operator(n: int, chi: int, seed: int) -> Train:
         shape = (left, right, 2, 2)
         w = rng.standard_normal(shape) + 1j * rng.standard_normal(shape)
         w *= 1 / np.sqrt(2 * 4 * left)
-        sites.append(w)
+        sites.append(w.astype(DTYPE))
     return trim(sites)
-
-
-class _Records(logging.Handler):
-    """Keep src-method's DEBUG messages (plan, tiers, sweep times)."""
-
-    def __init__(self) -> None:
-        super().__init__(level=logging.DEBUG)
-        self.messages: list[str] = []
-
-    def emit(self, record: logging.LogRecord) -> None:
-        self.messages.append(record.getMessage())
 
 
 @app.command
@@ -1435,23 +1527,27 @@ def step_probe(
     cutoff: float = 1e-12,
     budget_minutes: float = 26.0,
     seed: int = 0,
+    *,
+    householder: bool = False,
 ) -> None:
     """Time one Trotter step of a saturated operator at bond ``chi``.
 
     The compressions of the step's sub-layer groups run in order on a random
     operator of bond ``chi`` (see `random_operator`), with src-method's DEBUG
-    plan recorded (devices, memory tiers, batches, sweep times). Writes
-    ``leonardo/probe/{method}_chi{chi}_cut{cutoff}.json``.
+    plan recorded (devices, memory tiers, batches, sweep times, CholeskyQR
+    counts). Writes ``{platform}/probe/{method}_chi{chi}_cut{cutoff}_{dtype}.json``.
+    ``householder`` raises ``src_method._sweep.DISTRIBUTED_QR_MIN`` beyond any
+    sketch, so multi-device sweeps gather every sketch for a Householder QR on
+    rank 0 (bench-side patch, for the A/B against the distributed CholeskyQR).
     """
-    import resource  # noqa: PLC0415
+    from src_method import _sweep  # noqa: PLC0415
 
     _setup_logging()
     install_flop_counters()
     install_svd_fallback()
-    records = _Records()
-    src_logger = logging.getLogger("src_method")
-    src_logger.setLevel(logging.DEBUG)
-    src_logger.addHandler(records)
+    records = record_src_debug()
+    if householder:
+        _sweep.DISTRIBUTED_QR_MIN = 2**62
     t_start = perf_counter()
     _warmup({method}, cutoff)
     layers = step_layers(N_QUBITS, eagle_edges(), theta_k * np.pi / 32)
@@ -1459,7 +1555,9 @@ def step_probe(
     t0 = perf_counter()
     O = pipe.state(random_operator(N_QUBITS, chi, seed))
     build = perf_counter() - t0
-    out_path = OUT / "probe" / f"{method}_chi{chi}_cut{cutoff:g}.json"
+    qr = "_householder" if householder else ""
+    tag = DTYPE_TAG[dtype_name()]
+    out_path = OUT / "probe" / f"{method}_chi{chi}_cut{cutoff:g}_{tag}{qr}.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     result: dict[str, Any] = {
         "chi": chi,
@@ -1467,6 +1565,8 @@ def step_probe(
         "k": pipe.k,
         "theta_k": theta_k,
         "cutoff": cutoff,
+        "dtype": dtype_name(),
+        "distributed_qr_min": _sweep.DISTRIBUTED_QR_MIN,
         "input_bond": max(bonds(O)),
         "input_gb": sum(t.nbytes for t in O) / 1e9,
         "build_seconds": build,
@@ -1476,9 +1576,7 @@ def step_probe(
     }
 
     def save() -> None:
-        result["host_peak_gb"] = (
-            resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6
-        )
+        result["host_peak_gb"] = host_peak_gb()
         out_path.write_text(json.dumps(result, indent=1, default=str))
 
     groups = chunks(layers, pipe.k)
@@ -1509,10 +1607,12 @@ def step_probe(
                 "pool_gb": pool_gb(),
                 "out_bond": max(bonds(O)),
                 "svd_fallbacks": SVD_FALLBACKS["count"],
+                "host_peak_gb": host_peak_gb(),
+                **cqr_counts(records.messages),
                 "src_debug": [
                     m
                     for m in records.messages
-                    if "plan" in m or "sweep" in m or "stalls" in m
+                    if "plan" in m or "sweep" in m or "stalls" in m or "Cholesky" in m
                 ],
             }
         )
@@ -1633,10 +1733,13 @@ def load_runs(folder: Path = OUT / "runs") -> list[dict[str, Any]]:
             else:
                 run_["rows"].append(d)
         if "config" in run_:
+            run_.setdefault("dtype", "complex128")
             if run_.get("cutoff"):
                 run_["method"] += f" cut {run_['cutoff']:g}"
             if run_.get("svd_fallback"):
                 run_["method"] += " +gesvd"
+            # complex128 keeps the Leonardo labels.
+            run_["method"] += {"complex64": " c64"}.get(run_["dtype"], "")
             runs.append(run_)
     return runs
 
@@ -1928,7 +2031,9 @@ def _failure_lines(
 def _stage1_lines(runs: Sequence[dict[str, Any]]) -> list[str]:
     """Stage 1: 5-step weight-10 and weight-17 over the theta grid, src-k1 seed 0."""
     lines = ["## Stage 1: exactly verifiable regime (5 steps, src-k1, seed 0)", ""]
-    for obs in ("w10", "w17"):
+    for obs, dtype in (
+        (o, d) for o in ("w10", "w17") for d in ("complex128", "complex64")
+    ):
         sel = [
             r
             for r in runs
@@ -1936,13 +2041,14 @@ def _stage1_lines(runs: Sequence[dict[str, Any]]) -> list[str]:
             and r["steps"] == 5
             and r["method"].split()[0] == "src-k1"  # noqa: PLR2004
             and r["seed"] == 0
+            and r["dtype"] == dtype
         ]
         chis = sorted({r["chi"] for r in sel})
         if not sel:
             continue
         lines += [
-            f"{obs}: absolute error against BGC exact; `F` marks a failed run "
-            "(host SVD did not converge), `*` a run with the gesvd fallback.",
+            f"{obs}, {dtype}: absolute error against BGC exact; `F` marks a failed "
+            "run (host SVD did not converge), `*` a run with the gesvd fallback.",
             "",
             "| theta_h / (pi/32) | exact | "
             + " | ".join(f"chi {c}" for c in chis)
@@ -2011,9 +2117,10 @@ def _probe_lines(folder: Path) -> list[str]:
     lines = [
         "## Cost of one Trotter step at large chi (random saturated operator)",
         "",
-        "| method | chi | cutoff | groups done | step s (or partial) | TFLOP | TFLOP/s | "
-        "GPU pool GB | host peak GB | input GB | tiers (first group) |",
-        "|---|---|---|---|---|---|---|---|---|---|---|",
+        "| method | chi | cutoff | dtype | QR | groups done | step s (or partial) "
+        "| TFLOP | TFLOP/s | GPU pool GB | host peak GB | input GB | tiers (first group) "
+        "| CholeskyQR tried / fallback / skipped |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for d in sorted(probes, key=lambda d: (d["chi"], d["cutoff"], d["method"])):
         g = d["groups"]
@@ -2034,10 +2141,20 @@ def _probe_lines(folder: Path) -> list[str]:
             + (" (OOM)" if "oom" in d else "")
             + ("" if d["complete"] else " partial")
         )
+        qr = (
+            "Householder on rank 0"
+            if d.get("distributed_qr_min", 0) > 2**40
+            else "library"
+        )
+        cqr = " / ".join(
+            str(sum(x.get(k, 0) for x in g))
+            for k in ("cqr_tried", "cqr_fallbacks", "cqr_skipped")
+        )
         lines.append(
-            f"| {d['method']} | {d['chi']} | {d['cutoff']:g} | {status} | {secs:.1f} | {tflop:.1f} "
+            f"| {d['method']} | {d['chi']} | {d['cutoff']:g} "
+            f"| {d.get('dtype', 'complex128')} | {qr} | {status} | {secs:.1f} | {tflop:.1f} "
             f"| {tflop / secs if secs else 0:.2f} | {max((x['pool_gb'] for x in g), default=0):.1f} "
-            f"| {d.get('host_peak_gb', 0):.0f} | {d['input_gb']:.1f} | {tiers} |"
+            f"| {d.get('host_peak_gb', 0):.0f} | {d['input_gb']:.1f} | {tiers} | {cqr} |"
         )
     lines.append("")
     return lines
@@ -2105,5 +2222,21 @@ def _check_lines(c: dict[str, Any]) -> list[str]:
     return lines
 
 
+@app.meta.default
+def launcher(
+    *tokens: Annotated[str, Parameter(show=False, allow_leading_hyphen=True)],
+    dtype: DType = "complex128",
+) -> None:
+    """Run a command with every array in ``dtype``.
+
+    Args:
+        tokens: The command and its arguments.
+        dtype: Precision of the gates, observables, random operators and
+            diagnostics; src-method and quimb follow their inputs.
+    """
+    set_dtype(dtype)
+    app(tokens)
+
+
 if __name__ == "__main__":
-    app()
+    app.meta()
