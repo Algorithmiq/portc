@@ -1,0 +1,118 @@
+{
+ "provenance": {
+  "src_method": "0.5.3.dev12+gd5a04f9a6",
+  "quimb": "1.15.0",
+  "autoray": "0.11.0",
+  "opt_einsum": "3.4.0",
+  "numpy": "2.4.4",
+  "cupy": "14.2.0",
+  "cuda_runtime": 13020,
+  "cuda_driver": 13000,
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "gpus_visible": 1,
+  "qiskit": "2.6.1",
+  "qiskit_ibm_runtime": "0.51.0",
+  "stim": "1.16.0",
+  "python": "3.14.7",
+  "host": "computeinstance-e05a79nv5z3datsw3m",
+  "slurm_job": null,
+  "git": "f3b6a849961c24ccb6d4e748c2feb8f7626c5b43",
+  "dtype": "complex128",
+  "env": {
+   "CUDA_VISIBLE_DEVICES": "1",
+   "CUPY_TF32": "0",
+   "NVIDIA_TF32_OVERRIDE": "0",
+   "CUPY_CUDA_PER_THREAD_DEFAULT_STREAM": null,
+   "TMPDIR": "/dev/shm/ki-scratch"
+  }
+ },
+ "dense_12q": {
+  "qubits": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   14,
+   15,
+   18,
+   19,
+   20,
+   21,
+   22
+  ],
+  "edges": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    5
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    4,
+    6
+   ],
+   [
+    5,
+    7
+   ],
+   [
+    6,
+    11
+   ],
+   [
+    7,
+    8
+   ],
+   [
+    8,
+    9
+   ],
+   [
+    9,
+    10
+   ],
+   [
+    10,
+    11
+   ]
+  ],
+  "n_sublayers": 2,
+  "theta_h": 0.8876050132651336,
+  "steps": 2,
+  "pauli": "YZYZZIIXXZZI",
+  "qiskit_vs_dense": 6.938893903907228e-17,
+  "rel_error": {
+   "src-k1": 2.8280075179311705e-15,
+   "src-k1-os": 5.142646247267737e-15,
+   "src-k2": 1.982535184553706e-15,
+   "src-k2-os": 8.725131983216169e-15,
+   "src-k3": 1.982535184553706e-15,
+   "src-k3-os": 8.725131983216169e-15,
+   "quimb-fit": 4.9419183626237545e-15,
+   "quimb-zipup": 6.592055767547481e-15,
+   "quimb-src": 3.791649372861093e-15,
+   "quimb-src-os": 6.085306738316334e-15,
+   "quimb-src-default": 3.791649372861093e-15,
+   "quimb-src-os-default": 6.085306738316334e-15
+  },
+  "stack_order": {
+   "src(Bd, Ad, O, A, B) vs Bd Ad O A B": 1.3624179818726993e-15,
+   "reversed stack vs Bd Ad O A B": 1.3962671465294585
+  }
+ }
+}

@@ -1,0 +1,8 @@
+# Step 2: geometry and checks, complex128; one job per check section, merged into checks.json.
+1 step2-geometry --dtype complex128 geometry
+1 step2-dense --dtype complex128 check dense --output benches/kicked_ising/nebius/checks_parts/dense.json
+1 step2-fragment --dtype complex128 check fragment --output benches/kicked_ising/nebius/checks_parts/fragment.json
+1 step2-clifford-z62-k0 --dtype complex128 check clifford --cases z62:20:0 --output benches/kicked_ising/nebius/checks_parts/clifford_z62_k0.json
+1 step2-clifford-z62-k16 --dtype complex128 check clifford --cases z62:20:16 --output benches/kicked_ising/nebius/checks_parts/clifford_z62_k16.json
+1 step2-clifford-w10 --dtype complex128 check clifford --cases w10:5:16 --output benches/kicked_ising/nebius/checks_parts/clifford_w10.json
+1 step2-clifford-w17 --dtype complex128 check clifford --cases w17:5:16 --output benches/kicked_ising/nebius/checks_parts/clifford_w17.json

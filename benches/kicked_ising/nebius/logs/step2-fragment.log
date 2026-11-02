@@ -1,0 +1,13 @@
+# 2026-11-02T11:17:52.576715+00:00 gpus [2]: --dtype complex128 check fragment --output benches/kicked_ising/nebius/checks_parts/fragment.json
+2026-11-02 11:18:00,541 16q src-k1: error 2.35e-16
+2026-11-02 11:33:30,382 16q src-k1-os: error 3.73e-15
+2026-11-02 11:33:33,886 16q src-k2: error 6.59e-16
+2026-11-02 11:43:54,364 16q src-k2-os: error 2.74e-16
+2026-11-02 11:44:12,793 16q src-k3: error 3.70e-16
+2026-11-02 11:49:40,856 16q src-k3-os: error 5.34e-16
+2026-11-02 11:49:51,976 16q quimb-fit: error 1.88e-16
+2026-11-02 11:49:52,630 16q quimb-zipup: error 1.45e-15
+2026-11-02 11:49:56,292 16q quimb-src: error 3.29e-16
+2026-11-02 11:49:58,134 16q quimb-src-os: error 9.55e-16
+2026-11-02 11:49:59,446 16q quimb-src-default: error 3.29e-16
+2026-11-02 11:50:01,136 16q quimb-src-os-default: error 9.55e-16

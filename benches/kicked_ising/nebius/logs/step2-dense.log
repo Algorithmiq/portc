@@ -1,0 +1,14 @@
+# 2026-11-02T11:17:52.575959+00:00 gpus [1]: --dtype complex128 check dense --output benches/kicked_ising/nebius/checks_parts/dense.json
+2026-11-02 11:18:01,718 dense 12q src-k1: rel error 2.83e-15
+2026-11-02 11:21:46,697 dense 12q src-k1-os: rel error 5.14e-15
+2026-11-02 11:21:47,565 dense 12q src-k2: rel error 1.98e-15
+2026-11-02 11:23:39,035 dense 12q src-k2-os: rel error 8.73e-15
+2026-11-02 11:23:39,710 dense 12q src-k3: rel error 1.98e-15
+2026-11-02 11:25:30,927 dense 12q src-k3-os: rel error 8.73e-15
+2026-11-02 11:25:32,733 dense 12q quimb-fit: rel error 4.94e-15
+2026-11-02 11:25:33,485 dense 12q quimb-zipup: rel error 6.59e-15
+2026-11-02 11:25:34,192 dense 12q quimb-src: rel error 3.79e-15
+2026-11-02 11:25:34,896 dense 12q quimb-src-os: rel error 6.09e-15
+2026-11-02 11:25:35,509 dense 12q quimb-src-default: rel error 3.79e-15
+2026-11-02 11:25:36,244 dense 12q quimb-src-os-default: rel error 6.09e-15
+2026-11-02 11:25:41,238 stack order: {'src(Bd, Ad, O, A, B) vs Bd Ad O A B': 1.3624179818726993e-15, 'reversed stack vs Bd Ad O A B': 1.3962671465294585}

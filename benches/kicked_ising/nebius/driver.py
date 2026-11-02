@@ -6,9 +6,10 @@ and its output in ``nebius/logs/<name>.log``. A single-GPU job is pinned to the
 24 logical CPUs next to its GPU (GPUs 0-3 on NUMA node 0, 4-7 on node 1) with
 as many BLAS threads; a multi-GPU job gets the whole node. Blank lines and lines
 starting with ``#`` are skipped. The bench skips finished runs, so a job file
-can be rerun after an interruption.
+can be rerun after an interruption. An optional second argument restricts the
+driver to some GPUs, e.g. ``0,1,3`` while another driver holds GPU 2.
 
-    python benches/kicked_ising/nebius/driver.py jobs.txt
+    python benches/kicked_ising/nebius/driver.py jobs.txt [gpus]
 """
 
 from __future__ import annotations
@@ -60,16 +61,16 @@ def command(gpus: list[int], args: list[str]) -> list[str]:
     return cmd
 
 
-def main(job_file: str) -> None:
-    """Run every job of ``job_file``."""
+def main(job_file: str, gpus: str = "") -> None:
+    """Run every job of ``job_file`` on ``gpus`` (comma-separated, default all)."""
     jobs = []
     for line in Path(job_file).read_text().splitlines():
         if line.strip() and not line.lstrip().startswith("#"):
-            gpus, name, *args = shlex.split(line)
-            jobs.append((int(gpus), name, args))
+            count, name, *args = shlex.split(line)
+            jobs.append((int(count), name, args))
     SCRATCH.mkdir(parents=True, exist_ok=True)
     (HERE / "logs").mkdir(exist_ok=True)
-    free = list(range(N_GPUS))
+    free = [int(g) for g in gpus.split(",")] if gpus else list(range(N_GPUS))
     running: list[tuple[subprocess.Popen[bytes], list[int], str]] = []
     failed = []
     while jobs or running:
@@ -105,4 +106,4 @@ if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s %(message)s", stream=sys.stdout
     )
-    main(sys.argv[1])
+    main(*sys.argv[1:])

@@ -1,0 +1,11 @@
+# 2026-11-02T11:17:52.579582+00:00 gpus [5]: --dtype complex128 check clifford --cases w10:5:16 --output benches/kicked_ising/nebius/checks_parts/clifford_w10.json
+2026-11-02 11:17:56,827 w10: {'stim': '+________ZY__ZX___Z__________ZXYXZ______________________________________________________________________________________________', 'paper': '+________ZY__ZX___Z__________ZXYXZ______________________________________________________________________________________________', 'matches_up_to_sign': True}
+2026-11-02 11:17:56,827 w17: {'stim': '-_____________________________________XZ_ZXZ_________X___XXX___XZ________Z__Y___XZ_________ZZ___________________________________', 'paper': '+_____________________________________XZ_ZXZ_________X___XXX___XZ________Z__Y___XZ_________ZZ___________________________________', 'matches_up_to_sign': True}
+2026-11-02 11:18:07,846 clifford w10 5 steps k=16 src-k1: error 1.4e-13, bond 1
+2026-11-02 11:18:19,587 clifford w10 5 steps k=16 src-k1-os: error 9.4e-14, bond 1
+2026-11-02 11:18:25,809 clifford w10 5 steps k=16 src-k2: error 7.7e-14, bond 1
+2026-11-02 11:18:35,806 clifford w10 5 steps k=16 src-k3: error 6.9e-14, bond 1
+2026-11-02 11:19:56,763 clifford w10 5 steps k=16 quimb-fit: error 1.3e-13, bond 1
+2026-11-02 11:20:06,734 clifford w10 5 steps k=16 quimb-zipup: error 1.3e-14, bond 2
+2026-11-02 11:20:13,878 clifford w10 5 steps k=16 quimb-src: error 2.1e-13, bond 1
+2026-11-02 11:20:23,824 clifford w10 5 steps k=16 quimb-src-os: error 1.5e-13, bond 1

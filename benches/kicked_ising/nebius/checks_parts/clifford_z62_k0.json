@@ -1,0 +1,84 @@
+{
+ "provenance": {
+  "src_method": "0.5.3.dev12+gd5a04f9a6",
+  "quimb": "1.15.0",
+  "autoray": "0.11.0",
+  "opt_einsum": "3.4.0",
+  "numpy": "2.4.4",
+  "cupy": "14.2.0",
+  "cuda_runtime": 13020,
+  "cuda_driver": 13000,
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "gpus_visible": 1,
+  "qiskit": "2.6.1",
+  "qiskit_ibm_runtime": "0.51.0",
+  "stim": "1.16.0",
+  "python": "3.14.7",
+  "host": "computeinstance-e05a79nv5z3datsw3m",
+  "slurm_job": null,
+  "git": "f3b6a849961c24ccb6d4e748c2feb8f7626c5b43",
+  "dtype": "complex128",
+  "env": {
+   "CUDA_VISIBLE_DEVICES": "3",
+   "CUPY_TF32": "0",
+   "NVIDIA_TF32_OVERRIDE": "0",
+   "CUPY_CUDA_PER_THREAD_DEFAULT_STREAM": null,
+   "TMPDIR": "/dev/shm/ki-scratch"
+  }
+ },
+ "clifford": {
+  "w10_is_U5_Z13_U5dag": {
+   "stim": "+________ZY__ZX___Z__________ZXYXZ______________________________________________________________________________________________",
+   "paper": "+________ZY__ZX___Z__________ZXYXZ______________________________________________________________________________________________",
+   "matches_up_to_sign": true
+  },
+  "w17_is_U5_Z58_U5dag": {
+   "stim": "-_____________________________________XZ_ZXZ_________X___XXX___XZ________Z__Y___XZ_________ZZ___________________________________",
+   "paper": "+_____________________________________XZ_ZXZ_________X___XXX___XZ________Z__Y___XZ_________ZZ___________________________________",
+   "matches_up_to_sign": true
+  },
+  "z62_20steps_k0": {
+   "stim": 1.0,
+   "src-k1": {
+    "error": 4.2310599468464716e-13,
+    "max_step_error_theta0": 4.2310599468464716e-13,
+    "max_bond": 1
+   },
+   "src-k1-os": {
+    "error": 1.7130741269966165e-13,
+    "max_step_error_theta0": 1.7130741269966165e-13,
+    "max_bond": 1
+   },
+   "src-k2": {
+    "error": 2.546851618490109e-13,
+    "max_step_error_theta0": 2.546851618490109e-13,
+    "max_bond": 1
+   },
+   "src-k3": {
+    "error": 1.91402449445377e-13,
+    "max_step_error_theta0": 1.91402449445377e-13,
+    "max_bond": 1
+   },
+   "quimb-fit": {
+    "error": 2.489120021209601e-13,
+    "max_step_error_theta0": 2.489120021209601e-13,
+    "max_bond": 1
+   },
+   "quimb-zipup": {
+    "error": 3.2018832030189515e-13,
+    "max_step_error_theta0": 3.2018832030189515e-13,
+    "max_bond": 2
+   },
+   "quimb-src": {
+    "error": 1.1053380433168059e-12,
+    "max_step_error_theta0": 1.1053380433168059e-12,
+    "max_bond": 1
+   },
+   "quimb-src-os": {
+    "error": 9.099387909827783e-13,
+    "max_step_error_theta0": 9.099387909827783e-13,
+    "max_bond": 1
+   }
+  }
+ }
+}

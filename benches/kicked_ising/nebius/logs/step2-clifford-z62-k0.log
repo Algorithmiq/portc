@@ -1,0 +1,11 @@
+# 2026-11-02T11:17:52.577726+00:00 gpus [3]: --dtype complex128 check clifford --cases z62:20:0 --output benches/kicked_ising/nebius/checks_parts/clifford_z62_k0.json
+2026-11-02 11:17:56,637 w10: {'stim': '+________ZY__ZX___Z__________ZXYXZ______________________________________________________________________________________________', 'paper': '+________ZY__ZX___Z__________ZXYXZ______________________________________________________________________________________________', 'matches_up_to_sign': True}
+2026-11-02 11:17:56,637 w17: {'stim': '-_____________________________________XZ_ZXZ_________X___XXX___XZ________Z__Y___XZ_________ZZ___________________________________', 'paper': '+_____________________________________XZ_ZXZ_________X___XXX___XZ________Z__Y___XZ_________ZZ___________________________________', 'matches_up_to_sign': True}
+2026-11-02 11:18:29,560 clifford z62 20 steps k=0 src-k1: error 4.2e-13, bond 1
+2026-11-02 11:19:13,526 clifford z62 20 steps k=0 src-k1-os: error 1.7e-13, bond 1
+2026-11-02 11:19:34,097 clifford z62 20 steps k=0 src-k2: error 2.5e-13, bond 1
+2026-11-02 11:20:01,288 clifford z62 20 steps k=0 src-k3: error 1.9e-13, bond 1
+2026-11-02 11:24:50,850 clifford z62 20 steps k=0 quimb-fit: error 2.5e-13, bond 1
+2026-11-02 11:25:25,883 clifford z62 20 steps k=0 quimb-zipup: error 3.2e-13, bond 2
+2026-11-02 11:25:52,229 clifford z62 20 steps k=0 quimb-src: error 1.1e-12, bond 1
+2026-11-02 11:26:28,266 clifford z62 20 steps k=0 quimb-src-os: error 9.1e-13, bond 1

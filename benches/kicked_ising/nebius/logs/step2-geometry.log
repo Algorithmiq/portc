@@ -1,0 +1,2 @@
+# 2026-11-02T11:17:52.574563+00:00 gpus [0]: --dtype complex128 geometry
+2026-11-02 11:17:53,736 144 edges, max cut load 6, 6 sub-layers of [64, 34, 15, 18, 11, 2] gates
