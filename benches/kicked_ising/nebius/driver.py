@@ -7,7 +7,9 @@ and its output in ``nebius/logs/<name>.log``. A single-GPU job is pinned to the
 as many BLAS threads; a multi-GPU job gets the whole node. Blank lines and lines
 starting with ``#`` are skipped. The bench skips finished runs, so a job file
 can be rerun after an interruption. An optional second argument restricts the
-driver to some GPUs, e.g. ``0,1,3`` while another driver holds GPU 2.
+driver to some GPUs, e.g. ``0,1,3`` while another driver holds GPU 2. A
+``KI_PLATFORM`` already set (e.g. ``nebius/fp64-emulation``) is kept, and so is
+the rest of the environment, such as cuBLAS's emulation variables.
 
     python benches/kicked_ising/nebius/driver.py jobs.txt [gpus]
 """
@@ -41,7 +43,7 @@ def environment(gpus: list[int]) -> dict[str, str]:
     env.pop("CUPY_CUDA_PER_THREAD_DEFAULT_STREAM", None)
     threads = str(CPUS_PER_GPU * len(gpus)) if len(gpus) == 1 else str(os.cpu_count())
     env.update(
-        KI_PLATFORM="nebius",
+        KI_PLATFORM=os.environ.get("KI_PLATFORM", "nebius"),
         CUDA_VISIBLE_DEVICES=",".join(map(str, gpus)),
         CUPY_TF32="0",
         NVIDIA_TF32_OVERRIDE="0",
@@ -61,8 +63,8 @@ def command(gpus: list[int], args: list[str]) -> list[str]:
     return cmd
 
 
-def main(job_file: str, gpus: str = "") -> None:
-    """Run every job of ``job_file`` on ``gpus`` (comma-separated, default all)."""
+def main(job_file: str, allowed: str = "") -> None:
+    """Run every job of ``job_file`` on the GPUs ``allowed`` (comma-separated, default all)."""
     jobs = []
     for line in Path(job_file).read_text().splitlines():
         if line.strip() and not line.lstrip().startswith("#"):
@@ -70,7 +72,7 @@ def main(job_file: str, gpus: str = "") -> None:
             jobs.append((int(count), name, args))
     SCRATCH.mkdir(parents=True, exist_ok=True)
     (HERE / "logs").mkdir(exist_ok=True)
-    free = [int(g) for g in gpus.split(",")] if gpus else list(range(N_GPUS))
+    free = [int(g) for g in allowed.split(",")] if allowed else list(range(N_GPUS))
     running: list[tuple[subprocess.Popen[bytes], list[int], str]] = []
     failed = []
     while jobs or running:

@@ -1,0 +1,355 @@
+{
+ "c64-fp32": {
+  "env": {},
+  "rows": [
+   {
+    "shape": [
+     2048,
+     2048,
+     2048
+    ],
+    "seconds": 0.0009172385861316359,
+    "tflops": 74.9199584219605,
+    "relative_error": 5.168166994742993e-07,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     4096,
+     4096,
+     4096
+    ],
+    "seconds": 0.006898355666635325,
+    "tflops": 79.69374738779503,
+    "relative_error": 8.123596421845489e-07,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     8192,
+     8192,
+     8192
+    ],
+    "seconds": 0.054704292000678834,
+    "tflops": 80.39673579998849,
+    "relative_error": 1.0272320463015989e-06,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     65536,
+     2048,
+     2048
+    ],
+    "seconds": 0.027537758000107715,
+    "tflops": 79.85483987270852,
+    "relative_error": 5.757476576703136e-07,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   }
+  ]
+ },
+ "c64-tf32": {
+  "env": {},
+  "rows": [
+   {
+    "shape": [
+     2048,
+     2048,
+     2048
+    ],
+    "seconds": 0.0009162588276326303,
+    "tflops": 75.00007057345674,
+    "relative_error": 5.168166994742993e-07,
+    "compute_type": "COMPUTE_TYPE_TF32"
+   },
+   {
+    "shape": [
+     4096,
+     4096,
+     4096
+    ],
+    "seconds": 0.006917240665643476,
+    "tflops": 79.47617271992937,
+    "relative_error": 8.123596421845489e-07,
+    "compute_type": "COMPUTE_TYPE_TF32"
+   },
+   {
+    "shape": [
+     8192,
+     8192,
+     8192
+    ],
+    "seconds": 0.053874150666767186,
+    "tflops": 81.63556096332076,
+    "relative_error": 1.0272320463015989e-06,
+    "compute_type": "COMPUTE_TYPE_TF32"
+   },
+   {
+    "shape": [
+     65536,
+     2048,
+     2048
+    ],
+    "seconds": 0.027109457666180486,
+    "tflops": 81.11646063267874,
+    "relative_error": 5.757476576703136e-07,
+    "compute_type": "COMPUTE_TYPE_TF32"
+   }
+  ]
+ },
+ "c64-bf16x9": {
+  "env": {
+   "CUBLAS_EMULATE_SINGLE_PRECISION": "1"
+  },
+  "rows": [
+   {
+    "shape": [
+     2048,
+     2048,
+     2048
+    ],
+    "seconds": 0.0009173712068927828,
+    "tflops": 74.90912753710566,
+    "relative_error": 5.168166994742993e-07,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     4096,
+     4096,
+     4096
+    ],
+    "seconds": 0.0069267250000848435,
+    "tflops": 79.36735093153925,
+    "relative_error": 8.123596421845489e-07,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     8192,
+     8192,
+     8192
+    ],
+    "seconds": 0.05383743366716468,
+    "tflops": 81.6912362185339,
+    "relative_error": 1.0272320463015989e-06,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     65536,
+     2048,
+     2048
+    ],
+    "seconds": 0.02681575366659672,
+    "tflops": 82.00490215164949,
+    "relative_error": 5.757476576703136e-07,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   }
+  ]
+ },
+ "c128-fp64": {
+  "env": {},
+  "rows": [
+   {
+    "shape": [
+     2048,
+     2048,
+     2048
+    ],
+    "seconds": 0.04625283744826447,
+    "tflops": 1.4857353738106405,
+    "relative_error": 0.0,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     4096,
+     4096,
+     4096
+    ],
+    "seconds": 0.3692569319997953,
+    "tflops": 1.4888165021321922,
+    "relative_error": 0.0,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     8192,
+     8192,
+     8192
+    ],
+    "seconds": 2.9305967793334275,
+    "tflops": 1.5007340969317342,
+    "relative_error": 0.0,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     65536,
+     2048,
+     2048
+    ],
+    "seconds": 1.4598144856657502,
+    "tflops": 1.5063717185606174,
+    "relative_error": 0.0,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   }
+  ]
+ },
+ "c128-emulated": {
+  "env": {
+   "CUBLAS_EMULATE_DOUBLE_PRECISION": "1"
+  },
+  "rows": [
+   {
+    "shape": [
+     2048,
+     2048,
+     2048
+    ],
+    "seconds": 0.0041385633103972995,
+    "tflops": 16.604669684128375,
+    "relative_error": 2.1343516093237724e-15,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     4096,
+     4096,
+     4096
+    ],
+    "seconds": 0.018689218666016433,
+    "tflops": 29.41566598969968,
+    "relative_error": 3.0188213751955253e-15,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     8192,
+     8192,
+     8192
+    ],
+    "seconds": 0.11419543733306152,
+    "tflops": 38.51332954990743,
+    "relative_error": 4.2691103968893664e-15,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     65536,
+     2048,
+     2048
+    ],
+    "seconds": 0.07979798566642178,
+    "tflops": 27.557378011326517,
+    "relative_error": 2.1354160470009136e-15,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   }
+  ]
+ },
+ "c64-bf16x9-eager": {
+  "env": {
+   "CUBLAS_EMULATE_SINGLE_PRECISION": "1",
+   "CUBLAS_EMULATION_STRATEGY": "eager"
+  },
+  "rows": [
+   {
+    "shape": [
+     2048,
+     2048,
+     2048
+    ],
+    "seconds": 0.0009179766551322496,
+    "tflops": 74.85972148834203,
+    "relative_error": 5.168166994742993e-07,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     4096,
+     4096,
+     4096
+    ],
+    "seconds": 0.006931137333594961,
+    "tflops": 79.31682600247355,
+    "relative_error": 8.123596421845489e-07,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     8192,
+     8192,
+     8192
+    ],
+    "seconds": 0.053938939333117254,
+    "tflops": 81.5375045464363,
+    "relative_error": 1.0272320463015989e-06,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     65536,
+     2048,
+     2048
+    ],
+    "seconds": 0.026617466999596218,
+    "tflops": 82.61579719758303,
+    "relative_error": 5.757476576703136e-07,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   }
+  ]
+ },
+ "c128-emulated-eager": {
+  "env": {
+   "CUBLAS_EMULATE_DOUBLE_PRECISION": "1",
+   "CUBLAS_EMULATION_STRATEGY": "eager"
+  },
+  "rows": [
+   {
+    "shape": [
+     2048,
+     2048,
+     2048
+    ],
+    "seconds": 0.004141558862039377,
+    "tflops": 16.592659678428742,
+    "relative_error": 2.1343516093237724e-15,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     4096,
+     4096,
+     4096
+    ],
+    "seconds": 0.018669774999580113,
+    "tflops": 29.44630098115077,
+    "relative_error": 3.0188213751955253e-15,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     8192,
+     8192,
+     8192
+    ],
+    "seconds": 0.11274568799975289,
+    "tflops": 39.008556239540084,
+    "relative_error": 4.2691103968893664e-15,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   },
+   {
+    "shape": [
+     65536,
+     2048,
+     2048
+    ],
+    "seconds": 0.0788406506665827,
+    "tflops": 27.891997807725794,
+    "relative_error": 2.1354160470009136e-15,
+    "compute_type": "COMPUTE_TYPE_DEFAULT"
+   }
+  ]
+ }
+}

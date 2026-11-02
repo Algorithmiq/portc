@@ -497,6 +497,9 @@ def provenance() -> dict[str, Any]:
                 "CUPY_TF32",
                 "NVIDIA_TF32_OVERRIDE",
                 "CUPY_CUDA_PER_THREAD_DEFAULT_STREAM",
+                "CUBLAS_EMULATE_DOUBLE_PRECISION",
+                "CUBLAS_EMULATE_SINGLE_PRECISION",
+                "CUBLAS_EMULATION_STRATEGY",
                 "TMPDIR",
             )
         },
