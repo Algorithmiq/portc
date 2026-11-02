@@ -29,6 +29,7 @@ def test_a_group_of_one_runs_inline():
         assert group.allgather(rank, local) is local
         assert group.gather(rank, local) is local
         assert group.scatter(rank, local) is local
+        assert group.alltoall(rank, [local]) is local
         return rank
 
     assert group.run(fn) == [0]
@@ -62,6 +63,22 @@ def test_collectives(size, dtype):
         lo, hi = blocks(expected.shape[0], size)[rank]
         np.testing.assert_array_equal(mine, expected[lo:hi])
     np.testing.assert_array_equal(results[0][1], expected)
+
+
+@pytest.mark.parametrize("size", [2, 3])
+def test_alltoall_concatenates_what_each_rank_sent(size):
+    group = DeviceGroup("cpu", size)
+    # Rank r sends rank s an (r + 1, s + 2) block filled with 10 r + s.
+    sends = [
+        [np.full((r + 1, s + 2), 10.0 * r + s) for s in range(size)]
+        for r in range(size)
+    ]
+
+    results = group.run(lambda rank: group.alltoall(rank, sends[rank]))
+
+    for rank, received in enumerate(results):
+        expected = np.concatenate([sends[r][rank] for r in range(size)])
+        np.testing.assert_array_equal(received, expected)
 
 
 def test_many_collectives_in_a_row():

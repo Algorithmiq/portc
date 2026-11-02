@@ -5,6 +5,7 @@ Skipped automatically when cupy or a CUDA/ROCm device is unavailable.
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import numpy as np
@@ -13,6 +14,7 @@ import quimb.tensor as qtn
 
 import src_method._sweep as sweep_module
 from src_method import Resources, apply, compress, src
+from src_method._group import DeviceGroup
 from src_method._kernels import SiteKernels
 from src_method._plan import (
     GPU_MARGIN_FRACTION,
@@ -406,6 +408,39 @@ def test_two_gpus_match_one(
 
 
 @pytest.mark.usefixtures("two_gpus")
+@pytest.mark.parametrize("cutoff", [0.0, 1e-3])
+def test_two_gpus_factor_by_cholesky_qr(
+    cutoff: float, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """The distributed CholeskyQR on two GPUs gives the operator of one GPU."""
+    rng = np.random.default_rng(11)
+    stack = [random_mpo_arrays([4, 8, 8, 8, 8, 4], rng) for _ in range(3)]
+    one = src(*stack, chi_out=40, cutoff=cutoff, seed=2, device="gpu")
+
+    monkeypatch.setattr(sweep_module, "DISTRIBUTED_QR_MIN", 0)
+    with caplog.at_level(logging.DEBUG, logger="src_method"):
+        two = src(
+            *stack,
+            chi_out=40,
+            cutoff=cutoff,
+            seed=2,
+            device="gpu",
+            resources=Resources(devices=2),
+        )
+
+    assert "CholeskyQR at" in caplog.text
+    assert [t.shape for t in two] == [t.shape for t in one]
+    reference = dense_mpo(one)
+    error = np.linalg.norm(dense_mpo(two) - reference) / np.linalg.norm(reference)
+    assert error < 1e-10
+    for core in two[1:]:
+        matrix = core.reshape(core.shape[0], -1)
+        np.testing.assert_allclose(
+            matrix @ matrix.conj().T, np.eye(core.shape[0]), atol=1e-13
+        )
+
+
+@pytest.mark.usefixtures("two_gpus")
 def test_two_gpus_take_device_inputs() -> None:
     """Cores given on one GPU reach the other through the staging buffer."""
     rng = np.random.default_rng(10)
@@ -477,6 +512,38 @@ def test_too_many_devices_raise() -> None:
 
     with pytest.raises(ValueError, match="visible"):
         src(*stack, chi_out=4, device="gpu", resources=Resources(devices=count + 1))
+
+
+def test_group_runs_on_a_non_blocking_stream() -> None:
+    """Ranks leave the null stream, keep one stream per device, and see prior work."""
+    group = DeviceGroup("gpu", [0])
+    data = cupy.zeros(1 << 24, dtype=cupy.float32)
+    data += 1  # queued on the null stream before the run
+
+    def fn(_rank: int) -> tuple[int, float]:
+        stream = cupy.cuda.get_current_stream()
+        assert stream != cupy.cuda.Stream.null
+        return stream.ptr, float((data * 2).sum())
+
+    ((first, total),) = group.run(fn)
+    ((second, _),) = group.run(fn)
+
+    assert total == 2 * data.size
+    assert first == second
+    assert cupy.cuda.get_current_stream() == cupy.cuda.Stream.null
+
+
+@pytest.mark.usefixtures("two_gpus")
+def test_two_gpus_run_on_their_own_streams() -> None:
+    """Each rank of a group runs on a non-blocking stream of its own device."""
+    group = DeviceGroup("gpu", 2)
+
+    def fn(rank: int) -> tuple[int, int]:
+        stream = cupy.cuda.get_current_stream()
+        assert stream != cupy.cuda.Stream.null
+        return rank, stream.device_id
+
+    assert group.run(fn) == [(0, 0), (1, 1)]
 
 
 @pytest.mark.parametrize("n", [DEVICE_SVD_MIN // 2, DEVICE_SVD_MIN + 8])

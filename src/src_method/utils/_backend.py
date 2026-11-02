@@ -213,6 +213,42 @@ def use_device(xp: ModuleType, device: int) -> Iterator[None]:
         yield
 
 
+# One per device, reused across calls: CuPy's pool hands a freed block only to the
+# stream that allocated it, so a new stream per call would strand the blocks the
+# previous one cached.
+_streams: dict[int, Any] = {}
+
+
+@contextmanager
+def use_stream(xp: ModuleType) -> Iterator[None]:
+    """Run the block on a non-blocking stream of the current device.
+
+    On the legacy null stream, a peer copy into one device serializes with the copy
+    in the other direction, which halves the bandwidth of every collective over
+    PCIe. The stream first waits for the work already queued on the previous
+    current stream, so inputs written there are ready, and is synchronized on a
+    normal exit, so whatever the block returns is ready on any stream. On the host
+    this is a no-op.
+
+    Args:
+        xp: The array namespace.
+
+    Yields:
+        Nothing.
+    """
+    if is_host(xp):
+        yield
+        return
+    device = xp.cuda.Device().id
+    stream = _streams.get(device) or _streams.setdefault(
+        device, xp.cuda.Stream(non_blocking=True)
+    )
+    stream.wait_event(xp.cuda.get_current_stream().record())
+    with stream:
+        yield
+    stream.synchronize()
+
+
 # cudaErrorPeerAccessAlreadyEnabled: another library, or an earlier call, did it.
 _PEER_ALREADY_ENABLED = 704
 
@@ -295,6 +331,27 @@ def copy_into(dst: Array, src: Array, stream: Any) -> None:  # noqa: ANN401
             dst.nbytes,
             stream.ptr,
         )
+
+
+def solve_triangular(a: Array, b: Array, *, lower: bool) -> Array:
+    """Solve ``a @ x = b`` for a triangular ``a``, which the array API standard lacks.
+
+    On the device this is cuBLAS's ``trsm``. The host only runs it with simulated
+    devices, so a general solve stands in there.
+
+    Args:
+        a: The ``(n, n)`` triangular matrix.
+        b: The right-hand sides, ``(n, k)``.
+        lower: Whether ``a`` is lower triangular.
+
+    Returns:
+        ``x``, ``(n, k)``, on the backend of ``a``.
+    """
+    if isinstance(a, np.ndarray):
+        return np.linalg.solve(a, b)
+    from cupyx.scipy.linalg import solve_triangular  # noqa: PLC0415  (optional)
+
+    return solve_triangular(a, b, lower=lower)
 
 
 def device_memory(xp: ModuleType) -> tuple[int, int]:

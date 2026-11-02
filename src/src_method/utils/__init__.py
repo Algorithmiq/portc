@@ -23,17 +23,20 @@ from ._backend import (
     pinned_empty,
     release_cached_blocks,
     sketch_dtype,
+    solve_triangular,
     to_device_async,
     to_host_async,
     to_numpy,
     use_device,
+    use_stream,
 )
-from .linalg import thin_svd, truncated_qr
+from .linalg import cholesky_qr, thin_svd, truncated_qr
 
 __all__ = [
     "Array",
     "NullEvent",
     "NullStream",
+    "cholesky_qr",
     "copy_into",
     "current_device",
     "current_stream",
@@ -51,10 +54,12 @@ __all__ = [
     "pinned_empty",
     "release_cached_blocks",
     "sketch_dtype",
+    "solve_triangular",
     "thin_svd",
     "to_device_async",
     "to_host_async",
     "to_numpy",
     "truncated_qr",
     "use_device",
+    "use_stream",
 ]

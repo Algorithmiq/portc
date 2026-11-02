@@ -21,6 +21,7 @@ from src_method.utils import (
     to_device_async,
     to_host_async,
     use_device,
+    use_stream,
 )
 
 
@@ -88,6 +89,11 @@ def test_host_devices_are_simulated():
     assert enable_peer_access(np, [0, 1, 2])
     with use_device(np, 5):
         assert current_device(np) == 0
+
+
+def test_host_use_stream_is_a_no_op():
+    with use_stream(np):
+        assert isinstance(current_stream(np), NullStream)
 
 
 def test_copy_into_on_host():

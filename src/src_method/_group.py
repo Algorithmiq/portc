@@ -28,6 +28,7 @@ from .utils import (
     enable_peer_access,
     get_xp,
     use_device,
+    use_stream,
 )
 
 if TYPE_CHECKING:
@@ -125,14 +126,14 @@ class DeviceGroup:
             Exception: The first error raised by a rank, after every rank stopped.
         """
         if self.size == 1:
-            with use_device(self.xp, self.devices[0]):
+            with use_device(self.xp, self.devices[0]), use_stream(self.xp):
                 return [fn(0)]
         first: list[BaseException] = []
         lock = threading.Lock()
 
         def worker(rank: int) -> T:
             try:
-                with use_device(self.xp, self.devices[rank]):
+                with use_device(self.xp, self.devices[rank]), use_stream(self.xp):
                     return fn(rank)
             except BaseException as err:
                 secondary = isinstance(
@@ -262,6 +263,31 @@ class DeviceGroup:
         self._pull(_Part(source[lo:hi], parts[root].ready), local)
         self._settle(rank, parity)
         return local
+
+    def alltoall(self, rank: int, sends: Sequence[Array]) -> Array:
+        """Send ``sends[s]`` to rank ``s``; concatenate what every rank sent here.
+
+        Args:
+            rank: The calling rank.
+            sends: One C-contiguous block per rank, on this rank's device; the
+                blocks sent to one rank may differ along the first axis only.
+
+        Returns:
+            The blocks sent to this rank, concatenated along the first axis in rank
+            order, on this rank's device.
+        """
+        if self.size == 1:
+            return sends[0]
+        parity, parts = self._publish(rank, list(sends))
+        mine = [_Part(part.array[rank], part.ready) for part in parts]
+        full = self._empty_like_parts(mine)
+        lo = 0
+        for part in mine:
+            hi = lo + part.array.shape[0]
+            self._pull(part, full[lo:hi])
+            lo = hi
+        self._settle(rank, parity)
+        return full
 
     def _empty_like_parts(self, parts: Sequence[_Part]) -> Array:
         first = parts[0].array
