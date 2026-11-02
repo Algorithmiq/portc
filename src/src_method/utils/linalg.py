@@ -15,14 +15,9 @@ if TYPE_CHECKING:
     from ._backend import Array
 
 # Smallest side for which a device SVD (cuSOLVER gesvd) beats numpy's host gesdd:
-# one complex128 n x n SVD on an A100 against OpenBLAS takes 0.023 s against
-# 0.015 s at n = 256, 0.058 s against 0.071 s at 512 and 0.63 s against 2.2 s at
-# 2048. gesvd also converges on the ill-conditioned factors where gesdd fails.
 DEVICE_SVD_MIN = 512
 
-# A plain CholeskyQR pass leaves its output orthonormal to working precision once
-# the Gram matrix it factors lies within this Frobenius distance of the identity:
-# the condition number of its input is then at most sqrt(1.1 / 0.9).
+# A plain CholeskyQR pass leaves its output orthonormal to working precision
 CHOLESKY_QR_TOL = 0.1
 
 

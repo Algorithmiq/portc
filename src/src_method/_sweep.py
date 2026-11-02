@@ -72,17 +72,9 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-# Smallest sketch size factored by `cholesky_qr` on several devices; below it the
-# Householder QR on rank 0 is cheaper than the extra exchanges. On four A100s
-# (NVLink), compressing a 127-site complex128 MPO stack with CholeskyQR took 1.25x
-# as long at chi_out = 512, and 0.72x, 0.68x and 0.76x as long at 1024, 2048 and
-# 4096.
+# Smallest sketch size factored by `cholesky_qr` on several devices
 DISTRIBUTED_QR_MIN = 1024
-# Numerical rank deficiency follows the bond profile of the operator, so it spans
-# runs of neighbouring sites (all of them early in an evolution at cutoff 0, where
-# the bonds are padded to chi_out), and a CholeskyQR that falls back costs almost as
-# much as one that succeeds. From the second consecutive fallback on, the next 2,
-# 4, 8, ... sites, at most this many, go straight to the Householder QR.
+# Numerical rank deficiency follows the bond profile of the operator
 CHOLESKY_QR_MAX_SKIP = 16
 
 
