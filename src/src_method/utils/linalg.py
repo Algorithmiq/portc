@@ -80,7 +80,9 @@ def cholesky_qr(
     Returns:
         The same rows of the isometry ``Q``, transposed: ``(rank, rows_block)``.
         ``None`` if ``Y`` is too ill-conditioned for CholeskyQR, typically
-        numerically rank-deficient; `truncated_qr` handles that case.
+        numerically rank-deficient; `truncated_qr` handles that case. Whether a
+        rank-deficient ``Y`` is declined depends on the rounding; a returned
+        isometry is accurate either way.
     """
     xp = array_namespace(block)
     n = block.shape[0]

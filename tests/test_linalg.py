@@ -79,8 +79,24 @@ def test_cholesky_qr_truncates_like_truncated_qr(size, rng):
 
 
 @pytest.mark.parametrize("size", [1, 3])
-def test_cholesky_qr_declines_a_rank_deficient_matrix(size, rng):
-    S = np.concatenate([np.ones(30), np.zeros(10)])
-    Y = conditioned(160, 40, S, rng)
+def test_cholesky_qr_declines_an_exactly_singular_matrix(size, rng):
+    Y = conditioned(160, 40, np.ones(40), rng)
+    Y[:, 7] = 0
 
     assert split_qr(Y, size) is None
+
+
+@pytest.mark.parametrize("seed", range(8))
+@pytest.mark.parametrize("size", [1, 3])
+def test_cholesky_qr_declines_or_factors_a_rank_deficient_matrix(size, seed):
+    # Whether rounding leaves the null space resolvable depends on the BLAS; either
+    # way the result must be exact: declined, or an orthonormal basis of Y.
+    S = np.concatenate([np.ones(30), np.zeros(10)])
+    Y = conditioned(160, 40, S, np.random.default_rng(seed))
+
+    Q = split_qr(Y, size)
+
+    if Q is not None:
+        np.testing.assert_allclose(Q.conj().T @ Q, np.eye(40), atol=1e-13)
+        residual = Y - projector(Q) @ Y
+        assert np.linalg.norm(residual) < 1e-13 * np.linalg.norm(Y)
