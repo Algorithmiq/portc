@@ -1,0 +1,14 @@
+# Step 4: the runs that stopped on a host SVD failure (stage 1 and 2, moved to runs_failed/), rerun with the bench-side gesvd fallback.
+1 fb-w10_5_7_src-k1_256_0 --dtype complex128 run w10:5:7:src-k1:256:0 --cutoff 1e-12 --budget-minutes 1e9 --svd-fallback
+1 fb-w17_5_10_src-k1-os_128_2 --dtype complex128 run w17:5:10:src-k1-os:128:2 --cutoff 1e-12 --budget-minutes 1e9 --svd-fallback
+1 fb-w10_5_9_src-k1_128_0 --dtype complex128 run w10:5:9:src-k1:128:0 --cutoff 1e-12 --budget-minutes 1e9 --svd-fallback
+1 fb-w17_5_10_src-k1-os_512_0 --dtype complex128 run w17:5:10:src-k1-os:512:0 --cutoff 1e-12 --budget-minutes 1e9 --svd-fallback
+1 fb-w17_5_10_src-k1_128_1 --dtype complex128 run w17:5:10:src-k1:128:1 --cutoff 1e-12 --budget-minutes 1e9 --svd-fallback
+1 fb-w17_5_10_src-k2-os_128_2 --dtype complex128 run w17:5:10:src-k2-os:128:2 --cutoff 1e-12 --budget-minutes 1e9 --svd-fallback
+1 fb-w17_5_6_src-k1-os_128_1 --dtype complex128 run w17:5:6:src-k1-os:128:1 --cutoff 1e-12 --budget-minutes 1e9 --svd-fallback
+1 fb-w17_5_6_src-k3-os_512_1 --dtype complex128 run w17:5:6:src-k3-os:512:1 --cutoff 1e-12 --budget-minutes 1e9 --svd-fallback
+1 fb-w17_5_6_src-k3-os_128_0 --dtype complex128 run w17:5:6:src-k3-os:128:0 --cutoff 1e-12 --budget-minutes 1e9 --svd-fallback
+1 fb-w17_5_8_src-k1-os_256_0 --dtype complex128 run w17:5:8:src-k1-os:256:0 --cutoff 1e-12 --budget-minutes 1e9 --svd-fallback
+1 fb-z62_9_6_src-k2-os_256_1 --dtype complex128 run z62:9:6:src-k2-os:256:1 --cutoff 1e-12 --budget-minutes 1e9 --svd-fallback
+1 fb-z62_9_6_src-k1-os_256_1 --dtype complex128 run z62:9:6:src-k1-os:256:1 --cutoff 1e-12 --budget-minutes 1e9 --svd-fallback
+1 fb-z62_9_8_src-k3_256_1 --dtype complex128 run z62:9:8:src-k3:256:1 --cutoff 1e-12 --budget-minutes 1e9 --svd-fallback
