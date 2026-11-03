@@ -1,0 +1,3 @@
+# Step 5f: 20 steps of <Z62> at chi 8192 (theta_k 8, cutoff 0, complex64) on 8 GPUs, Householder QR
+# on rank 0 (the distributed CholeskyQR declines every real sketch in complex64, see cholesky_qr.md).
+8 s3-z62_20_8_src-k1-g8_8192_0_c64_householder --dtype complex64 run z62:20:8:src-k1-g8:8192:0 --budget-minutes 1e9 --householder
