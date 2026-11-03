@@ -1777,9 +1777,12 @@ COLORS = {
 
 
 def _methods(runs: Sequence[dict[str, Any]]) -> list[str]:
-    """Methods present, in the order of METHODS, cutoff variants after each."""
+    """Methods present, in the order of METHODS, cutoff and multi-GPU variants after each."""
     present = {r["method"] for r in runs}
-    return sorted(present, key=lambda m: (METHODS.index(m.split()[0]), m))
+    return sorted(
+        present,
+        key=lambda m: (METHODS.index(re.sub(r"-g\d+$", "", m.split()[0])), m),
+    )
 
 
 def _fmt(x: float | None, spec: str = ".2e") -> str:
@@ -2018,7 +2021,7 @@ def _stage1_only(runs: Sequence[dict[str, Any]]) -> set[tuple[str, int, float]]:
 def _failure_lines(
     runs: Sequence[dict[str, Any]], failed: Sequence[dict[str, Any]]
 ) -> list[str]:
-    """Runs of the released src-method that stopped on a host SVD failure."""
+    """Runs of src-method that stopped on a host SVD failure."""
     failed = [*failed, *(r for r in runs if r["status"] == "failed")]
     if not failed:
         return []
@@ -2028,7 +2031,7 @@ def _failure_lines(
         if r["method"].startswith("src-") and "+gesvd" not in r["method"]
     ]
     lines = [
-        "## Host SVD failures of the released src-method",
+        "## Host SVD failures of src-method",
         "",
         f"{len(failed)} of {len(released) + len(failed)} src-method runs without the "
         "fallback stopped with `LinAlgError: SVD did not converge` (numpy gesdd on the "
