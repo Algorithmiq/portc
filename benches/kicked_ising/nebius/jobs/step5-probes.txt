@@ -1,0 +1,7 @@
+# Step 5d/5e: one Trotter step (theta_k 8, cutoff 0, complex64) of a saturated operator on 8 GPUs:
+# src-k1-g8 at chi 4096 before the 20-step run, and the QR A/B (distributed CholeskyQR against
+# a Householder QR on rank 0, via src_method._sweep.DISTRIBUTED_QR_MIN) at chi 2048 and 4096.
+8 s3-probe-g8-4096 --dtype complex64 step-probe 4096 --method src-k1-g8 --cutoff 0 --budget-minutes 1e9
+8 s3-probe-g8-4096-householder --dtype complex64 step-probe 4096 --method src-k1-g8 --cutoff 0 --budget-minutes 1e9 --householder
+8 s3-probe-g8-2048 --dtype complex64 step-probe 2048 --method src-k1-g8 --cutoff 0 --budget-minutes 1e9
+8 s3-probe-g8-2048-householder --dtype complex64 step-probe 2048 --method src-k1-g8 --cutoff 0 --budget-minutes 1e9 --householder

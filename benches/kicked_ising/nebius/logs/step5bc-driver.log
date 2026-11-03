@@ -1,0 +1,26 @@
+2026-11-02 16:55:56,896 start s3-z62_20_8_src-k1_1024_0_c128 on GPUs [0]
+2026-11-02 16:55:56,897 start s3-z62_20_5_quimb-zipup_2048_0_c128 on GPUs [1]
+2026-11-02 16:55:56,898 start s3-z62_20_5_quimb-zipup_2048_0_c128_cut1e-12 on GPUs [2]
+2026-11-02 16:55:56,899 start s3-z62_20_7_quimb-zipup_2048_0_c128 on GPUs [3]
+2026-11-02 17:13:43,010 done s3-z62_20_5_quimb-zipup_2048_0_c128 (0)
+2026-11-02 17:13:43,012 start s3-z62_20_7_quimb-zipup_2048_0_c128_cut1e-12 on GPUs [1]
+2026-11-02 17:13:49,012 done s3-z62_20_7_quimb-zipup_2048_0_c128 (0)
+2026-11-02 17:13:49,014 start s3-z62_20_8_quimb-zipup_2048_0_c128 on GPUs [3]
+2026-11-02 17:31:37,127 done s3-z62_20_8_quimb-zipup_2048_0_c128 (0)
+2026-11-02 17:31:37,129 start s3-z62_20_8_quimb-zipup_2048_0_c128_cut1e-12 on GPUs [3]
+2026-11-02 18:04:29,338 done s3-z62_20_5_quimb-zipup_2048_0_c128_cut1e-12 (0)
+2026-11-02 18:04:29,339 start s3-z62_20_10_quimb-zipup_2048_0_c128 on GPUs [2]
+2026-11-02 18:17:33,425 done s3-z62_20_7_quimb-zipup_2048_0_c128_cut1e-12 (0)
+2026-11-02 18:17:33,426 start s3-z62_20_10_quimb-zipup_2048_0_c128_cut1e-12 on GPUs [1]
+2026-11-02 18:22:11,455 done s3-z62_20_10_quimb-zipup_2048_0_c128 (0)
+2026-11-02 18:22:11,457 start s3-z62_20_5_quimb-zipup_1024_0_c128 on GPUs [2]
+2026-11-02 18:37:57,558 done s3-z62_20_8_quimb-zipup_2048_0_c128_cut1e-12 (0)
+2026-11-02 18:37:57,560 start s3-z62_20_5_quimb-zipup_1024_0_c128_cut1e-12 on GPUs [3]
+2026-11-02 19:01:13,709 done s3-z62_20_8_src-k1_1024_0_c128 (0)
+2026-11-02 19:01:13,711 start s3-z62_20_7_quimb-zipup_1024_0_c128 on GPUs [0]
+2026-11-02 19:21:31,837 done s3-z62_20_5_quimb-zipup_1024_0_c128 (0)
+2026-11-02 19:21:31,839 start s3-z62_20_7_quimb-zipup_1024_0_c128_cut1e-12 on GPUs [2]
+2026-11-02 19:28:05,881 done s3-z62_20_10_quimb-zipup_2048_0_c128_cut1e-12 (0)
+2026-11-02 19:28:05,883 start s3-z62_20_8_quimb-zipup_1024_0_c128 on GPUs [1]
+2026-11-02 20:01:28,138 done s3-z62_20_7_quimb-zipup_1024_0_c128 (0)
+2026-11-02 20:01:28,140 start s3-z62_20_8_quimb-zipup_1024_0_c128_cut1e-12 on GPUs [0]

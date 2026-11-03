@@ -1,0 +1,23 @@
+# Step 5b-c: 20 steps of <Z62>, cutoff 0 unless marked.
+# 5c: the complex64 cross-check, complex128.
+1 s3-z62_20_8_src-k1_1024_0_c128 --dtype complex128 run z62:20:8:src-k1:1024:0 --budget-minutes 1e9
+# 5b: quimb zip-up in complex128 (complex64 gives NaN at 127 sites), cutoff 0 and 1e-12, until done or out of memory.
+1 s3-z62_20_5_quimb-zipup_2048_0_c128 --dtype complex128 run z62:20:5:quimb-zipup:2048:0 --budget-minutes 1e9
+1 s3-z62_20_5_quimb-zipup_2048_0_c128_cut1e-12 --dtype complex128 run z62:20:5:quimb-zipup:2048:0 --cutoff 1e-12 --budget-minutes 1e9
+1 s3-z62_20_7_quimb-zipup_2048_0_c128 --dtype complex128 run z62:20:7:quimb-zipup:2048:0 --budget-minutes 1e9
+1 s3-z62_20_7_quimb-zipup_2048_0_c128_cut1e-12 --dtype complex128 run z62:20:7:quimb-zipup:2048:0 --cutoff 1e-12 --budget-minutes 1e9
+1 s3-z62_20_8_quimb-zipup_2048_0_c128 --dtype complex128 run z62:20:8:quimb-zipup:2048:0 --budget-minutes 1e9
+1 s3-z62_20_8_quimb-zipup_2048_0_c128_cut1e-12 --dtype complex128 run z62:20:8:quimb-zipup:2048:0 --cutoff 1e-12 --budget-minutes 1e9
+1 s3-z62_20_10_quimb-zipup_2048_0_c128 --dtype complex128 run z62:20:10:quimb-zipup:2048:0 --budget-minutes 1e9
+1 s3-z62_20_10_quimb-zipup_2048_0_c128_cut1e-12 --dtype complex128 run z62:20:10:quimb-zipup:2048:0 --cutoff 1e-12 --budget-minutes 1e9
+1 s3-z62_20_5_quimb-zipup_1024_0_c128 --dtype complex128 run z62:20:5:quimb-zipup:1024:0 --budget-minutes 1e9
+1 s3-z62_20_5_quimb-zipup_1024_0_c128_cut1e-12 --dtype complex128 run z62:20:5:quimb-zipup:1024:0 --cutoff 1e-12 --budget-minutes 1e9
+1 s3-z62_20_7_quimb-zipup_1024_0_c128 --dtype complex128 run z62:20:7:quimb-zipup:1024:0 --budget-minutes 1e9
+1 s3-z62_20_7_quimb-zipup_1024_0_c128_cut1e-12 --dtype complex128 run z62:20:7:quimb-zipup:1024:0 --cutoff 1e-12 --budget-minutes 1e9
+1 s3-z62_20_8_quimb-zipup_1024_0_c128 --dtype complex128 run z62:20:8:quimb-zipup:1024:0 --budget-minutes 1e9
+1 s3-z62_20_8_quimb-zipup_1024_0_c128_cut1e-12 --dtype complex128 run z62:20:8:quimb-zipup:1024:0 --cutoff 1e-12 --budget-minutes 1e9
+1 s3-z62_20_10_quimb-zipup_1024_0_c128 --dtype complex128 run z62:20:10:quimb-zipup:1024:0 --budget-minutes 1e9
+1 s3-z62_20_10_quimb-zipup_1024_0_c128_cut1e-12 --dtype complex128 run z62:20:10:quimb-zipup:1024:0 --cutoff 1e-12 --budget-minutes 1e9
+# The complex64 NaN of quimb fit and zip-up, one step each.
+1 s3-z62_1_8_quimb-zipup_1024_0_c64 --dtype complex64 run z62:1:8:quimb-zipup:1024:0 --budget-minutes 1e9
+1 s3-z62_1_8_quimb-fit_1024_0_c64 --dtype complex64 run z62:1:8:quimb-fit:1024:0 --budget-minutes 1e9

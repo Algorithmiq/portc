@@ -1,0 +1,9 @@
+# Step 5a: 20 steps of <Z62>, src-k1, complex64, cutoff 0, chi 2048 and 1024.
+1 s3-z62_20_5_src-k1_2048_0_c64 --dtype complex64 run z62:20:5:src-k1:2048:0 --budget-minutes 1e9
+1 s3-z62_20_7_src-k1_2048_0_c64 --dtype complex64 run z62:20:7:src-k1:2048:0 --budget-minutes 1e9
+1 s3-z62_20_8_src-k1_2048_0_c64 --dtype complex64 run z62:20:8:src-k1:2048:0 --budget-minutes 1e9
+1 s3-z62_20_10_src-k1_2048_0_c64 --dtype complex64 run z62:20:10:src-k1:2048:0 --budget-minutes 1e9
+1 s3-z62_20_5_src-k1_1024_0_c64 --dtype complex64 run z62:20:5:src-k1:1024:0 --budget-minutes 1e9
+1 s3-z62_20_7_src-k1_1024_0_c64 --dtype complex64 run z62:20:7:src-k1:1024:0 --budget-minutes 1e9
+1 s3-z62_20_8_src-k1_1024_0_c64 --dtype complex64 run z62:20:8:src-k1:1024:0 --budget-minutes 1e9
+1 s3-z62_20_10_src-k1_1024_0_c64 --dtype complex64 run z62:20:10:src-k1:1024:0 --budget-minutes 1e9

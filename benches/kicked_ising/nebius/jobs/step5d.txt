@@ -1,0 +1,2 @@
+# Step 5d: 20 steps of <Z62>, theta_k 8, src-k1 on 8 GPUs at chi 4096, complex64, cutoff 0.
+8 s3-z62_20_8_src-k1-g8_4096_0_c64 --dtype complex64 run z62:20:8:src-k1-g8:4096:0 --budget-minutes 1e9

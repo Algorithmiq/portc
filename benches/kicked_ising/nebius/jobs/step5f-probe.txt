@@ -1,0 +1,2 @@
+# Step 5f: one Trotter step of a saturated operator at chi 8192 on 8 GPUs, complex64, cutoff 0.
+8 s3-probe-g8-8192 --dtype complex64 step-probe 8192 --method src-k1-g8 --cutoff 0 --budget-minutes 1e9

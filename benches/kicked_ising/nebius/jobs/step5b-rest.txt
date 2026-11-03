@@ -1,0 +1,5 @@
+# Step 5b (rest): the zip-up and NaN jobs of step5bc.txt that its driver had not started, moved to GPUs 4-7.
+1 s3-z62_20_10_quimb-zipup_1024_0_c128 --dtype complex128 run z62:20:10:quimb-zipup:1024:0 --budget-minutes 1e9
+1 s3-z62_20_10_quimb-zipup_1024_0_c128_cut1e-12 --dtype complex128 run z62:20:10:quimb-zipup:1024:0 --cutoff 1e-12 --budget-minutes 1e9
+1 s3-z62_1_8_quimb-zipup_1024_0_c64 --dtype complex64 run z62:1:8:quimb-zipup:1024:0 --budget-minutes 1e9
+1 s3-z62_1_8_quimb-fit_1024_0_c64 --dtype complex64 run z62:1:8:quimb-fit:1024:0 --budget-minutes 1e9
