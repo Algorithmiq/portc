@@ -1044,10 +1044,10 @@ def clifford_checks(
     return out
 
 
-def _run_path(cfg: str, cutoff: float) -> Path:
+def _run_path(cfg: str, cutoff: float, *, householder: bool = False) -> Path:
     obs, steps, theta_k, method, chi, seed = cfg.split(":")
     cut = f"_cut{cutoff:g}" if cutoff else ""
-    tag = DTYPE_TAG[dtype_name()]
+    tag = DTYPE_TAG[dtype_name()] + ("_householder" if householder else "")
     name = f"{obs}_n{steps}_k{theta_k}_{method}_chi{chi}{cut}_{tag}_s{seed}.jsonl"
     return OUT / "runs" / name
 
@@ -1162,13 +1162,20 @@ def run(
     budget_minutes: float = 27.0,
     cutoff: float = 0.0,
     svd_fallback: bool = False,
+    householder: bool = False,
 ) -> None:
     """Run ``obs:steps:theta_k:method:chi:seed`` configurations.
 
     ``theta_h = theta_k pi / 32``. One JSON line per Trotter step; a finished run
     ends with a ``done`` line and is skipped next time. A run that would cross
     the budget is stopped and marked, and rerun from scratch by a later job.
+    ``householder`` disables the distributed CholeskyQR as in `step_probe`, and
+    writes to a separate ``_householder`` file.
     """
+    from src_method import _sweep  # noqa: PLC0415
+
+    if householder:
+        _sweep.DISTRIBUTED_QR_MIN = 2**62
     _setup_logging()
     install_flop_counters()
     if svd_fallback:
@@ -1178,11 +1185,16 @@ def run(
     meta = provenance()
     edges = eagle_edges()
     _warmup(
-        {c.split(":")[3] for c in configs if not _done(_run_path(c, cutoff))}, cutoff
+        {
+            c.split(":")[3]
+            for c in configs
+            if not _done(_run_path(c, cutoff, householder=householder))
+        },
+        cutoff,
     )
     started = 0
     for cfg in configs:
-        path = _run_path(cfg, cutoff)
+        path = _run_path(cfg, cutoff, householder=householder)
         if _done(path):
             logger.info("%s: done already", cfg)
             continue
@@ -1221,6 +1233,7 @@ def run(
             "cutoff": cutoff,
             "dtype": dtype_name(),
             "svd_fallback": svd_fallback,
+            "householder": householder,
             "reference": None if ref is None else {"value": ref[0], "source": ref[1]},
             "provenance": meta,
         }
@@ -1741,6 +1754,8 @@ def load_runs(folder: Path = OUT / "runs") -> list[dict[str, Any]]:
                 run_["method"] += f" cut {run_['cutoff']:g}"
             if run_.get("svd_fallback"):
                 run_["method"] += " +gesvd"
+            if run_.get("householder"):
+                run_["method"] += " householder"
             # complex128 keeps the Leonardo labels.
             run_["method"] += {"complex64": " c64"}.get(run_["dtype"], "")
             runs.append(run_)

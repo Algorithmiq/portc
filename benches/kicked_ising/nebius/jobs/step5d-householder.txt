@@ -1,0 +1,5 @@
+# Step 5d rerun: the 20-step chi 4096 run stopped at step 10 because the distributed CholeskyQR
+# declined every site it tried; here with it disabled (Householder QR on rank 0, as in the QR A/B).
+# Then the chi 8192 probe, the same way.
+8 s3-z62_20_8_src-k1-g8_4096_0_c64_householder --dtype complex64 run z62:20:8:src-k1-g8:4096:0 --budget-minutes 1e9 --householder
+8 s3-probe-g8-8192-householder --dtype complex64 step-probe 8192 --method src-k1-g8 --cutoff 0 --budget-minutes 1e9 --householder
