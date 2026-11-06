@@ -5,6 +5,7 @@ Skipped automatically when cupy or a CUDA/ROCm device is unavailable.
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import numpy as np
@@ -23,6 +24,8 @@ from src_method._plan import (
     make_plan,
 )
 from src_method._sites import padded_shapes, site_bytes
+from src_method.utils import thin_svd
+from src_method.utils.linalg import DEVICE_SVD_MIN
 
 cupy = pytest.importorskip("cupy")
 
@@ -405,6 +408,39 @@ def test_two_gpus_match_one(
 
 
 @pytest.mark.usefixtures("two_gpus")
+@pytest.mark.parametrize("cutoff", [0.0, 1e-3])
+def test_two_gpus_factor_by_cholesky_qr(
+    cutoff: float, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """The distributed CholeskyQR on two GPUs gives the operator of one GPU."""
+    rng = np.random.default_rng(11)
+    stack = [random_mpo_arrays([4, 8, 8, 8, 8, 4], rng) for _ in range(3)]
+    one = src(*stack, chi_out=40, cutoff=cutoff, seed=2, device="gpu")
+
+    monkeypatch.setattr(sweep_module, "DISTRIBUTED_QR_MIN", 0)
+    with caplog.at_level(logging.DEBUG, logger="src_method"):
+        two = src(
+            *stack,
+            chi_out=40,
+            cutoff=cutoff,
+            seed=2,
+            device="gpu",
+            resources=Resources(devices=2),
+        )
+
+    assert "CholeskyQR at" in caplog.text
+    assert [t.shape for t in two] == [t.shape for t in one]
+    reference = dense_mpo(one)
+    error = np.linalg.norm(dense_mpo(two) - reference) / np.linalg.norm(reference)
+    assert error < 1e-10
+    for core in two[1:]:
+        matrix = core.reshape(core.shape[0], -1)
+        np.testing.assert_allclose(
+            matrix @ matrix.conj().T, np.eye(core.shape[0]), atol=1e-13
+        )
+
+
+@pytest.mark.usefixtures("two_gpus")
 def test_two_gpus_take_device_inputs() -> None:
     """Cores given on one GPU reach the other through the staging buffer."""
     rng = np.random.default_rng(10)
@@ -508,3 +544,17 @@ def test_two_gpus_run_on_their_own_streams() -> None:
         return rank, stream.device_id
 
     assert group.run(fn) == [(0, 0), (1, 1)]
+
+
+@pytest.mark.parametrize("n", [DEVICE_SVD_MIN // 2, DEVICE_SVD_MIN + 8])
+def test_thin_svd_matches_host_on_either_side_of_the_threshold(n: int) -> None:
+    """Below the threshold the SVD runs on the host, above it on the device."""
+    rng = np.random.default_rng(3)
+    host = rng.standard_normal((n + 5, n)) + 1j * rng.standard_normal((n + 5, n))
+    U, S, Vh = thin_svd(cupy.asarray(host))
+    assert isinstance(U, cupy.ndarray)
+    assert isinstance(Vh, cupy.ndarray)
+    assert isinstance(S, np.ndarray)
+    np.testing.assert_allclose(S, np.linalg.svd(host, compute_uv=False), rtol=1e-10)
+    rebuilt = cupy.asnumpy((U * cupy.asarray(S)) @ Vh)
+    np.testing.assert_allclose(rebuilt, host, atol=1e-10 * np.abs(host).max())

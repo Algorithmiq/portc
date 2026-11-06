@@ -264,6 +264,31 @@ class DeviceGroup:
         self._settle(rank, parity)
         return local
 
+    def alltoall(self, rank: int, sends: Sequence[Array]) -> Array:
+        """Send ``sends[s]`` to rank ``s``; concatenate what every rank sent here.
+
+        Args:
+            rank: The calling rank.
+            sends: One C-contiguous block per rank, on this rank's device; the
+                blocks sent to one rank may differ along the first axis only.
+
+        Returns:
+            The blocks sent to this rank, concatenated along the first axis in rank
+            order, on this rank's device.
+        """
+        if self.size == 1:
+            return sends[0]
+        parity, parts = self._publish(rank, list(sends))
+        mine = [_Part(part.array[rank], part.ready) for part in parts]
+        full = self._empty_like_parts(mine)
+        lo = 0
+        for part in mine:
+            hi = lo + part.array.shape[0]
+            self._pull(part, full[lo:hi])
+            lo = hi
+        self._settle(rank, parity)
+        return full
+
     def _empty_like_parts(self, parts: Sequence[_Part]) -> Array:
         first = parts[0].array
         rows = sum(part.array.shape[0] for part in parts)
