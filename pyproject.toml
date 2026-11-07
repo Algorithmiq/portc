@@ -268,7 +268,7 @@ python-version = "3.11"
 
 [tool.ty.analysis]
 # Optional GPU dependency, imported lazily in `utils._backend`.
-allowed-unresolved-imports = ["cupy", "cupyx"]
+allowed-unresolved-imports = ["cupy", "cupyx", "cupyx.**"]
 
 [tool.ty.src]
 include = ["src/src_method", "tests"]
