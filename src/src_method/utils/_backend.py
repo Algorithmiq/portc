@@ -333,6 +333,27 @@ def copy_into(dst: Array, src: Array, stream: Any) -> None:  # noqa: ANN401
         )
 
 
+def solve_triangular(a: Array, b: Array, *, lower: bool) -> Array:
+    """Solve ``a @ x = b`` for a triangular ``a``, which the array API standard lacks.
+
+    On the device this is cuBLAS's ``trsm``. The host only runs it with simulated
+    devices, so a general solve stands in there.
+
+    Args:
+        a: The ``(n, n)`` triangular matrix.
+        b: The right-hand sides, ``(n, k)``.
+        lower: Whether ``a`` is lower triangular.
+
+    Returns:
+        ``x``, ``(n, k)``, on the backend of ``a``.
+    """
+    if isinstance(a, np.ndarray):
+        return np.linalg.solve(a, b)
+    from cupyx.scipy.linalg import solve_triangular  # noqa: PLC0415  (optional)
+
+    return solve_triangular(a, b, lower=lower)
+
+
 def device_memory(xp: ModuleType) -> tuple[int, int]:
     """Return the device bytes available to the sweep and the device total.
 

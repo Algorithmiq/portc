@@ -95,9 +95,13 @@ alone, and `tests/test_gpu_backend.py` derives GPU budgets from a plan made with
 the host, through the same code as on GPUs: the split of the sketch columns, the
 collectives and the shared reading of the cores. `tests/test_stack.py` compares
 such runs with a single device, also with uneven blocks (`chi_out` not a
-multiple of `n`, or smaller than it), a cutoff and spilling. Only the peer copies
-and device selection are GPU-specific; their tests in `tests/test_gpu_backend.py`
-skip unless at least two GPUs are visible.
+multiple of `n`, or smaller than it), a cutoff and spilling. The distributed
+CholeskyQR only engages from `chi_out = DISTRIBUTED_QR_MIN` (1024), so those tests
+run both QR paths through the `cholesky` fixture, which lowers it to 0; the
+decomposition itself, including the sketches it must decline, is tested over
+simulated devices in `tests/test_linalg.py`. Only the peer copies and device
+selection are GPU-specific; their tests in `tests/test_gpu_backend.py` skip unless
+at least two GPUs are visible.
 
 ## Logging in tests
 

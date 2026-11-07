@@ -702,9 +702,18 @@ def test_out_of_memory_on_one_row_raises(rng, monkeypatch):
 # -------------------------------
 
 
+@pytest.fixture(params=[False, True], ids=["householder", "cholesky"])
+def cholesky(request, monkeypatch):
+    """Factor the sketches of several devices by Householder QR or by CholeskyQR."""
+    if request.param:
+        monkeypatch.setattr(sweep_module, "DISTRIBUTED_QR_MIN", 0)
+    return request.param
+
+
 @pytest.mark.parametrize(
     ("devices", "chi"), [(2, 16), (3, 16), (3, 17), ([2, 0, 1], 16), (4, 3)]
 )
+@pytest.mark.usefixtures("cholesky")
 def test_devices_match_one_device(devices, chi, rng):
     stack = [random_mpo([3, 4, 4, 4, 3], rng) for _ in range(4)]
 
@@ -730,6 +739,7 @@ def test_devices_are_exact_without_truncation(spec, rng):
     assert rel_error(out, dense_stack(*stack)) < 1e-10
 
 
+@pytest.mark.usefixtures("cholesky")
 def test_devices_with_cutoff_keep_the_bonds(rng):
     stack = [random_mpo([3, 4, 4, 4, 3], rng) for _ in range(3)]
 
@@ -738,6 +748,50 @@ def test_devices_with_cutoff_keep_the_bonds(rng):
 
     assert [t.shape for t in many] == [t.shape for t in one]
     assert rel_error(many, dense(one)) < 1e-10
+
+
+@pytest.mark.parametrize("cutoff", [0.0, 0.05])
+def test_devices_factor_tall_sketches_by_cholesky_qr(cutoff, rng, monkeypatch, caplog):
+    stack = [random_mpo([3, 4, 4, 4, 4, 3], rng) for _ in range(3)]
+    one = src(*stack, chi_out=24, cutoff=cutoff, seed=6, dtype=np.complex128)
+
+    monkeypatch.setattr(sweep_module, "DISTRIBUTED_QR_MIN", 0)
+    with caplog.at_level(logging.DEBUG, logger="src_method"):
+        many = src(
+            *stack,
+            chi_out=24,
+            cutoff=cutoff,
+            seed=6,
+            dtype=np.complex128,
+            resources=Resources(devices=3),
+        )
+
+    assert "CholeskyQR at 4 sites" in caplog.text
+    assert [t.shape for t in many] == [t.shape for t in one]
+    assert rel_error(many, dense(one)) < 1e-10
+    for core in many[1:]:
+        matrix = core.reshape(core.shape[0], -1)
+        np.testing.assert_allclose(
+            matrix @ matrix.conj().T, np.eye(core.shape[0]), atol=1e-13
+        )
+
+
+def test_cholesky_qr_backs_off_after_repeated_fallbacks():
+    backoff = sweep_module._Backoff()
+    outcomes = iter([False, False, False, True, False, True])
+
+    tried = []
+    for _ in range(10):
+        if backoff.attempt():
+            tried.append(True)
+            backoff.record(succeeded=next(outcomes))
+        else:
+            tried.append(False)
+
+    # Fail, fail (skip 2), fail (skip 4), ...: only the second fallback in a row
+    # starts skipping.
+    assert tried[:6] == [True, True, False, False, True, False]
+    assert (backoff.tried, backoff.fallbacks) == (4, 3)
 
 
 def test_devices_spill_and_clean_up(rng, tmp_path, plans):
