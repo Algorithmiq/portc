@@ -23,4 +23,5 @@ jobs:
         env:
           RUFF_OUTPUT_FORMAT: github
         with:
+          prek-version: 0.5.9
           extra-args: --from-ref ${{ github.event.pull_request.base.sha }} --to-ref ${{ github.event.pull_request.head.sha }}
