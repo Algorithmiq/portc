@@ -32,6 +32,8 @@ jobs:
       - name: Run prek for linting
         env:
           RUFF_OUTPUT_FORMAT: github
+          UV_PYTHON_PREFERENCE: only-system
+          UV_PYTHON_DOWNLOADS: never
         run: >
           uvx prek run --show-diff-on-failure --color=always
           --from-ref ${{ github.event.pull_request.base.sha }}
