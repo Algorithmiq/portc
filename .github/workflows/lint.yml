@@ -18,17 +18,20 @@ jobs:
           # grab the history of the PR, so we can run prek on a commit range
           fetch-depth: 0
 
+      - name: Install Python
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: .python-version
+
       - name: Install uv
         uses: astral-sh/setup-uv@v7
 
       # prek comes from PyPI: the GitHub release download used by prek-action
-      # returns HTTP 504 on the runners. For the same reason uv uses the runner's
-      # Python instead of downloading the one pinned in .python-version.
+      # returns HTTP 504 on the runners. For the same reason Python comes from
+      # setup-python instead of being downloaded by uv-lock.
       - name: Run prek for linting
         env:
           RUFF_OUTPUT_FORMAT: github
-          UV_PYTHON: python3
-          UV_PYTHON_DOWNLOADS: never
         run: >
           uvx prek run --show-diff-on-failure --color=always
           --from-ref ${{ github.event.pull_request.base.sha }}
