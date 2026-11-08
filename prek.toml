@@ -46,7 +46,7 @@ hooks = [{ id = "uv-lock" }]
 [[repos]]
 # Keep in sync with the ty pin in pyproject.toml; check-tool-pins enforces it.
 repo = "https://github.com/astral-sh/ty-pre-commit"
-rev = "v0.0.82"
+rev = "v0.0.95"
 hooks = [{ id = "ty" }]
 
 [[repos]]
