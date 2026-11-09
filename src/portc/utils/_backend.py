@@ -20,7 +20,7 @@ import numpy as np
 from array_api_compat import numpy as np_compat
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator, Sequence
+    from collections.abc import Generator, Sequence
     from types import ModuleType
 
     from numpy.typing import DTypeLike
@@ -193,7 +193,7 @@ def device_count(xp: ModuleType) -> int | None:
 
 
 @contextmanager
-def use_device(xp: ModuleType, device: int) -> Iterator[None]:
+def use_device(xp: ModuleType, device: int) -> Generator[None]:
     """Make ``device`` current in the calling thread for the duration of the block.
 
     On the host backend the devices of a group are simulated: they share the host,
@@ -220,7 +220,7 @@ _streams: dict[int, Any] = {}
 
 
 @contextmanager
-def use_stream(xp: ModuleType) -> Iterator[None]:
+def use_stream(xp: ModuleType) -> Generator[None]:
     """Run the block on a non-blocking stream of the current device.
 
     On the legacy null stream, a peer copy into one device serializes with the copy
@@ -392,7 +392,7 @@ def release_cached_blocks(xp: ModuleType) -> None:
 
 
 @contextmanager
-def device_pool_limit(xp: ModuleType, budget: int | None) -> Iterator[None]:
+def device_pool_limit(xp: ModuleType, budget: int | None) -> Generator[None]:
     """Cap cupy's default memory pool at ``budget`` bytes beyond its current use.
 
     An allocation past the cap fails at once instead of when another allocation
