@@ -1,9 +1,9 @@
-"""Test the stack helpers in `src_method._tensor_train`."""
+"""Test the stack helpers in `portc._tensor_train`."""
 
 import numpy as np
 import pytest
 
-from src_method._tensor_train import (
+from portc._tensor_train import (
     SwappedLegs,
     exact_stack,
     normalize_stack,

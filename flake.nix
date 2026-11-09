@@ -1,5 +1,5 @@
 {
-  description = "src_method: Successive Randomized Compression";
+  description = "portc: Parallel Out-of-Core Randomized Tensor-Network Compression";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 

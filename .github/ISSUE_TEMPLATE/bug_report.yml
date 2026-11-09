@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a bug or unexpected behavior in src-method
+description: Report a bug or unexpected behavior in portc
 labels: ["bug"]
 body:
   - type: markdown
@@ -52,10 +52,10 @@ body:
     id: versions
     attributes:
       label: Versions
-      description: Versions of `src_method`, Python, NumPy and, for GPU runs, CuPy and the CUDA/ROCm runtime.
+      description: Versions of `portc`, Python, NumPy and, for GPU runs, CuPy and the CUDA/ROCm runtime.
       render: text
       placeholder: |
-        src_method: (python -c "import src_method; print(src_method.__version__)")
+        portc: (python -c "import portc; print(portc.__version__)")
         Python:
         NumPy:
         CuPy:

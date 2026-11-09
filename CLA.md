@@ -1,6 +1,6 @@
 # Contributor License Agreement
 
-Thank you for your interest in contributing to `src_method` ("the Project"),
+Thank you for your interest in contributing to `portc` ("the Project"),
 maintained by Algorithmiq Ltd. ("Algorithmiq"). This Contributor License
 Agreement ("Agreement") documents the rights granted by contributors to
 Algorithmiq. It is for your protection as a contributor as well as the

@@ -3,13 +3,13 @@ title: GPU execution
 description: Run the sweep on NVIDIA or AMD GPUs through CuPy.
 ---
 
-`src_method` runs on CPU (NumPy) by default and can be accelerated on GPUs
+`portc` runs on CPU (NumPy) by default and can be accelerated on GPUs
 through [CuPy](https://cupy.dev/). Both NVIDIA (CUDA) and AMD (ROCm) GPUs are
 supported through optional extras:
 
 ```bash
-uv pip install "src_method[gpu-nvidia]"   # CUDA 13.x, driver >= 580
-uv pip install "src_method[gpu-rocm]"     # ROCm
+uv pip install "portc[gpu-nvidia]"   # CUDA 13.x, driver >= 580
+uv pip install "portc[gpu-rocm]"     # ROCm
 ```
 
 On data-center GPUs behind an older driver, as on many clusters, NVIDIA's
@@ -18,10 +18,10 @@ runs CUDA 13 without root: unpack `cuda-compat-13-x` and put its `compat/`
 folder first on `LD_LIBRARY_PATH`. The [Leonardo](/hpc/leonardo) page does this
 on driver 535.
 
-When adding `src_method` to another project's `pyproject.toml`:
+When adding `portc` to another project's `pyproject.toml`:
 
 ```toml
-dependencies = ["src_method[gpu-nvidia]"]
+dependencies = ["portc[gpu-nvidia]"]
 ```
 
 At runtime, pass `device="gpu"`:

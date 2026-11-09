@@ -12,31 +12,31 @@ import numpy as np
 import pytest
 import quimb.tensor as qtn
 
-import src_method._sweep as sweep_module
-from src_method import Resources, apply, compress, src
-from src_method._group import DeviceGroup
-from src_method._kernels import SiteKernels
-from src_method._plan import (
+import portc._sweep as sweep_module
+from portc import Resources, apply, compress, src
+from portc._group import DeviceGroup
+from portc._kernels import SiteKernels
+from portc._plan import (
     GPU_MARGIN_FRACTION,
     GPU_MARGIN_MIN,
     Budgets,
     Plan,
     make_plan,
 )
-from src_method._sites import padded_shapes, site_bytes
-from src_method.utils import thin_svd
-from src_method.utils.linalg import DEVICE_SVD_MIN
+from portc._sites import padded_shapes, site_bytes
+from portc.utils import thin_svd
+from portc.utils.linalg import DEVICE_SVD_MIN
 
 cupy = pytest.importorskip("cupy")
 
 
 def as_mps(arrays: list[np.ndarray]) -> qtn.MatrixProductState:
-    """Wrap a list of site arrays returned by src_method into a quimb MPS."""
+    """Wrap a list of site arrays returned by portc into a quimb MPS."""
     return qtn.MatrixProductState(arrays)
 
 
 def as_mpo(arrays: list[np.ndarray]) -> qtn.MatrixProductOperator:
-    """Wrap a list of site arrays returned by src_method into a quimb MPO."""
+    """Wrap a list of site arrays returned by portc into a quimb MPO."""
     return qtn.MatrixProductOperator(arrays)
 
 
@@ -374,7 +374,7 @@ def test_two_gpus_match_one(
     chi = 63
     if uploads == "full":
         monkeypatch.setattr(
-            "src_method._group.enable_peer_access", lambda _xp, _devices: False
+            "portc._group.enable_peer_access", lambda _xp, _devices: False
         )
     shapes, sizes = padded_shapes(stack), site_bytes(stack)
     roomy = make_plan(
@@ -418,7 +418,7 @@ def test_two_gpus_factor_by_cholesky_qr(
     one = src(*stack, chi_out=40, cutoff=cutoff, seed=2, device="gpu")
 
     monkeypatch.setattr(sweep_module, "DISTRIBUTED_QR_MIN", 0)
-    with caplog.at_level(logging.DEBUG, logger="src_method"):
+    with caplog.at_level(logging.DEBUG, logger="portc"):
         two = src(
             *stack,
             chi_out=40,

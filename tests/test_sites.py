@@ -5,10 +5,10 @@ from collections.abc import Sequence
 import numpy as np
 import pytest
 
-from src_method import src
-from src_method._group import DeviceGroup
-from src_method._sites import SiteSource, padded_shapes, site_bytes, sweep_order
-from src_method._tensor_train import pad
+from portc import src
+from portc._group import DeviceGroup
+from portc._sites import SiteSource, padded_shapes, site_bytes, sweep_order
+from portc._tensor_train import pad
 
 
 class CountingTrain(Sequence):

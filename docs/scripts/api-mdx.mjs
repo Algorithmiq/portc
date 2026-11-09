@@ -17,7 +17,7 @@ import { stringify } from 'yaml';
 /**
  * Render a module tree to a flat list of `{path, frontmatter, content}` files.
  *
- * `path` stays package-qualified (`src_method/stack/index.mdx`) -- callers key
+ * `path` stays package-qualified (`portc/stack/index.mdx`) -- callers key
  * off that leading segment to derive a page's scope and source file -- while
  * `write` strips it on the way to disk, matching the hrefs `getHref` mints.
  */
@@ -229,7 +229,7 @@ function encodeText(v) {
 
 /**
  * Write the rendered files under `outDir`, dropping the leading path segment
- * (the package name) so `src_method/stack/...` lands at `<outDir>/stack/...`.
+ * (the package name) so `portc/stack/...` lands at `<outDir>/stack/...`.
  */
 export async function write(output, options = {}) {
   await Promise.all(

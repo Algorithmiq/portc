@@ -1,11 +1,11 @@
 ---
 title: Contributing
-description: Workflow, quality gates and code style for working on src_method.
+description: Workflow, quality gates and code style for working on portc.
 ---
 
 Bug reports, benchmarks on new hardware and algorithmic improvements are all
 welcome. The short version lives in
-[`CONTRIBUTING.md`](https://github.com/Algorithmiq/src-method/blob/main/CONTRIBUTING.md);
+[`CONTRIBUTING.md`](https://github.com/Algorithmiq/portc/blob/main/CONTRIBUTING.md);
 the pages in this section go into detail.
 
 <Cards>
@@ -19,14 +19,14 @@ the pages in this section go into detail.
 ## Contributor License Agreement
 
 Before we can merge your contribution, you must sign the [Contributor License
-Agreement](https://github.com/Algorithmiq/src-method/blob/main/CLA.md). The CLA
+Agreement](https://github.com/Algorithmiq/portc/blob/main/CLA.md). The CLA
 bot posts a one-time comment on your first pull request with instructions.
 
 ## Reporting bugs
 
-[Open an issue](https://github.com/Algorithmiq/src-method/issues/new/choose) with:
+[Open an issue](https://github.com/Algorithmiq/portc/issues/new/choose) with:
 
-- the versions of `src_method`, `numpy` and, if relevant, `cupy`;
+- the versions of `portc`, `numpy` and, if relevant, `cupy`;
 - a minimal reproducer, ideally with a fixed `seed=`;
 - the observed and expected behaviour.
 
@@ -77,6 +77,6 @@ carry type hints and Google-style docstrings without types in the argument list.
 The algorithms speak the [array API standard](https://data-apis.org/array-api/)
 through `array-api-compat`: they take the namespace from their arrays
 (`array_namespace(x)`) instead of importing NumPy or CuPy, and annotate them as
-`src_method.utils.Array`. What the standard leaves out (streams, page-locked
+`portc.utils.Array`. What the standard leaves out (streams, page-locked
 memory, CuPy's memory pool, host-side random draws) lives in
-`src_method.utils._backend`, so the CPU and GPU paths stay in sync.
+`portc.utils._backend`, so the CPU and GPU paths stay in sync.

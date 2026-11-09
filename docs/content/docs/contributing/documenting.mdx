@@ -16,14 +16,14 @@ group. From the repository root:
 uv sync --group docs
 cd docs
 npm ci
-uv run python scripts/gen_api_dump.py src_method -d .   # docstrings -> JSON
+uv run python scripts/gen_api_dump.py portc -d .   # docstrings -> JSON
 node scripts/generate-api.mjs                           # JSON -> content/docs/api
 uv run python scripts/notebooks_to_mdx.py               # notebooks -> content/docs/tutorials
 npm run dev                                             # http://localhost:3000
 ```
 
 `npm run build` writes the static export to `docs/out`. The generated API pages,
-tutorials and `src_method.json` are ignored by git; regenerate them after
+tutorials and `portc.json` are ignored by git; regenerate them after
 changing a docstring or a notebook.
 
 ## Writing pages
@@ -34,7 +34,7 @@ orders its sidebar entries. Besides Markdown you can use:
 - math with `$...$` and `$$...$$`, rendered by KaTeX;
 - citations with `[@key]`, resolved against `docs/bibliography.bib`; add the
   formatted entry to the [References](/references) page too;
-- cross-references to the API with `[src][]` or `[text][src_method.stack.src]`;
+- cross-references to the API with `[src][]` or `[text][portc.stack.src]`;
 - Fumadocs components such as `<Callout>` and `<Cards>`.
 
 Python code blocks are executed by the `Documentation` workflow with

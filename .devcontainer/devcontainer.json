@@ -1,5 +1,5 @@
 {
-  "name": "src_method development environment",
+  "name": "portc development environment",
   "build": {
     "dockerfile": "Dockerfile"
   },

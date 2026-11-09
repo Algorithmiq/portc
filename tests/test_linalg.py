@@ -3,8 +3,8 @@
 import numpy as np
 import pytest
 
-from src_method._group import DeviceGroup, blocks
-from src_method.utils import cholesky_qr, truncated_qr
+from portc._group import DeviceGroup, blocks
+from portc.utils import cholesky_qr, truncated_qr
 
 
 @pytest.fixture

@@ -7,7 +7,7 @@ A single SRC sweep keeps, besides the input and output trains, one sketched
 environment per site. For stacks with a large bond, such as `N . V . M . U` with a
 bond of several thousand in `M`, these environments and the intermediates of the
 contractions no longer fit on a GPU, and often not in host memory either.
-`src_method` then plans the sweep to the memory at hand:
+`portc` then plans the sweep to the memory at hand:
 
 - the input cores are read one site at a time, so a train can live on disk;
 - every contraction runs in batches of sketch columns (or rows), sized to the GPU
@@ -23,7 +23,7 @@ and the mathematics are those of a sweep that fits in memory.
 The budgets are set with `Resources`, passed to `src`, `apply` or `compress`:
 
 ```python notest
-from src_method import Resources, src
+from portc import Resources, src
 
 out = src(
     N, V, M, U,
@@ -82,7 +82,7 @@ its name identifies the process.
 On a node with several GPUs, one sweep can be split among them:
 
 ```python notest
-from src_method import Resources, src
+from portc import Resources, src
 
 out = src(
     N, V, M, U,
@@ -146,7 +146,7 @@ result is the same, and the mode exists to test the multi-GPU sweep without GPUs
 
 ## Reading the plan
 
-With `DEBUG` logging on for the `src_method` logger (see
+With `DEBUG` logging on for the `portc` logger (see
 [Logging](/features/logging)), every sweep logs its plan as `SRC plan: ...`:
 
 - `prefetch`: whether the next site is read ahead;
@@ -182,4 +182,4 @@ out = src(*stack, chi_out=2000, optimize=oe.DynamicProgramming(minimize="size"))
 On an A100, `auto` took 1.9x as long as `dp` over a full sweep, and at large bonds
 its projection path needs an intermediate too big for batches above 16 rows; see
 the
-[out-of-core benchmark](https://github.com/Algorithmiq/src-method/tree/main/benches/large).
+[out-of-core benchmark](https://github.com/Algorithmiq/portc/tree/main/benches/large).

@@ -3,15 +3,15 @@ title: Versioning
 description: How version numbers are computed from git.
 ---
 
-`src_method` follows [semantic versioning](https://semver.org/) and
+`portc` follows [semantic versioning](https://semver.org/) and
 [PEP 440](https://peps.python.org/pep-0440/). Version numbers are computed from
 git by [`hatch-vcs`](https://github.com/ofek/hatch-vcs), which wraps
 [`setuptools-scm`](https://setuptools-scm.readthedocs.io) and its [default
 scheme](https://setuptools-scm.readthedocs.io/en/latest/usage/#default-versioning-scheme),
 so every revision on every branch has an unambiguous version. The build writes it
-to `src/src_method/_version.py`, which is generated and never edited by hand.
+to `src/portc/_version.py`, which is generated and never edited by hand.
 
-The version is available as `src_method.__version__` and looks like
+The version is available as `portc.__version__` and looks like
 `0.3.3.dev31+gdaa652023.d20261006`:
 
 - `0.3.3` is the latest tag with its last component increased by one: the
@@ -23,3 +23,43 @@ The version is available as `src_method.__version__` and looks like
 While in `0.x.y`, breaking changes may occur in minor releases. Commit types
 drive the bump: `feat` is a minor change, `fix` a patch, and a `!` marks a
 breaking change.
+
+## Migration to portc
+
+The distribution and import package are now `portc`, short for **Parallel
+Out-of-Core Randomized Tensor-Network Compression**. This is a breaking rename,
+not a change to the SRC algorithm or its public function signatures. Replace
+`src_method` in downstream dependencies, imports, logger names, and any
+package-qualified strings (for example, monkeypatch targets). GPU extras keep
+their names. No `src_method` compatibility package is shipped.
+
+The rename does not reset version history: retain the existing git tags and make
+the first `portc` release a new minor release under the project's `0.x` policy.
+Before publishing it:
+
+1. A repository administrator must rename the GitHub repository from
+   `Algorithmiq/src-method` to `Algorithmiq/portc` in **Settings > General**.
+   This PR cannot perform that operation. Update local remotes with
+   `git remote set-url origin https://github.com/Algorithmiq/portc.git`.
+2. Update branch rulesets or protection rules requiring `Test src_method` to
+   require `Test portc`. Check repository-scoped GitHub App access as well.
+3. Redeploy GitHub Pages at `https://algorithmiq.github.io/portc/`. The workflow
+   uses `/portc` as its base path; GitHub's repository redirects do not redirect
+   the old Pages site.
+4. Configure a [PyPI pending Trusted Publisher](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/)
+   for project `portc`, owner `Algorithmiq`, repository `portc`, workflow
+   `deploy.yml`, and environment `pypi`. Retain the GitHub `pypi` environment and
+   its required reviewers. Trusted Publishers for the old repository name do
+   not authorize publishing from the renamed repository.
+5. Publish the release through the existing release workflow. The first upload
+   creates the `portc` PyPI project. A pending publisher does **not** reserve the
+   name; only an actual upload does. PyPI distributions cannot be renamed, and
+   `portc` can coexist with the old project, so deleting `src_method` first is
+   unnecessary. Prefer retaining its existing releases for reproducibility.
+6. In SonarCloud, update the repository binding and display name. Keep the
+   existing project key, `Algorithmiq_src-method`, to preserve analysis history;
+   the scanner and README badges deliberately retain that external identifier.
+
+The PyPI name must still be available at the time of the first upload. If
+publishing before the GitHub rename, configure the publisher for the current
+repository name and replace it after the rename.

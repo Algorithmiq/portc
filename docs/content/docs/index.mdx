@@ -1,9 +1,10 @@
 ---
-title: src_method Documentation
-description: Successive Randomized Compression for matrix product states and operators.
+title: portc Documentation
+description: Parallel Out-of-Core Randomized Tensor-Network Compression.
 ---
 
-`src_method` is a pure-Python implementation of Successive Randomized
+`portc` stands for **Parallel Out-of-Core Randomized Tensor-Network Compression**.
+It is a pure-Python implementation of Successive Randomized
 Compression (SRC) [@camano2026src], a randomized algorithm that contracts and
 compresses tensor trains in a single sweep. It extends the original MPO-MPS
 product to MPO-MPO products, plain compression of an MPS or MPO, and whole
@@ -11,14 +12,15 @@ stacks of trains.
 
 The package has no tensor-network framework dependency: it takes and returns
 plain lists of per-site NumPy arrays, in the `quimb` layout [@gray2018quimb], and
-runs on GPUs through CuPy.
+runs on GPUs through CuPy, including multiple GPUs and memory-budgeted
+out-of-core execution.
 
 New here? Install the package and run the first example in [Getting
 Started](/getting-started), then read [Concepts](/concepts) for the algorithm and
 the array conventions.
 
 <Cards>
-  <Card title="Getting Started" href="/getting-started" description="Install src_method and compress your first product." />
+  <Card title="Getting Started" href="/getting-started" description="Install portc and compress your first product." />
   <Card title="Concepts" href="/concepts" description="The SRC algorithm and the index and contraction conventions." />
   <Card title="Features" href="/features" description="Stacks, adaptive truncation, precision, GPUs and logging." />
   <Card title="HPC clusters" href="/hpc" description="Set up and run on supercomputers, with an example job script." />
@@ -43,6 +45,6 @@ the array conventions.
 - [Benchmarks](/benchmarks) — accuracy and timing measurements.
 - [References](/references) — the papers behind the method.
 
-**Contributing** — work on `src_method` itself.
+**Contributing** — work on `portc` itself.
 
 - [Contributing](/contributing) — workflow, quality gates, tests and docs.

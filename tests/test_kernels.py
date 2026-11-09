@@ -4,7 +4,7 @@ import numpy as np
 import opt_einsum as oe
 import pytest
 
-from src_method._kernels import SiteKernels, equations, peak_elements
+from portc._kernels import SiteKernels, equations, peak_elements
 
 
 def cores(rng, dtype, *, left=(3, 2), right=(4, 3), up=2, mid=3, down=2):

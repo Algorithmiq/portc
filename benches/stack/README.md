@@ -40,7 +40,7 @@ steps per sweep (`k = 1` is pairwise application), on one A100-64GB. The
 reference is `k = 1` at `chi = 1024`; rows give the wall time of the 80 steps,
 the infidelity of the final state and the error of `<Z>` on the middle qubit.
 `quimb` applies the same MPO with exact SVD truncation on the 32 cores of the
-node. See [HPC clusters](https://algorithmiq.github.io/src-method/hpc/leonardo)
+node. See [HPC clusters](https://algorithmiq.github.io/portc/hpc/leonardo)
 for how to run on Leonardo.
 
 ```bash
@@ -181,7 +181,7 @@ Measured on an AMD Ryzen 7 7840U, 16 threads, with light background load.
   35-65 %).
 - Both methods sit 2-15x above the lower bound, so the sketch, not compounding
   across layers, dominates the error. Oversampling
-  ([#40](https://github.com/Algorithmiq/src-method/issues/40)) is the larger
+  ([#40](https://github.com/Algorithmiq/portc/issues/40)) is the larger
   lever.
 - The per-site cost grows with `chi**2` times the product of the layer bonds.
   Thin Trotter layers run at 0.6-1.4x the sequential time up to depth 5, while

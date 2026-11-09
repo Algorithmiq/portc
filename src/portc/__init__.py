@@ -1,6 +1,6 @@
 """Copyright (c) 2025 Algorithmiq Development Team. All rights reserved.
 
-src_method: Successive Randomized Compression.
+portc: Parallel Out-of-Core Randomized Tensor-Network Compression.
 """
 
 from __future__ import annotations

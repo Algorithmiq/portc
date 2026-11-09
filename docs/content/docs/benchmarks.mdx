@@ -4,13 +4,13 @@ description: Accuracy and timing of SRC against quimb and against pairwise appli
 ---
 
 The benchmark scripts live in
-[`benches/`](https://github.com/Algorithmiq/src-method/tree/main/benches) and need
+[`benches/`](https://github.com/Algorithmiq/portc/tree/main/benches) and need
 the `bench` dependency group. Each folder's README holds the full tables and the
 commands to reproduce them.
 
 ## Primitives
 
-[`benches/primitives`](https://github.com/Algorithmiq/src-method/tree/main/benches/primitives)
+[`benches/primitives`](https://github.com/Algorithmiq/portc/tree/main/benches/primitives)
 compares the MPO-MPO product against `quimb`'s contract-then-compress on one
 Booster node of the Leonardo supercomputer at CINECA (32 cores, one A100-64GB).
 One MPO is random, the other a slightly perturbed identity, so the product is
@@ -30,7 +30,7 @@ fill it. At $\chi = 1000$ SRC uses about a seventh of the peak host memory of
 
 ## Quench dynamics
 
-[`benches/stack`](https://github.com/Algorithmiq/src-method/tree/main/benches/stack)
+[`benches/stack`](https://github.com/Algorithmiq/portc/tree/main/benches/stack)
 evolves 50 and 100 qubits of the non-integrable mixed-field Ising chain from
 $|0\dots0\rangle$ to $t = 8$ (80 Trotter steps), on one A100, fusing $k$ steps
 per [stack](/features/stacks) sweep. Errors are against a $\chi = 1024$
@@ -55,7 +55,7 @@ reference.
 
 ## Out-of-core
 
-[`benches/large`](https://github.com/Algorithmiq/src-method/tree/main/benches/large)
+[`benches/large`](https://github.com/Algorithmiq/portc/tree/main/benches/large)
 compresses a stack whose middle MPO is read from disk. On one A100, a 50-site
 stack with $D_M = 1000$ compressed to $\chi = 500$ gives bit-identical results
 under a 4 GB and a 60 GB GPU budget, which keep 49 and 0 of the 50
@@ -63,7 +63,7 @@ environments on the host; spilling costs 18 % of the wall time.
 
 ## Stack depth
 
-[`benches/stack`](https://github.com/Algorithmiq/src-method/tree/main/benches/stack)
+[`benches/stack`](https://github.com/Algorithmiq/portc/tree/main/benches/stack)
 also compares one sweep over a [stack](/features/stacks), `src(A_1, ..., A_k, psi)`,
 with pairwise application truncating after every product, as a function of the
 number of trains, on small chains on a laptop.

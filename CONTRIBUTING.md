@@ -1,6 +1,6 @@
-# Contributing to src_method
+# Contributing to portc
 
-Thanks for your interest in improving `src_method`. Bug reports, benchmarks on
+Thanks for your interest in improving `portc`. Bug reports, benchmarks on
 new hardware, and algorithmic improvements are all welcome.
 
 ## Contributor License Agreement
@@ -14,7 +14,7 @@ comment on that thread and applies to all your future contributions.
 
 Open an issue with:
 
-- the versions of `src_method`, `numpy` and (if relevant) `cupy`,
+- the versions of `portc`, `numpy` and (if relevant) `cupy`,
 - a minimal reproducer, ideally with a fixed `seed=`,
 - the observed and expected behaviour.
 

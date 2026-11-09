@@ -10,11 +10,11 @@ import textwrap
 import numpy as np
 import pytest
 
-from src_method import apply, compress
+from portc import apply, compress
 
 
 def _run(code: str) -> subprocess.CompletedProcess[str]:
-    """Run ``code`` in a fresh interpreter, so ``src_method`` is imported anew."""
+    """Run ``code`` in a fresh interpreter, so ``portc`` is imported anew."""
     return subprocess.run(  # noqa: S603
         [sys.executable, "-c", textwrap.dedent(code)],
         capture_output=True,
@@ -33,10 +33,10 @@ def test_import_leaves_root_logger_untouched() -> None:
         root.setLevel(logging.CRITICAL)
         before = (root.level, list(root.handlers))
 
-        import src_method
+        import portc
 
         assert (root.level, list(root.handlers)) == before, root.handlers
-        package = logging.getLogger("src_method")
+        package = logging.getLogger("portc")
         assert all(isinstance(h, logging.NullHandler) for h in package.handlers)
         """
     )
@@ -49,7 +49,7 @@ def test_calls_are_silent_by_default() -> None:
     result = _run(
         """
         import numpy as np
-        from src_method import apply, compress
+        from portc import apply, compress
 
         rng = np.random.default_rng(0)
         mpo = [rng.normal(size=(2, 2, 2))]
@@ -70,19 +70,19 @@ def test_calls_are_silent_by_default() -> None:
 
 @pytest.mark.parametrize("call", ["apply", "compress"])
 def test_debug_records_reach_enabled_logger(call: str, caplog) -> None:
-    """Progress messages are emitted at DEBUG on the ``src_method`` loggers."""
+    """Progress messages are emitted at DEBUG on the ``portc`` loggers."""
     rng = np.random.default_rng(0)
     mpo = [rng.normal(size=(2, 2, 2))]
     mpo += [rng.normal(size=(2, 2, 2, 2)) for _ in range(2)]
     mpo += [rng.normal(size=(2, 2, 2))]
-    caplog.set_level(logging.DEBUG, logger="src_method")
+    caplog.set_level(logging.DEBUG, logger="portc")
 
     if call == "apply":
         apply(mpo, mpo, chi_out=2, seed=0)
     else:
         compress(mpo, chi_out=2, seed=0)
 
-    records = [r for r in caplog.records if r.name.startswith("src_method")]
+    records = [r for r in caplog.records if r.name.startswith("portc")]
     assert records
     assert all(r.levelno == logging.DEBUG for r in records)
     assert "SRC complete" in caplog.text

@@ -40,7 +40,7 @@ Always run tests through `pytest`, never as `python tests/test_<name>.py`.
 ```python
 import pytest
 
-from src_method import compress
+from portc import compress
 
 
 def test_rejects_zero_chi_out():
@@ -107,7 +107,7 @@ at least two GPUs are visible.
 
 `log_cli` is on, so log records show up live while the tests run. To assert on
 them, use the `caplog` [fixture](https://docs.pytest.org/en/stable/how-to/logging.html);
-the library logs progress at `DEBUG`, so lower the level of the `src_method`
+the library logs progress at `DEBUG`, so lower the level of the `portc`
 logger first:
 
 ```python
@@ -115,11 +115,11 @@ import logging
 
 import quimb.tensor as qtn
 
-from src_method import compress
+from portc import compress
 
 
 def test_reports_completion(caplog):
-    caplog.set_level(logging.DEBUG, logger="src_method")
+    caplog.set_level(logging.DEBUG, logger="portc")
     compress(qtn.MPO_rand(4, bond_dim=2, seed=0).arrays, chi_out=2, seed=0)
     assert "SRC complete" in caplog.text
 ```

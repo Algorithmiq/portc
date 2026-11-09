@@ -1,4 +1,4 @@
-name: Publish src_method Python sdist and wheels
+name: Publish portc Python sdist and wheels
 
 on:
   release:
@@ -63,7 +63,7 @@ jobs:
     # ideally required reviewers, since a release here cannot be undone.
     environment:
       name: pypi
-      url: https://pypi.org/project/src_method/
+      url: https://pypi.org/project/portc/
 
     permissions:
       id-token: write  # for PyPI's trusted publishing (OIDC); no token is stored

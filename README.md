@@ -1,12 +1,14 @@
-# Successive Randomized Compression
+# portc
 
-[![Documentation](https://github.com/Algorithmiq/src-method/actions/workflows/docpages.yml/badge.svg)](https://algorithmiq.github.io/src-method/)
-[![Test src_method](https://github.com/Algorithmiq/src-method/actions/workflows/test.yml/badge.svg)](https://github.com/Algorithmiq/src-method/actions/workflows/test.yml)
+[![Documentation](https://github.com/Algorithmiq/portc/actions/workflows/docpages.yml/badge.svg)](https://algorithmiq.github.io/portc/)
+[![Test portc](https://github.com/Algorithmiq/portc/actions/workflows/test.yml/badge.svg)](https://github.com/Algorithmiq/portc/actions/workflows/test.yml)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Algorithmiq_src-method&metric=coverage&token=ab544eca4948ef2f80dffa566c31a9c00026a825)](https://sonarcloud.io/summary/new_code?id=Algorithmiq_src-method)
 [![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=Algorithmiq_src-method&metric=alert_status&token=ab544eca4948ef2f80dffa566c31a9c00026a825)](https://sonarcloud.io/summary/new_code?id=Algorithmiq_src-method)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
-An implementation of the SRC algorithm introduced in [Camaño, Epperly and Tropp, *Quantum* **10**, 2022 (2026)](https://doi.org/10.22331/q-2026-03-10-2022), extending the idea to other kinds of tensor networks.
+**Parallel Out-of-Core Randomized Tensor-Network Compression.**
+
+An implementation of the SRC algorithm introduced in [Camaño, Epperly and Tropp, *Quantum* **10**, 2022 (2026)](https://doi.org/10.22331/q-2026-03-10-2022), extended to stacks of tensor trains, multi-GPU execution and memory-budgeted out-of-core compression.
 
 ### Features
 
@@ -19,15 +21,15 @@ The following primitives are supported:
 5. Randomized contraction-compression of a whole stack of trains in one sweep:
    `MPO^k`, `MPO^k . MPS` and `MPS . MPO^k`.
 
-`src_method` has no tensor-network framework dependency: it takes and returns plain lists of per-site NumPy arrays, one array per site.
+`portc` has no tensor-network framework dependency: it takes and returns plain lists of per-site NumPy arrays, one array per site.
 
 ```python
-from src_method import apply, compress, src
+from portc import apply, compress, src
 ```
 
 The `apply` function covers cases 1 and 2 above, the `compress` function cases 3 and 4, and `src` all five: `apply` and `compress` are its two- and one-train special cases. All three functions are pure, meaning no in-place modification ever happens. The user should
 manage the assignment of the returned objects, possibly overwriting the input variables.
-See the [reference documentation](https://algorithmiq.github.io/src-method/) for details, and the [tests](tests/) or [benchmarks](benches/) folders for usage examples.
+See the [reference documentation](https://algorithmiq.github.io/portc/) for details, and the [tests](tests/) or [benchmarks](benches/) folders for usage examples.
 
 Whether a train is an MPS or an MPO is inferred from the rank of its first site tensor, so no wrapper type is needed.
 
@@ -73,7 +75,7 @@ Please keep this in mind when constructing or manipulating tensors directly.
 `src` contracts a *stack* of trains and compresses the result in a single sweep:
 
 ```python
-from src_method import src
+from portc import src
 
 state = src(U3, U2, U1, psi, chi_out=64)  # U3 U2 U1 |psi>, U1 acts first
 ```
@@ -101,7 +103,7 @@ The result then pairs with a ket by plain contraction, with no further conjugati
 
 ### GPU Support
 
-`src_method` runs on CPU (NumPy) by default and can be accelerated on GPUs via [CuPy](https://cupy.dev/). Both **NVIDIA** (CUDA) and **AMD** (ROCm) GPUs are supported through optional install extras.
+`portc` runs on CPU (NumPy) by default and can be accelerated on GPUs via [CuPy](https://cupy.dev/). Both **NVIDIA** (CUDA) and **AMD** (ROCm) GPUs are supported through optional install extras.
 
 At runtime, pass `device="gpu"` to use GPU acceleration. The library handles backend dispatch automatically.
 
@@ -110,7 +112,7 @@ At runtime, pass `device="gpu"` to use GPU acceleration. The library handles bac
 Stacks that do not fit on the GPU, or in host memory, still run: the sweep reads the input cores one site at a time (from NumPy arrays, `np.memmap`, zarr or HDF5 datasets), batches every contraction to a memory budget, and keeps the sketched environments on the GPU, in host memory or on local disk. The budgets are detected, or set explicitly with `Resources`:
 
 ```python
-from src_method import Resources, src
+from portc import Resources, src
 
 out = src(
     N,
@@ -127,32 +129,38 @@ On a node with several GPUs, `Resources(devices=4)` splits the sweep among four 
 
 The contractions follow opt_einsum's cheapest (`dp`) paths. `optimize` selects any other opt_einsum path optimizer, by name or as a `PathOptimizer` instance.
 
-See [Large problems](https://algorithmiq.github.io/src-method/features/large-problems) for the budgets, the scratch directory, several GPUs, contraction paths and how to read the logged plan.
+See [Large problems](https://algorithmiq.github.io/portc/features/large-problems) for the budgets, the scratch directory, several GPUs, contraction paths and how to read the logged plan.
 
 ## Installation
 
+Previously published as `src_method`. Replace that dependency with `portc`
+(keeping any GPU extra), update imports to `portc`, and use the `portc` logger
+name. There is no compatibility alias; the public functions and their arguments
+are unchanged. See the [migration and release checklist](https://algorithmiq.github.io/portc/contributing/versioning/#migration-to-portc)
+for the repository and PyPI cutover.
+
 ```bash
 # CPU only (default)
-uv pip install src_method
+uv pip install portc
 
 # With NVIDIA GPU support (CUDA 13.x, driver >= 580)
-uv pip install "src_method[gpu-nvidia]"
+uv pip install "portc[gpu-nvidia]"
 
 # With AMD GPU support (ROCm)
-uv pip install "src_method[gpu-rocm]"
+uv pip install "portc[gpu-rocm]"
 ```
 
-When including `src_method` in another project's `pyproject.toml`:
+When including `portc` in another project's `pyproject.toml`:
 
 ```toml
 # CPU only
-dependencies = ["src_method"]
+dependencies = ["portc"]
 
 # With NVIDIA GPU support
-dependencies = ["src_method[gpu-nvidia]"]
+dependencies = ["portc[gpu-nvidia]"]
 
 # With AMD GPU support
-dependencies = ["src_method[gpu-rocm]"]
+dependencies = ["portc[gpu-rocm]"]
 ```
 
 ## Nix flake
@@ -193,4 +201,4 @@ docstrings, and the developer guide.
 [direnv]: https://direnv.net/
 [uv]: https://docs.astral.sh/uv/
 [Fumadocs]: https://fumadocs.dev
-[at this link]: https://algorithmiq.github.io/src-method/
+[at this link]: https://algorithmiq.github.io/portc/

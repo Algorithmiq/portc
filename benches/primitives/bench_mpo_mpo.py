@@ -9,7 +9,7 @@ import cyclopts
 import numpy as np
 import quimb.tensor as qtn
 
-from src_method import apply
+from portc import apply
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +113,7 @@ def main(
             apply(warm.arrays, warm.arrays, chi_out=2, device=device)
         logger.info("Computing SRC's MPO-MPO contraction (with compression)...")
         tms = perf_counter_ns()
-        # src_method takes and returns plain lists of site arrays; quimb is only
+        # portc takes and returns plain lists of site arrays; quimb is only
         # used here to build the inputs and to measure the distance.
         H_src = qtn.MatrixProductOperator(
             apply(H1.arrays, H2.arrays, chi_out=chi_out, seed=seed, device=device)
@@ -137,6 +137,6 @@ if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s"
     )
-    # Report the per-sweep timings of src_method too.
-    logging.getLogger("src_method").setLevel(logging.DEBUG)
+    # Report the per-sweep timings of portc too.
+    logging.getLogger("portc").setLevel(logging.DEBUG)
     app()

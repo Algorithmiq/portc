@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: "src_method: Successive Randomized Compression for tensor networks"
+title: "portc: Parallel Out-of-Core Randomized Tensor-Network Compression"
 message: "If you use this software, please cite both this software and the paper that introduced the SRC algorithm."
 type: software
 authors:
@@ -9,13 +9,14 @@ authors:
   - family-names: "Botelho"
     given-names: "Ludmila"
     affiliation: "Algorithmiq Ltd."
-repository-code: "https://github.com/Algorithmiq/src-method"
-url: "https://algorithmiq.github.io/src-method/"
+repository-code: "https://github.com/Algorithmiq/portc"
+url: "https://algorithmiq.github.io/portc/"
 abstract: >-
   An implementation of the Successive Randomized Compression (SRC) algorithm
   for matrix product states and matrix product operators, covering MPO-MPS and
   MPO-MPO contraction-compression as well as standalone MPS and MPO
-  compression, with CPU (NumPy) and GPU (CuPy) backends.
+  compression and whole stacks of tensor trains, with CPU (NumPy) and GPU
+  (CuPy) backends, multi-GPU execution and memory-budgeted out-of-core sweeps.
 keywords:
   - tensor networks
   - matrix product states

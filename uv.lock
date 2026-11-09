@@ -2449,7 +2449,7 @@ wheels = [
 ]
 
 [[package]]
-name = "src-method"
+name = "portc"
 source = { editable = "." }
 dependencies = [
     { name = "array-api-compat" },

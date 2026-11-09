@@ -11,18 +11,18 @@ import { buildXrefMap, resolve } from './xref.mjs';
 
 // Prose is scoped to the package root, so a bare `[src][]`
 // resolves via the scope walk in `resolve`.
-const SCOPE = 'src_method';
+const SCOPE = 'portc';
 // Same pattern as `resolveXrefs` in generate-api.mjs.
 const XREF_PATTERN = /\[([^\]]+)\]\[([^\]]*)\]/g;
 
-const JSON_PATH = path.resolve('src_method.json');
+const JSON_PATH = path.resolve('portc.json');
 
 let xref = null;
 let byLeaf = null;
 try {
   xref = buildXrefMap(JSON.parse(fs.readFileSync(JSON_PATH, 'utf8')));
   // The public classes/functions live in submodules (e.g.
-  // `src_method.stack.src`) but authors know them by the
+  // `portc.stack.src`) but authors know them by the
   // bare name they import, so index every symbol by its leaf name as a fallback --
   // dropping any leaf that maps to more than one URL.
   byLeaf = new Map();

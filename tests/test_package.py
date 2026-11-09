@@ -10,30 +10,48 @@
 
 from __future__ import annotations
 
+from importlib.metadata import distribution
+
 import numpy as np
 import pytest
 import quimb.tensor as qtn
 
-from src_method import apply, compress
-from src_method.stack import src
-from src_method.utils import gaussian_sketch
+import portc
+from portc import apply, compress
+from portc.stack import src
+from portc.utils import gaussian_sketch
+
+
+def test_installed_package_metadata() -> None:
+    installed = distribution("portc")
+
+    assert installed.metadata["Name"] == "portc"
+    assert installed.version == portc.__version__
+    assert set(installed.metadata.get_all("Provides-Extra") or []) == {
+        "gpu-nvidia",
+        "gpu-rocm",
+    }
+    assert portc.apply is apply
+    assert portc.compress is compress
+    assert portc.src is src
+
 
 # -------------
 # --- Utils ---
 # -------------
 
-# ``src_method`` operates on plain lists of site arrays.  quimb is used here only
+# ``portc`` operates on plain lists of site arrays.  quimb is used here only
 # to build reference networks and to measure distances, so every call unwraps its
 # inputs with ``.arrays`` and re-wraps the result with one of the helpers below.
 
 
 def as_mps(arrays: list[np.ndarray]) -> qtn.MatrixProductState:
-    """Wrap a list of site arrays returned by src_method into a quimb MPS."""
+    """Wrap a list of site arrays returned by portc into a quimb MPS."""
     return qtn.MatrixProductState(arrays)
 
 
 def as_mpo(arrays: list[np.ndarray]) -> qtn.MatrixProductOperator:
-    """Wrap a list of site arrays returned by src_method into a quimb MPO."""
+    """Wrap a list of site arrays returned by portc into a quimb MPO."""
     return qtn.MatrixProductOperator(arrays)
 
 

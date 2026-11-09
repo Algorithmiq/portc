@@ -130,7 +130,7 @@ def write_index(stems: list[str]) -> Path:
     body = (
         "---\n"
         "title: Tutorials\n"
-        "description: Runnable notebooks applying src_method to concrete "
+        "description: Runnable notebooks applying portc to concrete "
         "problems.\n"
         "---\n\n"
         "These tutorials work through complete problems end to end. Each one is "

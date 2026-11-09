@@ -1,4 +1,4 @@
-# src_method documentation site
+# portc documentation site
 
 A [Fumadocs](https://fumadocs.dev) (Next.js) application, exported as static
 files and deployed to GitHub Pages by `.github/workflows/docpages.yml`.
@@ -16,7 +16,7 @@ Build it from the repository root with Node.js 22 or later:
 uv sync --group docs
 cd docs
 npm ci
-uv run python scripts/gen_api_dump.py src_method -d .
+uv run python scripts/gen_api_dump.py portc -d .
 node scripts/generate-api.mjs
 uv run python scripts/notebooks_to_mdx.py
 npm run dev     # live preview on http://localhost:3000
