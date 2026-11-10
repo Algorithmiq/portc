@@ -24,6 +24,6 @@ uv sync --group bench
 ## HPC clusters
 
 The recorded results come from the Booster partition of Leonardo at CINECA. The
-[HPC clusters](https://algorithmiq.github.io/src-method/hpc/leonardo) section of
+[HPC clusters](https://algorithmiq.github.io/portc/hpc/leonardo) section of
 the documentation covers the setup and has an example job script; pass it the
 benchmark command, e.g. `python benches/large/bench_large.py run ...`.

@@ -24,7 +24,7 @@ uv run python benches/large/bench_large.py scaling /local/stack --chi-out 2000 \
 
 `run` logs the wall time, the size of CuPy's pool on each GPU at the end (its high-water mark,
 since the pool keeps its blocks), the host peak (`ru_maxrss`), the planned peaks,
-the bytes spilled and the tiers. With `--debug` before the command, `src_method` also
+the bytes spilled and the tiers. With `--debug` before the command, `portc` also
 logs its plan, the time of each pass and the stall time (`SRC stalls`).
 
 Acceptance of the out-of-core sweep on one A100-40GB, with at least 300 GB of host
@@ -54,7 +54,7 @@ and resolves differences down to rounding; the acceptance applies to it.
 ## Leonardo
 
 Recorded on Booster nodes of Leonardo at CINECA; see
-[HPC clusters](https://algorithmiq.github.io/src-method/hpc/leonardo) for the setup
+[HPC clusters](https://algorithmiq.github.io/portc/hpc/leonardo) for the setup
 and a job script. The nodes have no local disk, so the stacks and the spilled
 environments live on Lustre scratch rather than NVMe.
 

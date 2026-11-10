@@ -1,5 +1,5 @@
 name: Feature request / Enhancement
-description: Suggest a new feature or improvement to src-method
+description: Suggest a new feature or improvement to portc
 labels: ["enhancement"]
 body:
   - type: markdown
@@ -33,7 +33,7 @@ body:
       description: If applicable, sketch how the feature would look from a user's perspective.
       render: python
       placeholder: |
-        import src_method
+        import portc
         # ...
 
   - type: textarea

@@ -6,10 +6,10 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-import src_method._plan as plan_module
-from src_method import Resources
-from src_method._group import DeviceGroup
-from src_method._plan import (
+import portc._plan as plan_module
+from portc import Resources
+from portc._group import DeviceGroup
+from portc._plan import (
     GEMM_MULTIPLE,
     Budgets,
     make_plan,

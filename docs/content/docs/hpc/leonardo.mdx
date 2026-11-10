@@ -1,6 +1,6 @@
 ---
 title: Leonardo (CINECA)
-description: Run src_method on the Booster partition of Leonardo, on one GPU or all four of a node.
+description: Run portc on the Booster partition of Leonardo, on one GPU or all four of a node.
 ---
 
 [Leonardo](https://docs.hpc.cineca.it/general/getting_started.html) is a EuroHPC
@@ -20,7 +20,7 @@ from a workstation:
 ## Setup
 
 Once, on a login node, from a clone of the repository in your work area (or from
-your own project that depends on `src_method[gpu-nvidia]`):
+your own project that depends on `portc[gpu-nvidia]`):
 
 ```bash
 # Keep the uv cache and Python installations out of $HOME.
@@ -80,7 +80,7 @@ In the script, split the sweep among the four GPUs and spill to scratch:
 ```python notest
 import os
 
-from src_method import Resources, src
+from portc import Resources, src
 
 out = src(
     *stack,
@@ -114,5 +114,5 @@ out = src(
 - **Host memory sets how much reaches the disk.** The sweep keeps 90% of the
   available memory as its host budget; environments beyond it go to
   `scratch_dir`. The
-  [out-of-core benchmark](https://github.com/Algorithmiq/src-method/tree/main/benches/large)
+  [out-of-core benchmark](https://github.com/Algorithmiq/portc/tree/main/benches/large)
   reports where the environments of its reference runs ended up.

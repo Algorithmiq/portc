@@ -61,7 +61,7 @@ body:
     id: cores_used
     attributes:
       label: Number of cores used
-      description: How many CPU cores / threads did src_method use during the run (e.g. `OMP_NUM_THREADS`)?
+      description: How many CPU cores / threads did portc use during the run (e.g. `OMP_NUM_THREADS`)?
       placeholder: "e.g. 8 (out of 16 physical cores)"
     validations:
       required: true
@@ -110,10 +110,10 @@ body:
     id: versions
     attributes:
       label: Versions
-      description: Versions of `src_method`, Python, NumPy and, for GPU runs, CuPy and the CUDA/ROCm runtime.
+      description: Versions of `portc`, Python, NumPy and, for GPU runs, CuPy and the CUDA/ROCm runtime.
       render: text
       placeholder: |
-        src_method:
+        portc:
         Python:
         NumPy:
         CuPy:

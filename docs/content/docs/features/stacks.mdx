@@ -9,7 +9,7 @@ product in one sweep, instead of compressing after every pairwise product:
 ```python
 import quimb.tensor as qtn
 
-from src_method import apply, src
+from portc import apply, src
 
 layers = [qtn.MPO_rand(10, bond_dim=2, seed=s) for s in range(3)]
 psi = qtn.MPS_rand_state(10, bond_dim=8, seed=3)

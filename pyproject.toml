@@ -4,11 +4,11 @@ build-backend = "hatchling.build"
 
 
 [project]
-name = "src_method"
+name = "portc"
 authors = [
   { name = "Algorithmiq Development Team", email = "aurora@algorithmiq.fi" },
 ]
-description = "Successive Randomized Compression."
+description = "Parallel Out-of-Core Randomized Tensor-Network Compression."
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
@@ -43,11 +43,11 @@ gpu-rocm = ["cupy>=14.1.1"]
 
 [project.urls]
 Homepage = "https://algorithmiq.fi"
-Documentation = "https://algorithmiq.github.io/src-method/"
-Repository = "https://github.com/Algorithmiq/src-method"
-Changelog = "https://github.com/Algorithmiq/src-method/releases"
-"Bug Tracker" = "https://github.com/Algorithmiq/src-method/issues"
-Discussions = "https://github.com/Algorithmiq/src-method/discussions"
+Documentation = "https://algorithmiq.github.io/portc/"
+Repository = "https://github.com/Algorithmiq/portc"
+Changelog = "https://github.com/Algorithmiq/portc/releases"
+"Bug Tracker" = "https://github.com/Algorithmiq/portc/issues"
+Discussions = "https://github.com/Algorithmiq/portc/discussions"
 
 
 [dependency-groups]
@@ -94,7 +94,7 @@ python-preference = "only-managed"
 [tool.hatch]
 version = { source = "vcs" }
 metadata = { allow-direct-references = true }
-build.hooks.vcs = { version-file = "src/src_method/_version.py" }
+build.hooks.vcs = { version-file = "src/portc/_version.py" }
 
 
 [tool.pytest.ini_options]
@@ -120,9 +120,9 @@ required_plugins = ["pytest-cov"]
 
 
 [tool.coverage]
-run.source = ["src/src_method"]
+run.source = ["src/portc"]
 relative_files = true
-omit = ["src/src_method/_version.py"]
+omit = ["src/portc/_version.py"]
 
 [tool.coverage.report]
 exclude_also = [
@@ -147,7 +147,7 @@ exclude_also = [
 [tool.ruff]
 # for the default settings, see: https://docs.astral.sh/ruff/configuration/#configuring-ruff
 
-exclude = ["docs", "src/src_method/_version.py"]
+exclude = ["docs", "src/portc/_version.py"]
 
 # Lint against the oldest supported interpreter, not the default one.
 target-version = "py311"
@@ -248,7 +248,7 @@ flake8-annotations.allow-star-arg-any = true
 # - I002 (isort required import)
 "tests/**/test_*.py" = ["ANN", "I002"]
 # ignore I002 (isort required import) for all `__init__.py` files
-"src/src_method/**/__init__.py" = ["I002"]
+"src/portc/**/__init__.py" = ["I002"]
 
 [tool.ruff.lint.pycodestyle]
 # maximum line length to allow for line-length violations within documentation,
@@ -271,4 +271,4 @@ python-version = "3.11"
 allowed-unresolved-imports = ["cupy", "cupyx", "cupyx.**"]
 
 [tool.ty.src]
-include = ["src/src_method", "tests"]
+include = ["src/portc", "tests"]

@@ -3,7 +3,7 @@ title: SonarCloud
 description: Setting up the SonarCloud analysis.
 ---
 
-Adding SonarCloud analysis for `src_method` takes two steps.
+Adding SonarCloud analysis for `portc` takes two steps.
 
 First, ask a software engineer to enable the SonarCloud app for the repository
 in Algorithmiq's GitHub organization settings:
@@ -11,14 +11,14 @@ in Algorithmiq's GitHub organization settings:
 - Go to [Algorithmiq's GitHub organization settings](https://github.com/organizations/Algorithmiq/settings/profile).
 - Click on "GitHub Apps" in the left-hand bar.
 - Click "Configure" for SonarCloud.
-- In the "Repository Access" menu, add `src-method` to the list.
+- In the "Repository Access" menu, add `portc` to the list.
 - Click "Save".
 
 Then, on the SonarCloud dashboard:
 
 - Go to the [Algorithmiq organization](https://sonarcloud.io/organizations/algorithmiq/projects).
 - Click on the **+** in the top right corner and choose **Analyze new project**.
-- Add the `src-method` repository from the list.
+- Add the `portc` repository from the list.
 
 <Callout type="warn">
 We run SonarCloud through CI: the analysis method (**Administration > Analysis
@@ -27,10 +27,10 @@ method**) must **not** be set to Automatic Analysis.
 
 Finally, set the `SONAR_TOKEN` secret for the repository:
 
-- Copy the token from the [project's GitHub Actions configuration](https://sonarcloud.io/project/configuration/GitHubActions?id=Algorithmiq_src_method).
-- Go to the [**Secrets and variables** menu for Actions](https://github.com/Algorithmiq/src-method/settings/secrets/actions).
+- Copy the token from the [project's GitHub Actions configuration](https://sonarcloud.io/project/configuration/GitHubActions?id=Algorithmiq_src-method).
+- Go to the [**Secrets and variables** menu for Actions](https://github.com/Algorithmiq/portc/settings/secrets/actions).
 - Click on **New repository secret**, name it `SONAR_TOKEN` and paste the value.
-- Repeat the same steps in the [**Secrets and variables** menu for Dependabot](https://github.com/Algorithmiq/src-method/settings/secrets/dependabot).
+- Repeat the same steps in the [**Secrets and variables** menu for Dependabot](https://github.com/Algorithmiq/portc/settings/secrets/dependabot).
 
 The `Publish Tests Results` job of the test workflow then uploads coverage and
 reports, which show up on the SonarCloud dashboard. Without the token, the scan

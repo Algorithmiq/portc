@@ -69,7 +69,7 @@ class DeviceGroup:
     """The devices of one sweep and the collectives between them.
 
     Args:
-        device: ``"cpu"`` or ``"gpu"``, as in `src_method.stack.src`.
+        device: ``"cpu"`` or ``"gpu"``, as in `portc.stack.src`.
         devices: A count ``n`` for the first ``n`` visible devices, or the device
             ids in rank order; rank 0 is the root. Defaults to the current device.
 

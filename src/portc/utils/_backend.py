@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
     from numpy.typing import DTypeLike
 
-    from src_method._tensor_train import Site, SiteLike
+    from portc._tensor_train import Site, SiteLike
 
 # An array of the active backend: a numpy.ndarray or a cupy.ndarray. CuPy ships no
 # type stubs, so to a type checker either is no narrower than Any.

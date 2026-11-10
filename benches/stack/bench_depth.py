@@ -23,7 +23,7 @@ import cyclopts
 import numpy as np
 from scipy.linalg import expm
 
-from src_method import apply, src
+from portc import apply, src
 
 logger = logging.getLogger(__name__)
 app = cyclopts.App(help="Benchmark one-shot SRC over stacks against pairwise apply.")

@@ -2,14 +2,14 @@
 
 ## Supported versions
 
-Only the latest released version of `src_method` receives security updates.
+Only the latest released version of `portc` receives security updates.
 
 ## Reporting a vulnerability
 
 Please do **not** open a public issue for security problems.
 
 Report vulnerabilities privately through
-[GitHub's private vulnerability reporting](https://github.com/Algorithmiq/src-method/security/advisories/new),
+[GitHub's private vulnerability reporting](https://github.com/Algorithmiq/portc/security/advisories/new),
 or by email to <aurora@algorithmiq.fi>.
 
 Include a description of the issue, the affected version, and a reproducer if
@@ -18,7 +18,7 @@ publish a fix and an advisory once the issue is confirmed and resolved.
 
 ## Scope
 
-`src_method` is a numerical library: it performs tensor-network arithmetic on
+`portc` is a numerical library: it performs tensor-network arithmetic on
 arrays supplied by the caller and does not parse untrusted input formats,
 open network connections, or execute user-supplied code. The most likely
 security-relevant issues are therefore memory-safety problems surfaced through

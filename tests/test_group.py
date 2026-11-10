@@ -5,7 +5,7 @@ import threading
 import numpy as np
 import pytest
 
-from src_method._group import DeviceGroup, GroupAbortedError, blocks
+from portc._group import DeviceGroup, GroupAbortedError, blocks
 
 
 @pytest.mark.parametrize("n", [0, 1, 7, 8, 2000])

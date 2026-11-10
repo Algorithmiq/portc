@@ -13,7 +13,7 @@ Gaussian sketches. The result has the same dtype as the inputs:
 import numpy as np
 import quimb.tensor as qtn
 
-from src_method import compress
+from portc import compress
 
 mps = qtn.MPS_rand_state(6, bond_dim=8, dtype=np.complex64, seed=0)
 out = compress(mps.arrays, chi_out=4, seed=1)
@@ -37,7 +37,7 @@ an integer `seed` for reproducible results:
 import numpy as np
 import quimb.tensor as qtn
 
-from src_method import compress
+from portc import compress
 
 mpo = qtn.MPO_rand(6, bond_dim=8, seed=0)
 first = compress(mpo.arrays, chi_out=4, seed=7)

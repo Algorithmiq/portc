@@ -12,7 +12,7 @@ Four commands:
 - ``scaling``: run on 1, 2, 4, ... GPUs of the node and report the wall time, the
   parallel efficiency and the distance to the single-GPU output.
 
-The plan, the per-pass times and the stall time are also logged by `src_method`
+The plan, the per-pass times and the stall time are also logged by `portc`
 itself at ``DEBUG``; pass ``--debug`` to see them.
 """
 
@@ -28,9 +28,9 @@ from typing import Annotated
 import cyclopts
 import numpy as np
 
-import src_method._sweep as sweep_module
-from src_method import Resources, src
-from src_method._plan import make_plan
+import portc._sweep as sweep_module
+from portc import Resources, src
+from portc._plan import make_plan
 
 logger = logging.getLogger(__name__)
 app = cyclopts.App(help="Benchmark out-of-core SRC of N.V.M.U with a large M.")
@@ -320,11 +320,11 @@ def main(
 
     Args:
         tokens: The command and its arguments.
-        debug: Also show the `src_method` debug log: plan, pass times and stalls.
+        debug: Also show the `portc` debug log: plan, pass times and stalls.
     """
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     if debug:
-        logging.getLogger("src_method").setLevel(logging.DEBUG)
+        logging.getLogger("portc").setLevel(logging.DEBUG)
     app(tokens)
 
 

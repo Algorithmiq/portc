@@ -1,6 +1,6 @@
-# Contributing to src_method
+# Contributing to portc
 
-Thanks for your interest in improving `src_method`. Bug reports, benchmarks on
+Thanks for your interest in improving `portc`. Bug reports, benchmarks on
 new hardware, and algorithmic improvements are all welcome.
 
 ## Contributor License Agreement
@@ -14,7 +14,7 @@ comment on that thread and applies to all your future contributions.
 
 Open an issue with:
 
-- the versions of `src_method`, `numpy` and (if relevant) `cupy`,
+- the versions of `portc`, `numpy` and (if relevant) `cupy`,
 - a minimal reproducer, ideally with a fixed `seed=`,
 - the observed and expected behaviour.
 
@@ -34,6 +34,10 @@ uv run prek install --prepare-hooks
 
 If your clone still carries the old `pre-commit` shims, add `--force` to
 replace them.
+
+Agent instructions live in [`AGENTS.md`](AGENTS.md).
+[Claude Code](https://code.claude.com/docs/en/memory#agents-md) supports this
+file from v2.1.277; see its documentation for precedence and compatibility.
 
 ## Quality gates
 

@@ -2,7 +2,7 @@
 
 One kernel covers every stack in ket form: ``k`` MPOs, optionally followed by an
 MPS. Sites are padded to bulk ``(l, r, u, d)`` views (see
-`src_method._tensor_train.pad`), so a single set of einsum equations, generated
+`portc._tensor_train.pad`), so a single set of einsum equations, generated
 from the depth ``k``, serves the boundaries and the bulk alike.
 
 The left-to-right sweep sketches the open physical legs with Gaussian ``omega``
@@ -10,7 +10,7 @@ tensors and accumulates the environments ``C``; the sketch index is shared by
 every site (a Khatri-Rao sketch). The right-to-left sweep builds the output
 through `truncated_qr` while carrying the projected environment ``S``.
 
-Every contraction runs in batches sized by `src_method._plan.make_plan` to the
+Every contraction runs in batches sized by `portc._plan.make_plan` to the
 memory budgets. The cores are read one site at a time (`SiteSource`) and the
 environments live on the device, in host memory or on disk (`EnvironmentStore`).
 CuPy's pool can fragment beyond the margin the plan leaves for it; a batch that
@@ -195,7 +195,7 @@ def sweep(
         chi_out: The sketch size, which bounds the intermediate bond dimension.
         prng: The generator for the Gaussian sketches, always host-side so that a
             seed gives the same draws on every device.
-        device: ``"cpu"`` or ``"gpu"``, as in `src_method.stack.src`.
+        device: ``"cpu"`` or ``"gpu"``, as in `portc.stack.src`.
         cutoff: Relative singular-value cutoff for adaptive bond truncation.
         truncate_to: If set, truncate the right-canonical intermediate to this
             bond dimension with a final left-to-right SVD pass, applying

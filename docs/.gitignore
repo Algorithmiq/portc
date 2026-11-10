@@ -5,7 +5,7 @@
 .source
 # griffe dump + generated API reference and tutorial MDX (produced by
 # docs/scripts/gen_api_dump.py, generate-api.mjs and notebooks_to_mdx.py)
-/src_method.json
+/portc.json
 /content/docs/api/
 /content/docs/tutorials/
 

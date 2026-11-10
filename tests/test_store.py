@@ -5,10 +5,10 @@ import errno
 import numpy as np
 import pytest
 
-import src_method._store as store_module
-from src_method._plan import Plan, SitePlan
-from src_method._store import EnvironmentStore
-from src_method.utils import NullStream
+import portc._store as store_module
+from portc._plan import Plan, SitePlan
+from portc._store import EnvironmentStore
+from portc.utils import NullStream
 
 CHI = 10
 SHAPES = [(CHI, 1), (CHI, 3, 2), (CHI, 4, 2), (CHI, 2, 1)]

@@ -1,6 +1,6 @@
 """Contraction-compression of an MPO with an MPS or another MPO.
 
-A thin wrapper around `src_method.stack.src` for two-train stacks:
+A thin wrapper around `portc.stack.src` for two-train stacks:
 
 1. MPO-MPS randomized contraction-compression.
 2. MPO-MPO randomized contraction-compression.
@@ -41,7 +41,7 @@ def apply(
     """Applies the Successive Randomized Compression (SRC) algorithm.
 
     Equivalent to ``src(left_tensor, right_tensor, ...)`` restricted to an MPO on
-    the left; see `src_method.stack.src` for the conventions, deeper stacks and the
+    the left; see `portc.stack.src` for the conventions, deeper stacks and the
     bra form. The train type is inferred from the rank of the first site tensor,
     and dispatch follows:
 
@@ -54,19 +54,19 @@ def apply(
         chi_out: The desired maximum bond dimension of the output tensor network.
         cutoff: Relative singular-value cutoff for adaptive bond truncation.
             Discards singular values below ``cutoff * sigma_max``; see
-            `src_method.stack.src`. Set to 0.0 (default) to disable cutoff
+            `portc.stack.src`. Set to 0.0 (default) to disable cutoff
             trimming. Ignored for two sites.
         oversample: Multiplicative sketch-size factor, finite and at least 1.0,
             or ``None`` for the paper's recommendation; see
-            `src_method.stack.src`. Defaults to 1.0, no oversampling.
+            `portc.stack.src`. Defaults to 1.0, no oversampling.
         dtype: Data type of the random sketches. Defaults to the promoted
             floating dtype of the inputs; an explicit dtype can promote the result.
         seed: An optional seed for the random number generator.
         device: ``"cpu"`` (default, numpy) or ``"gpu"`` (cupy).  Requires
             the optional ``cupy`` dependency for GPU execution.
-        resources: Memory budgets and scratch space; see `src_method.stack.src`.
+        resources: Memory budgets and scratch space; see `portc.stack.src`.
         optimize: The opt_einsum path optimizer of the contractions, a name or a
-            ``PathOptimizer``; see `src_method.stack.src`. Defaults to ``"dp"``.
+            ``PathOptimizer``; see `portc.stack.src`. Defaults to ``"dp"``.
 
     Returns:
         The site arrays of the compressed tensor network (MPS or MPO), in

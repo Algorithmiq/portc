@@ -10,13 +10,13 @@ import numpy as np
 import opt_einsum as oe
 import pytest
 
-import src_method._sweep as sweep_module
-import src_method.stack as stack_module
-from src_method import Resources, apply, compress, src
-from src_method._kernels import SiteKernels
-from src_method._plan import make_plan
-from src_method._sweep import sweep
-from src_method._tensor_train import pad
+import portc._sweep as sweep_module
+import portc.stack as stack_module
+from portc import Resources, apply, compress, src
+from portc._kernels import SiteKernels
+from portc._plan import make_plan
+from portc._sweep import sweep
+from portc._tensor_train import pad
 
 # -------------
 # --- Utils ---
@@ -678,7 +678,7 @@ def test_out_of_memory_splits_the_batches(devices, rng, monkeypatch, caplog):
     reference = src(*stack, chi_out=16, seed=4, dtype=np.complex128)
 
     _rows_capped(monkeypatch, 4)
-    with caplog.at_level(logging.DEBUG, logger="src_method"):
+    with caplog.at_level(logging.DEBUG, logger="portc"):
         split = src(
             *stack, chi_out=16, seed=4, dtype=np.complex128, resources=resources
         )
@@ -756,7 +756,7 @@ def test_devices_factor_tall_sketches_by_cholesky_qr(cutoff, rng, monkeypatch, c
     one = src(*stack, chi_out=24, cutoff=cutoff, seed=6, dtype=np.complex128)
 
     monkeypatch.setattr(sweep_module, "DISTRIBUTED_QR_MIN", 0)
-    with caplog.at_level(logging.DEBUG, logger="src_method"):
+    with caplog.at_level(logging.DEBUG, logger="portc"):
         many = src(
             *stack,
             chi_out=24,

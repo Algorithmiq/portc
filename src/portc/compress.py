@@ -1,6 +1,6 @@
 """Compression of a single MPS or MPO.
 
-A thin wrapper around `src_method.stack.src` for one-train stacks:
+A thin wrapper around `portc.stack.src` for one-train stacks:
 
 1. MPO randomized compression.
 2. MPS randomized compression.
@@ -38,7 +38,7 @@ def compress(
 ) -> list[np.ndarray]:
     """Applies the Successive Randomized Compression (SRC) algorithm.
 
-    Equivalent to ``src(tensor, ...)``; see `src_method.stack.src` for the
+    Equivalent to ``src(tensor, ...)``; see `portc.stack.src` for the
     conventions. The train type is inferred from the rank of the first site
     tensor:
 
@@ -50,19 +50,19 @@ def compress(
         chi_out: The desired maximum bond dimension of the output tensor network.
         cutoff: Relative singular-value cutoff for adaptive bond truncation.
             Discards singular values below ``cutoff * sigma_max``; see
-            `src_method.stack.src`. Set to 0.0 (default) to disable cutoff
+            `portc.stack.src`. Set to 0.0 (default) to disable cutoff
             trimming. Ignored for two sites.
         oversample: Multiplicative sketch-size factor, finite and at least 1.0,
             or ``None`` for the paper's recommendation; see
-            `src_method.stack.src`. Defaults to 1.0, no oversampling.
+            `portc.stack.src`. Defaults to 1.0, no oversampling.
         dtype: Data type of the random sketches. Defaults to the promoted
             floating dtype of the inputs; an explicit dtype can promote the result.
         seed: An optional seed for the random number generator.
         device: ``"cpu"`` (default, numpy) or ``"gpu"`` (cupy).  Requires
             the optional ``cupy`` dependency for GPU execution.
-        resources: Memory budgets and scratch space; see `src_method.stack.src`.
+        resources: Memory budgets and scratch space; see `portc.stack.src`.
         optimize: The opt_einsum path optimizer of the contractions, a name or a
-            ``PathOptimizer``; see `src_method.stack.src`. Defaults to ``"dp"``.
+            ``PathOptimizer``; see `portc.stack.src`. Defaults to ``"dp"``.
 
     Returns:
         The site arrays of the compressed tensor network (MPS or MPO), in

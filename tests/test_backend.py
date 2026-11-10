@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from src_method.utils import (
+from portc.utils import (
     NullEvent,
     NullStream,
     copy_into,

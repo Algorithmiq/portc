@@ -1,7 +1,7 @@
 // Shared cross-reference machinery for the docs pipeline: the API-reference
 // generator (`generate-api.mjs`) and the prose remark plugin (`remark-xref.mjs`)
 // must map a Python symbol path to the same doc URL, so these helpers -- built
-// from the griffe dump `src_method.json` -- are the single source of truth for it.
+// from the griffe dump `portc.json` -- are the single source of truth for it.
 
 export const API_BASE_URL = '/api';
 

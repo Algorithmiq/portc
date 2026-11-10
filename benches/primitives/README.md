@@ -9,7 +9,7 @@ controlled bond dimension, and compare to a `quimb` reference.
 
 The Leonardo [supercomputer](https://docs.hpc.cineca.it/general/getting_started.html) at CINECA is
 a pre-exascale Tier-0 EuroHPC system; see
-[HPC clusters](https://algorithmiq.github.io/src-method/hpc/leonardo) for how to run there.
+[HPC clusters](https://algorithmiq.github.io/portc/hpc/leonardo) for how to run there.
 
 ### MPO-MPO benchmark
 

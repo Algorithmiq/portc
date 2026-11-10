@@ -43,8 +43,8 @@ jobs:
         working-directory: docs
 
     env:
-      # The site is served from algorithmiq.github.io/src-method.
-      NEXT_PUBLIC_BASE_PATH: /src-method
+      # The site is served from algorithmiq.github.io/portc.
+      NEXT_PUBLIC_BASE_PATH: /portc
 
     steps:
       - name: Checkout
@@ -71,13 +71,13 @@ jobs:
           uv sync --no-dev --group docs
           npm ci
 
-      - name: Get src_method version
+      - name: Get portc version
         run: |
-          uv run --no-sync python -c "import src_method; print(src_method.__version__)"
+          uv run --no-sync python -c "import portc; print(portc.__version__)"
 
       - name: Generate the API reference
         run: |
-          uv run --no-sync python scripts/gen_api_dump.py src_method -d .
+          uv run --no-sync python scripts/gen_api_dump.py portc -d .
           node scripts/generate-api.mjs
 
       - name: Run the examples in the prose pages

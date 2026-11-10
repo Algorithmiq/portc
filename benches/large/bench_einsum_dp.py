@@ -32,11 +32,11 @@ import cyclopts
 import numpy as np
 import opt_einsum as oe
 
-import src_method
-import src_method._kernels as kernels_module
-import src_method._sweep as sweep_module
-from src_method import Resources, src
-from src_method._plan import make_plan
+import portc
+import portc._kernels as kernels_module
+import portc._sweep as sweep_module
+from portc import Resources, src
+from portc._plan import make_plan
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -54,12 +54,12 @@ COMPLEX_FLOPS = 4
 
 
 def provenance(optimize: str | None = None) -> dict[str, Any]:
-    """Versions (``src_method`` carries the commit), job and GPU of this process."""
+    """Versions (``portc`` carries the commit), job and GPU of this process."""
     import cupy  # noqa: PLC0415  (GPU only)
 
     return {
         "optimize": optimize,
-        "src_method": src_method.__version__,
+        "portc": portc.__version__,
         "numpy": np.__version__,
         "cupy": cupy.__version__,
         "opt_einsum": version("opt_einsum"),
@@ -319,8 +319,8 @@ def sweep(
     opt = optimize
     layers = _load(directory)
     capture = _Capture()
-    logging.getLogger("src_method").addHandler(capture)
-    logging.getLogger("src_method").setLevel(logging.DEBUG)
+    logging.getLogger("portc").addHandler(capture)
+    logging.getLogger("portc").setLevel(logging.DEBUG)
 
     builds: list[float] = []
     real_build = kernels_module.contract_expression

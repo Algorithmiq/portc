@@ -1,19 +1,19 @@
 ---
 title: Getting Started
-description: Install src_method and compress your first product.
+description: Install portc and compress your first product.
 ---
 
 ## Installation
 
 ```bash
 # CPU only (default)
-uv pip install src_method
+uv pip install portc
 
 # With NVIDIA GPU support (CUDA 13.x, driver >= 580)
-uv pip install "src_method[gpu-nvidia]"
+uv pip install "portc[gpu-nvidia]"
 
 # With AMD GPU support (ROCm)
-uv pip install "src_method[gpu-rocm]"
+uv pip install "portc[gpu-rocm]"
 ```
 
 The runtime dependencies are NumPy, `opt_einsum` and `array-api-compat`. The GPU
@@ -22,7 +22,7 @@ extras add CuPy; see [GPU execution](/features/gpu).
 ## The three entry points
 
 ```python
-from src_method import apply, compress, src
+from portc import apply, compress, src
 ```
 
 - [`apply`](/api/apply#apply) contracts an MPO with an MPS or another MPO and
@@ -44,7 +44,7 @@ so `quimb` can build the inputs and check the result:
 ```python
 import quimb.tensor as qtn
 
-from src_method import apply
+from portc import apply
 
 H = qtn.MPO_rand(10, bond_dim=4, phys_dim=2, seed=0)
 psi = qtn.MPS_rand_state(10, bond_dim=8, phys_dim=2, seed=1)

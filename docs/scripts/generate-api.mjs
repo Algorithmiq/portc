@@ -11,7 +11,7 @@ import * as path from 'node:path';
 import { convert, write } from './api-mdx.mjs';
 import { API_BASE_URL, buildXrefMap, resolve } from './xref.mjs';
 
-const JSON_PATH = path.resolve('src_method.json');
+const JSON_PATH = path.resolve('portc.json');
 const OUT_DIR = path.resolve('content/docs/api');
 
 // Public modules, in sidebar order, with the title shown for each: every module
@@ -22,7 +22,7 @@ const MODULES = [
   ['compress', 'compress'],
 ];
 const KEEP = new Set(MODULES.map(([name]) => name));
-const MODULE_GITHUB_PATHS = new Map(MODULES.map(([name]) => [name, `src/src_method/${name}.py`]));
+const MODULE_GITHUB_PATHS = new Map(MODULES.map(([name]) => [name, `src/portc/${name}.py`]));
 
 /** Drop single-underscore (non-dunder) members from a {name: node} map. */
 function prunePrivate(map) {
@@ -45,8 +45,8 @@ function pruneModule(mod) {
 /**
  * Derive the fully-qualified scope a rendered page documents, from its file
  * path (before `write` strips the leading package segment):
- *   `src_method/stack/index.mdx`   -> `src_method.stack`   (module)
- *   `src_method/index.mdx`         -> `src_method`         (package)
+ *   `portc/stack/index.mdx`   -> `portc.stack`   (module)
+ *   `portc/index.mdx`         -> `portc`         (package)
  */
 function scopeFromPath(filePath) {
   return filePath
@@ -60,8 +60,8 @@ function scopeFromPath(filePath) {
  * Resolve cross-references in a rendered MDX page into real links. Targets are
  * Python paths, resolved fully-qualified or relative to `scope`, the page's own
  * fully-qualified scope (see `scopeFromPath`):
- *   `[src][src_method.stack.src]`  ->  `[src](/api/stack#src)`
- *   `[src][]`  (on a page scoped to `src_method.stack`)  ->  `[src](/api/stack#src)`
+ *   `[src][portc.stack.src]`  ->  `[src](/api/stack#src)`
+ *   `[src][]`  (on a page scoped to `portc.stack`)  ->  `[src](/api/stack#src)`
  * Unresolved targets are collected in `unresolved` (surfaced by the caller) and
  * left untouched.
  */
@@ -183,7 +183,7 @@ async function main() {
 
     // Attach source paths to frontmatter so docs can build GitHub links
     // without duplicating the module list in app code.
-    const modulePrefixMatch = file.path.match(/^src_method\/([^/]+)(?:\/|$)/);
+    const modulePrefixMatch = file.path.match(/^portc\/([^/]+)(?:\/|$)/);
     const moduleName = modulePrefixMatch?.[1];
     const githubPath = moduleName ? MODULE_GITHUB_PATHS.get(moduleName) : undefined;
     if (githubPath) {
@@ -193,15 +193,15 @@ async function main() {
 
     // Add titles to the frontmatter for the modules we documented. The title
     // is used in the sidebar and in the page's <title> tag.
-    const m = file.path.match(/^src_method\/([^/]+)\/index\.mdx$/);
+    const m = file.path.match(/^portc\/([^/]+)\/index\.mdx$/);
     if (m) {
       const entry = MODULES.find(([name]) => name === m[1]);
       if (entry) file.frontmatter.title = entry[1];
     }
-    if (file.path === 'src_method/index.mdx') {
+    if (file.path === 'portc/index.mdx') {
       file.frontmatter.title = 'Python API';
-      file.frontmatter.description = 'Generated reference for the public src_method Python package.';
-      file.frontmatter.githubPath = 'src/src_method/__init__.py';
+      file.frontmatter.description = 'Generated reference for the public portc Python package.';
+      file.frontmatter.githubPath = 'src/portc/__init__.py';
     }
   }
 

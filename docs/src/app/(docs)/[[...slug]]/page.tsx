@@ -23,7 +23,7 @@ function getPageGithubPath(page: (typeof source)['$inferPage']) {
     return `docs/content/docs/${page.path}`;
   }
 
-  return 'src/src_method/__init__.py';
+  return 'src/portc/__init__.py';
 }
 
 export default async function Page(props: PageProps<'/[[...slug]]'>) {

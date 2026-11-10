@@ -1,4 +1,4 @@
-name: Test src_method
+name: Test portc
 
 # specify which events will trigger this workflow
 on:
@@ -101,9 +101,9 @@ jobs:
         run: |
           uv tree
 
-      - name: Get src_method version
+      - name: Get portc version
         run: |
-          uv run python -c "import src_method; print(src_method.__version__)"
+          uv run python -c "import portc; print(portc.__version__)"
 
       - name: CuPy configuration
         if: ${{ matrix.runner == 't4-4-core-custom' }}
@@ -148,7 +148,7 @@ jobs:
     # The ruleset requires a check named after this workflow, but the matrix
     # only ever reports per-combination names. This job publishes that name and
     # keeps it independent of the matrix dimensions.
-    name: Test src_method
+    name: Test portc
     if: always()
     needs: test
     runs-on: ubuntu-latest
