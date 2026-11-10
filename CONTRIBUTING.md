@@ -35,6 +35,10 @@ uv run prek install --prepare-hooks
 If your clone still carries the old `pre-commit` shims, add `--force` to
 replace them.
 
+Agent instructions live in [`AGENTS.md`](AGENTS.md).
+[Claude Code](https://code.claude.com/docs/en/memory#agents-md) supports this
+file from v2.1.277; see its documentation for precedence and compatibility.
+
 ## Quality gates
 
 All of these must pass before a pull request can be merged;
