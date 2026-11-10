@@ -133,12 +133,6 @@ See [Large problems](https://algorithmiq.github.io/portc/features/large-problems
 
 ## Installation
 
-Previously published as `src_method`. Replace that dependency with `portc`
-(keeping any GPU extra), update imports to `portc`, and use the `portc` logger
-name. There is no compatibility alias; the public functions and their arguments
-are unchanged. See the [migration and release checklist](https://algorithmiq.github.io/portc/contributing/versioning/#migration-to-portc)
-for the repository and PyPI cutover.
-
 ```bash
 # CPU only (default)
 uv pip install portc
