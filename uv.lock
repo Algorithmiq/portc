@@ -4,7 +4,8 @@ requires-python = ">=3.11, <3.15"
 resolution-markers = [
     "python_full_version >= '3.14'",
     "python_full_version >= '3.12' and python_full_version < '3.14'",
-    "python_full_version < '3.12'",
+    "python_full_version >= '3.11.5' and python_full_version < '3.12'",
+    "python_full_version < '3.11.5'",
 ]
 
 [[package]]
@@ -63,8 +64,25 @@ wheels = [
 
 [[package]]
 name = "beautifulsoup4"
+version = "4.6.3"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version < '3.11.5'",
+]
+sdist = { url = "https://files.pythonhosted.org/packages/88/df/86bffad6309f74f3ff85ea69344a078fc30003270c8df6894fca7a3c72ff/beautifulsoup4-4.6.3.tar.gz", hash = "sha256:90f8e61121d6ae58362ce3bed8cd997efb00c914eae0ff3d363c32f9a9822d10", size = 167469, upload-time = "2018-08-12T16:39:49.655Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/21/0a/47fdf541c97fd9b6a610cb5fd518175308a7cc60569962e776ac52420387/beautifulsoup4-4.6.3-py3-none-any.whl", hash = "sha256:194ec62a25438adcb3fdb06378b26559eda1ea8a747367d34c33cef9c7f48d57", size = 90375, upload-time = "2018-08-12T16:39:48.02Z" },
+]
+
+[[package]]
+name = "beautifulsoup4"
 version = "4.14.3"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.14'",
+    "python_full_version >= '3.12' and python_full_version < '3.14'",
+    "python_full_version >= '3.11.5' and python_full_version < '3.12'",
+]
 dependencies = [
     { name = "soupsieve" },
     { name = "typing-extensions" },
@@ -847,7 +865,8 @@ name = "ipython"
 version = "9.17.1"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "python_full_version < '3.12'",
+    "python_full_version >= '3.11.5' and python_full_version < '3.12'",
+    "python_full_version < '3.11.5'",
 ]
 dependencies = [
     { name = "colorama", marker = "sys_platform == 'win32'" },
@@ -1303,7 +1322,8 @@ name = "nbconvert"
 version = "7.17.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "beautifulsoup4" },
+    { name = "beautifulsoup4", version = "4.6.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11.5'" },
+    { name = "beautifulsoup4", version = "4.14.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11.5'" },
     { name = "bleach", extra = ["css"] },
     { name = "defusedxml" },
     { name = "jinja2" },
@@ -1702,6 +1722,133 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f9/e2/3e91f31a7d2b083fe6ef3fa267035b518369d9511ffab804f839851d2779/pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3", size = 69412, upload-time = "2025-05-15T12:30:07.975Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746", size = 20538, upload-time = "2025-05-15T12:30:06.134Z" },
+]
+
+[[package]]
+name = "portc"
+source = { editable = "." }
+dependencies = [
+    { name = "array-api-compat" },
+    { name = "numpy" },
+    { name = "opt-einsum" },
+]
+
+[package.optional-dependencies]
+gpu-nvidia = [
+    { name = "cupy-cuda13x", extra = ["ctk"] },
+]
+gpu-rocm = [
+    { name = "cupy" },
+]
+
+[package.dev-dependencies]
+bench = [
+    { name = "cmaes" },
+    { name = "cyclopts" },
+    { name = "quimb" },
+    { name = "scipy" },
+]
+dev = [
+    { name = "cmaes" },
+    { name = "cyclopts" },
+    { name = "prek" },
+    { name = "pytest" },
+    { name = "pytest-benchmark" },
+    { name = "pytest-cov" },
+    { name = "quimb" },
+    { name = "ruff" },
+    { name = "scalene" },
+    { name = "scipy" },
+    { name = "ty" },
+]
+docs = [
+    { name = "cmaes" },
+    { name = "griffelib" },
+    { name = "ipykernel" },
+    { name = "matplotlib" },
+    { name = "nbconvert" },
+    { name = "pydot" },
+    { name = "pylatexenc" },
+    { name = "pytest" },
+    { name = "pytest-benchmark" },
+    { name = "pytest-cov" },
+    { name = "pytest-markdown-docs" },
+    { name = "quimb" },
+    { name = "tqdm" },
+]
+interactive = [
+    { name = "ipykernel" },
+    { name = "matplotlib" },
+    { name = "pydot" },
+    { name = "pylatexenc" },
+    { name = "tqdm" },
+]
+test = [
+    { name = "cmaes" },
+    { name = "pytest" },
+    { name = "pytest-benchmark" },
+    { name = "pytest-cov" },
+    { name = "quimb" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "array-api-compat", specifier = ">=1.12" },
+    { name = "cupy", marker = "extra == 'gpu-rocm'", specifier = ">=14.1.1" },
+    { name = "cupy-cuda13x", extras = ["ctk"], marker = "extra == 'gpu-nvidia'", specifier = ">=14" },
+    { name = "numpy", specifier = ">=2.0,<3" },
+    { name = "opt-einsum", specifier = ">=3.4.0" },
+]
+provides-extras = ["gpu-nvidia", "gpu-rocm"]
+
+[package.metadata.requires-dev]
+bench = [
+    { name = "cmaes", specifier = ">=0.12.0" },
+    { name = "cyclopts", specifier = ">=3.20" },
+    { name = "quimb", specifier = ">=1.8.3,<2" },
+    { name = "scipy", specifier = ">=1.13" },
+]
+dev = [
+    { name = "cmaes", specifier = ">=0.12.0" },
+    { name = "cyclopts", specifier = ">=3.20" },
+    { name = "prek", specifier = ">=0.2.6" },
+    { name = "pytest", specifier = ">=9.1.0,<10.0" },
+    { name = "pytest-benchmark", specifier = ">=5.2.3" },
+    { name = "pytest-cov", specifier = ">=4.0" },
+    { name = "quimb", specifier = ">=1.8.3,<2" },
+    { name = "ruff", specifier = "==0.17.3" },
+    { name = "scalene", specifier = ">=1.5" },
+    { name = "scipy", specifier = ">=1.13" },
+    { name = "ty", specifier = "==0.0.95" },
+]
+docs = [
+    { name = "cmaes", specifier = ">=0.12.0" },
+    { name = "griffelib", specifier = ">=2.2,<3" },
+    { name = "ipykernel", specifier = ">=7.2.0" },
+    { name = "matplotlib", specifier = ">=3.11.0" },
+    { name = "nbconvert", specifier = ">=7" },
+    { name = "pydot", specifier = ">=1.4" },
+    { name = "pylatexenc", specifier = ">=2.10" },
+    { name = "pytest", specifier = ">=9.1.0,<10.0" },
+    { name = "pytest-benchmark", specifier = ">=5.2.3" },
+    { name = "pytest-cov", specifier = ">=4.0" },
+    { name = "pytest-markdown-docs", specifier = ">=0.9" },
+    { name = "quimb", specifier = ">=1.8.3,<2" },
+    { name = "tqdm", specifier = ">=4.65.0" },
+]
+interactive = [
+    { name = "ipykernel", specifier = ">=7.2.0" },
+    { name = "matplotlib", specifier = ">=3.11.0" },
+    { name = "pydot", specifier = ">=1.4" },
+    { name = "pylatexenc", specifier = ">=2.10" },
+    { name = "tqdm", specifier = ">=4.65.0" },
+]
+test = [
+    { name = "cmaes", specifier = ">=0.12.0" },
+    { name = "pytest", specifier = ">=9.1.0,<10.0" },
+    { name = "pytest-benchmark", specifier = ">=5.2.3" },
+    { name = "pytest-cov", specifier = ">=4.0" },
+    { name = "quimb", specifier = ">=1.8.3,<2" },
 ]
 
 [[package]]
@@ -2441,138 +2588,11 @@ wheels = [
 
 [[package]]
 name = "soupsieve"
-version = "2.9"
+version = "4.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/80/f1/93422647dd7e461f23d254e6b2bfa687a85b53aeb4903fcdbb74474d4584/soupsieve-2.9.tar.gz", hash = "sha256:acee8417325c5653e1377dc31eccad59eb82cbc65942afe6174c53b3aaad63fc", size = 122122, upload-time = "2026-07-19T01:35:18.425Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7d/5e/19b7c5d20bc2f226c44f33a9d9aab9740efed7555b96e656231fd564e514/soupsieve-4.0.tar.gz", hash = "sha256:ccd6470b256394ac44b08b86fd94b30a17d335a5335c8a3d15565f7b03d3c8cf", size = 151929, upload-time = "2026-11-03T14:28:55.388Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7b/d6/3185ab5ad1280319b31986898f3206dd7227cd75e293d4dba2a5e6bf27a0/soupsieve-2.9-py3-none-any.whl", hash = "sha256:a2b2c76d67df2382d245409fd71e321a571717e58463efa32ace87dcadac2c12", size = 37387, upload-time = "2026-07-19T01:35:17.106Z" },
-]
-
-[[package]]
-name = "portc"
-source = { editable = "." }
-dependencies = [
-    { name = "array-api-compat" },
-    { name = "numpy" },
-    { name = "opt-einsum" },
-]
-
-[package.optional-dependencies]
-gpu-nvidia = [
-    { name = "cupy-cuda13x", extra = ["ctk"] },
-]
-gpu-rocm = [
-    { name = "cupy" },
-]
-
-[package.dev-dependencies]
-bench = [
-    { name = "cmaes" },
-    { name = "cyclopts" },
-    { name = "quimb" },
-    { name = "scipy" },
-]
-dev = [
-    { name = "cmaes" },
-    { name = "cyclopts" },
-    { name = "prek" },
-    { name = "pytest" },
-    { name = "pytest-benchmark" },
-    { name = "pytest-cov" },
-    { name = "quimb" },
-    { name = "ruff" },
-    { name = "scalene" },
-    { name = "scipy" },
-    { name = "ty" },
-]
-docs = [
-    { name = "cmaes" },
-    { name = "griffelib" },
-    { name = "ipykernel" },
-    { name = "matplotlib" },
-    { name = "nbconvert" },
-    { name = "pydot" },
-    { name = "pylatexenc" },
-    { name = "pytest" },
-    { name = "pytest-benchmark" },
-    { name = "pytest-cov" },
-    { name = "pytest-markdown-docs" },
-    { name = "quimb" },
-    { name = "tqdm" },
-]
-interactive = [
-    { name = "ipykernel" },
-    { name = "matplotlib" },
-    { name = "pydot" },
-    { name = "pylatexenc" },
-    { name = "tqdm" },
-]
-test = [
-    { name = "cmaes" },
-    { name = "pytest" },
-    { name = "pytest-benchmark" },
-    { name = "pytest-cov" },
-    { name = "quimb" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "array-api-compat", specifier = ">=1.12" },
-    { name = "cupy", marker = "extra == 'gpu-rocm'", specifier = ">=14.1.1" },
-    { name = "cupy-cuda13x", extras = ["ctk"], marker = "extra == 'gpu-nvidia'", specifier = ">=14" },
-    { name = "numpy", specifier = ">=2.0,<3" },
-    { name = "opt-einsum", specifier = ">=3.4.0" },
-]
-provides-extras = ["gpu-nvidia", "gpu-rocm"]
-
-[package.metadata.requires-dev]
-bench = [
-    { name = "cmaes", specifier = ">=0.12.0" },
-    { name = "cyclopts", specifier = ">=3.20" },
-    { name = "quimb", specifier = ">=1.8.3,<2" },
-    { name = "scipy", specifier = ">=1.13" },
-]
-dev = [
-    { name = "cmaes", specifier = ">=0.12.0" },
-    { name = "cyclopts", specifier = ">=3.20" },
-    { name = "prek", specifier = ">=0.2.6" },
-    { name = "pytest", specifier = ">=9.1.0,<10.0" },
-    { name = "pytest-benchmark", specifier = ">=5.2.3" },
-    { name = "pytest-cov", specifier = ">=4.0" },
-    { name = "quimb", specifier = ">=1.8.3,<2" },
-    { name = "ruff", specifier = "==0.17.3" },
-    { name = "scalene", specifier = ">=1.5" },
-    { name = "scipy", specifier = ">=1.13" },
-    { name = "ty", specifier = "==0.0.95" },
-]
-docs = [
-    { name = "cmaes", specifier = ">=0.12.0" },
-    { name = "griffelib", specifier = ">=2.2,<3" },
-    { name = "ipykernel", specifier = ">=7.2.0" },
-    { name = "matplotlib", specifier = ">=3.11.0" },
-    { name = "nbconvert", specifier = ">=7" },
-    { name = "pydot", specifier = ">=1.4" },
-    { name = "pylatexenc", specifier = ">=2.10" },
-    { name = "pytest", specifier = ">=9.1.0,<10.0" },
-    { name = "pytest-benchmark", specifier = ">=5.2.3" },
-    { name = "pytest-cov", specifier = ">=4.0" },
-    { name = "pytest-markdown-docs", specifier = ">=0.9" },
-    { name = "quimb", specifier = ">=1.8.3,<2" },
-    { name = "tqdm", specifier = ">=4.65.0" },
-]
-interactive = [
-    { name = "ipykernel", specifier = ">=7.2.0" },
-    { name = "matplotlib", specifier = ">=3.11.0" },
-    { name = "pydot", specifier = ">=1.4" },
-    { name = "pylatexenc", specifier = ">=2.10" },
-    { name = "tqdm", specifier = ">=4.65.0" },
-]
-test = [
-    { name = "cmaes", specifier = ">=0.12.0" },
-    { name = "pytest", specifier = ">=9.1.0,<10.0" },
-    { name = "pytest-benchmark", specifier = ">=5.2.3" },
-    { name = "pytest-cov", specifier = ">=4.0" },
-    { name = "quimb", specifier = ">=1.8.3,<2" },
+    { url = "https://files.pythonhosted.org/packages/4f/18/d24df2f733ee0655c58717d51add4118a70e64692d0e47d403b9aac4cf98/soupsieve-4.0-py3-none-any.whl", hash = "sha256:5e7494bfce90e06676cfb4c5c2cf22243e98e5cf24646bb1ecdda46d318550a0", size = 50158, upload-time = "2026-11-03T14:28:53.988Z" },
 ]
 
 [[package]]
