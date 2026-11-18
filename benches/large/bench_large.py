@@ -23,7 +23,7 @@ import logging
 import resource
 from pathlib import Path
 from time import perf_counter
-from typing import Annotated
+from typing import Annotated, Literal
 
 import cyclopts
 import numpy as np
@@ -37,6 +37,7 @@ app = cyclopts.App(help="Benchmark out-of-core SRC of N.V.M.U with a large M.")
 
 LAYERS = ("N", "V", "M", "U")
 PHYS = 4  # Pauli transfer matrix legs
+Precision = Literal["float32", "float64", "complex64", "complex128"]
 
 
 def _site_shape(j: int, n_sites: int, bond: int) -> tuple[int, ...]:
@@ -52,17 +53,20 @@ def generate(
     n_sites: int = 50,
     bond: int = 4,
     bond_m: int = 4000,
-    dtype: str = "complex128",
+    dtype: Precision = "complex128",
     seed: int = 0,
 ) -> None:
     """Write random MPOs ``N``, ``V``, ``M``, ``U`` as one ``.npy`` file per site.
+
+    The draws are made in double precision and rounded to ``dtype``, so a seed gives
+    the same stack in every precision, up to that rounding.
 
     Args:
         directory: Where to write, ideally node-local NVMe.
         n_sites: Number of sites.
         bond: Bond dimension of ``N``, ``V`` and ``U``.
         bond_m: Bond dimension of ``M``.
-        dtype: ``float64`` or ``complex128``.
+        dtype: The data type of the sites.
         seed: Seed of the random draws.
     """
     rng = np.random.default_rng(seed)
@@ -70,8 +74,11 @@ def generate(
     for name in LAYERS:
         chi = bond_m if name == "M" else bond
         (directory / name).mkdir(parents=True, exist_ok=True)
-        # Scaled so that products of the layers stay of order one.
-        scale = 1 / np.sqrt(chi * PHYS)
+        # Every layer, real or complex, draws entries of variance 1 / (chi * PHYS).
+        # A sketched environment then grows by 2 per site in norm and the projected
+        # one shrinks by about as much, so both stay within single precision for
+        # over a hundred sites.
+        scale = 1 / np.sqrt(chi * PHYS * (2 if kind.kind == "c" else 1))
         for j in range(n_sites):
             shape = _site_shape(j, n_sites, chi)
             site = np.lib.format.open_memmap(
@@ -103,7 +110,8 @@ def _run(
     resources: Resources,
     seed: int,
     device: str = "gpu",
-) -> tuple[list[np.ndarray], float]:
+) -> tuple[list[np.ndarray], float, dict[str, object]]:
+    """Compress the stack once; return the output, the wall time and a run record."""
     layers = _load(directory)
     plans = []
 
@@ -135,19 +143,37 @@ def _run(
         for gpu in range(devices) if isinstance(devices, int) else devices:
             with cupy.cuda.Device(gpu):
                 pools.append(cupy.get_default_memory_pool().total_bytes())
+    record = {
+        "seconds": seconds,
+        "dtype": str(layers[0][0].dtype),
+        "chi_out": chi_out,
+        "pools": pools,
+        "host_peak": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024,
+        "planned_device_peak": plan.device_peak,
+        "planned_host_peak": plan.host_peak,
+        "disk_bytes": plan.disk_bytes,
+        "tiers": {tier: tiers.count(tier) for tier in ("device", "host", "disk")},
+        "sketch_batches": sorted({site.sketch_batch for site in plan.sites[1:]}),
+    }
     logger.info(
         "Run complete: %.1f s, pools %s B, host peak %d B, planned device peak %d B, "
         "planned host peak %d B, disk %d B, tiers %s, sketch batches %s",
         seconds,
         pools,
-        resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024,
+        record["host_peak"],
         plan.device_peak,
         plan.host_peak,
         plan.disk_bytes,
-        {tier: tiers.count(tier) for tier in ("device", "host", "disk")},
-        sorted({site.sketch_batch for site in plan.sites[1:]}),
+        record["tiers"],
+        record["sketch_batches"],
     )
-    return out, seconds
+    return out, seconds, record
+
+
+def _append(results: Path | None, record: dict[str, object]) -> None:
+    if results is not None:
+        with results.open("a") as f:
+            f.write(json.dumps(record) + "\n")
 
 
 @app.command
@@ -160,6 +186,8 @@ def run(
     scratch_dir: Path | None = None,
     devices: int = 1,
     seed: int = 0,
+    results: Path | None = None,
+    save: Path | None = None,
 ) -> None:
     """Compress the stack written by ``generate`` on the GPU.
 
@@ -171,9 +199,14 @@ def run(
         scratch_dir: Where to spill environments; ``$TMPDIR`` when omitted.
         devices: The number of GPUs to split the sweep among.
         seed: Seed of the sketch.
+        results: A JSON-lines file to append the run record to.
+        save: An ``.npz`` file to save the output sites to, ``site_0000``, ...
     """
     resources = Resources(gpu_memory, host_memory, scratch_dir, devices=devices)
-    _run(directory, chi_out, resources, seed)
+    out, _, record = _run(directory, chi_out, resources, seed)
+    _append(results, {"gpus": devices, "seed": seed, **record})
+    if save is not None:
+        np.savez(save, **{f"site_{j:04d}": site for j, site in enumerate(out)})
 
 
 def _inner(a: list[np.ndarray], b: list[np.ndarray]) -> complex:
@@ -204,8 +237,8 @@ def compare(
         scratch_dir: Where to spill environments; ``$TMPDIR`` when omitted.
         seed: Seed of the sketch, the same for both runs.
     """
-    first, _ = _run(directory, chi_out, Resources(small, None, scratch_dir), seed)
-    second, _ = _run(directory, chi_out, Resources(large, None, scratch_dir), seed)
+    first, _, _ = _run(directory, chi_out, Resources(small, None, scratch_dir), seed)
+    second, _, _ = _run(directory, chi_out, Resources(large, None, scratch_dir), seed)
     logger.info("Relative distance between the runs: %.3e", _distance(first, second))
 
 
@@ -276,12 +309,14 @@ def scaling(
         device: ``gpu``, or ``cpu`` to smoke-test with simulated devices.
     """
     reference: list[np.ndarray] | None = None
+    eps = 0.0
     ref_seconds = ref_devices = 0.0
     for count in devices:
         resources = Resources(gpu_memory, host_memory, scratch_dir, devices=count)
-        out, seconds = _run(directory, chi_out, resources, seed, device)
+        out, seconds, record = _run(directory, chi_out, resources, seed, device)
         if reference is None:
             reference, ref_seconds, ref_devices = out, seconds, count
+            eps = float(np.finfo(out[0].dtype).eps)
             distance = qr_distance = 0.0
         else:
             distance = _distance(reference, out)
@@ -289,25 +324,27 @@ def scaling(
         efficiency = ref_seconds * ref_devices / (seconds * count)
         logger.info(
             "GPUs %d: %.1f s, speed-up %.2f, efficiency %.0f %%, distance %.3e, "
-            "QR distance %.3e",
+            "QR distance %.3e (eps %.1e)",
             count,
             seconds,
             ref_seconds / seconds,
             100 * efficiency,
             distance,
             qr_distance,
+            eps,
         )
-        if results is not None:
-            record = {
+        _append(
+            results,
+            {
                 "gpus": count,
-                "seconds": seconds,
+                "seed": seed,
+                **record,
                 "efficiency": efficiency,
                 "distance": distance,
                 "qr_distance": qr_distance,
-                "chi_out": chi_out,
-            }
-            with results.open("a") as f:
-                f.write(json.dumps(record) + "\n")
+                "eps": eps,
+            },
+        )
         del out
 
 

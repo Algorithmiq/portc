@@ -1,7 +1,7 @@
 """Trace one `bench_large` run: per-site GPU time of kernels, collectives and QR.
 
 Wraps, without changing what runs, the contractions (`_Contractions.__call__`), the
-collectives of `DeviceGroup`, the QR of rank 0 and `SiteSource.next` with CUDA
+collectives of `DeviceGroup`, the QR of rank 0, the distributed `cholesky_qr` and `SiteSource.next` with CUDA
 events recorded on each rank's stream. Events do not synchronize, so the overlap of
 the sweep is kept; the intervals are read once the run is over.
 
@@ -10,9 +10,11 @@ splits into:
 
 - ``kernels``: the contractions, with their real flops along the executed path
   (opt_einsum's count times 4 for complex dtypes, 1 for real ones);
-- ``gather``, ``scatter``, ``allgather_s``, ``allgather_cores``: from the call to
-  the end of the copies, which includes the stream waiting for the other ranks;
+- ``gather``, ``scatter``, ``alltoall``, ``allgather_s``, ``allgather_cores``,
+  ``allgather_gram``: from the call to the end of the copies, which includes the
+  stream waiting for the other ranks;
 - ``qr``: `truncated_qr` on rank 0;
+- ``cholesky_qr``: `cholesky_qr` on every rank, ``allgather_gram`` included;
 - ``other``: the rest, i.e. uploads, copies of the output core to the host, and the
   stream idling while its host thread waits (barriers, environment reads).
 
@@ -105,7 +107,8 @@ def _install() -> None:
             label = _name
             if _name == "allgather":
                 caller = sys._getframe(1).f_code.co_name  # noqa: SLF001
-                label = "allgather_cores" if caller == "_upload" else "allgather_s"
+                labels = {"_upload": "allgather_cores", "gram": "allgather_gram"}
+                label = labels.get(caller, "allgather_s")
             with _timed(label):
                 return _original(self, *args, **kwargs)
 
@@ -118,6 +121,14 @@ def _install() -> None:
             return qr(*args, **kwargs)
 
     sweep_module.truncated_qr = traced_qr
+
+    cqr = sweep_module.cholesky_qr
+
+    def traced_cqr(*args, **kwargs):  # noqa: ANN002, ANN003, ANN202
+        with _timed("cholesky_qr"):
+            return cqr(*args, **kwargs)
+
+    sweep_module.cholesky_qr = traced_cqr
 
     for pass_name in ("_left_to_right", "_right_to_left"):
         original = getattr(sweep_module._Sweep, pass_name)

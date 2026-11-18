@@ -8,7 +8,13 @@ Prints one JSON object with:
   block from every other at the same time, one stream per receiver as in
   `portc._group.DeviceGroup.allgather`;
 - ``gather_gbs`` / ``scatter_gbs``: the same towards and from GPU 0 alone;
+- ``alltoall_gbs``: per-receiver bandwidth when the first ``G`` GPUs each pull a
+  ``1/G`` slice of the block from every other at the same time, as in
+  `portc._group.DeviceGroup.alltoall`;
 - ``h2d_gbs`` / ``d2h_gbs``: pinned host copies per GPU, alone and all at once;
+- ``cholesky_qr``: seconds of `portc.utils.linalg.cholesky_qr` on GPU 0 for one
+  rank's ``1/G`` of a complex64 ``rows x n`` sketch, without communication, and
+  the number of Gram matrices it formed;
 - ``matmul``: relative error of a complex64 ``4096 x 4096`` matmul against a
   complex128 reference, and the complex64 and complex128 GEMM rates.
 
@@ -26,6 +32,8 @@ from time import perf_counter
 
 import cupy as cp
 import numpy as np
+
+from portc.utils.linalg import cholesky_qr
 
 GB = 1e9
 
@@ -61,6 +69,8 @@ def main() -> None:
     parser.add_argument("--block-gb", type=float, default=1.0)
     parser.add_argument("--host-gb", type=float, default=4.0)
     parser.add_argument("--reps", type=int, default=5)
+    parser.add_argument("--cqr-rows", type=int, default=32000)
+    parser.add_argument("--cqr-n", type=int, default=2000)
     args = parser.parse_args()
     n = cp.cuda.runtime.getDeviceCount()
     nbytes = int(args.block_gb * GB)
@@ -113,16 +123,25 @@ def main() -> None:
                             continue
                         if kind == "scatter" and src != 0:
                             continue
+                        if kind == "alltoall":
+                            _peer_copy(
+                                recv[dst][src][: nbytes // g],
+                                send[src][: nbytes // g],
+                                streams[dst],
+                            )
+                            continue
                         _peer_copy(recv[dst][src], send[src], streams[dst])
 
         seconds = median(_timed(enqueue, n, args.reps))
         # Bytes per receiver: g - 1 blocks for the allgather and the gather, one
-        # for each receiver of the scatter.
+        # for each receiver of the scatter, g - 1 slices of 1/g for the alltoall.
         per_receiver = nbytes * (1 if kind == "scatter" else g - 1)
+        if kind == "alltoall":
+            per_receiver = nbytes // g * (g - 1)
         return per_receiver / seconds / GB
 
     counts = [g for g in (2, 4, 8) if g <= n]
-    for kind in ("allgather", "gather", "scatter"):
+    for kind in ("allgather", "gather", "scatter", "alltoall"):
         out[f"{kind}_gbs"] = {g: collective(g, kind) for g in counts}
 
     # Pinned host copies.
@@ -191,6 +210,27 @@ def main() -> None:
             "CUPY_TF32": os.environ.get("CUPY_TF32"),
             "NVIDIA_TF32_OVERRIDE": os.environ.get("NVIDIA_TF32_OVERRIDE"),
         }
+        n_cols = args.cqr_n
+        cqr = {}
+        for g in [1, *counts]:
+            block = cp.asarray(
+                rng.normal(size=(n_cols, args.cqr_rows // g))
+                + 1j * rng.normal(size=(n_cols, args.cqr_rows // g)),
+                cp.complex64,
+            )
+            calls = []
+
+            def gram(x: cp.ndarray, calls: list[int] = calls) -> cp.ndarray:
+                calls.append(1)
+                return x
+
+            def factor(block: cp.ndarray = block, gram: object = gram) -> None:
+                cholesky_qr(block, args.cqr_rows, 0.0, gram)
+
+            seconds = median(_timed(factor, 1, args.reps))
+            cqr[g] = {"seconds": seconds, "grams": len(calls) // (args.reps + 1)}
+            del block
+        out["cholesky_qr"] = {"rows": args.cqr_rows, "n": n_cols, "G": cqr}
     print(json.dumps(out))
 
 
