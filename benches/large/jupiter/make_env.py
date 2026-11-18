@@ -17,6 +17,8 @@ import portc
 
 HERE = Path(__file__).parent
 ENV = HERE / "node"
+# git is not on the compute nodes' PATH; the branch ref is a loose file.
+GIT = HERE.parents[2] / ".git"
 
 
 def main() -> None:
@@ -39,7 +41,7 @@ def main() -> None:
         "kernel": platform.release(),
         "versions": {
             "portc": portc.__version__,
-            "git": subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=HERE).stdout.strip(),
+            "git": (GIT / (GIT / "HEAD").read_text().removeprefix("ref: ").strip()).read_text().strip(),
             "cupy": cupy.__version__,
             "numpy": numpy.__version__,
             "opt_einsum": opt_einsum.__version__,
