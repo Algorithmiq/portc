@@ -17,7 +17,9 @@ run() {
   shift
   # git is not on the compute nodes' PATH; the branch ref is a loose file.
   { echo "# $(date -Is) $(hostname) job $SLURM_JOB_ID: $*"; echo "# git $(cat ".git/$(sed 's/^ref: //' .git/HEAD)")"; } > "$log"
+  echo "$(date -Is) start $log"
   { time "$@"; } >> "$log" 2>&1
+  echo "$(date -Is) end $log"
 }
 
 # Copy stacks to node memory, untimed, so the sweep reads them as on the RTX node.
