@@ -55,11 +55,11 @@ wheels = [
 
 [[package]]
 name = "autoray"
-version = "0.8.10"
+version = "0.11.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/f7/ca/fb0890c28a7228cdb4545d2e32f4016ebb16514039ab1ec7065092db6cee/autoray-0.8.10.tar.gz", hash = "sha256:a411c87fe5c0c12120c56478ddf64172d584705e582ef86ef12f81f5769f697f", size = 1324674, upload-time = "2026-03-06T22:36:39.931Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/cd/33/0a894071f0635b9f9a208ba4eabc3af80b5316e51ec7de7ada89a2bf097e/autoray-0.11.0.tar.gz", hash = "sha256:ef9c23d8307f2e5030d10dd222d304401450157172a6fcc6f7456b6e82681bf4", size = 1385745, upload-time = "2026-08-22T21:57:23.007Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ad/59/3044cc591035b2d2962826a9ae323e02f1dcb07a821d217ae5ccd9b94481/autoray-0.8.10-py3-none-any.whl", hash = "sha256:033f4ba37e2278ece9c50be4a42abe0d91d5c611194d90904c4e6d980300454a", size = 939985, upload-time = "2026-03-06T22:36:38.027Z" },
+    { url = "https://files.pythonhosted.org/packages/58/a1/7e82580da9ad8a2ed06306856d25bc9ebc737db9331f566590ee15b0d4ff/autoray-0.11.0-py3-none-any.whl", hash = "sha256:2e9ca95070834574e054162ee02946d2414f7821f65960308b95f49d08ee9227", size = 952870, upload-time = "2026-08-22T21:57:21.353Z" },
 ]
 
 [[package]]
@@ -302,14 +302,14 @@ wheels = [
 
 [[package]]
 name = "cotengra"
-version = "0.7.5"
+version = "0.8.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "autoray" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f2/42/041a65c3a12646156ae584a474a7843da977e51453403365aec9ec54bc7c/cotengra-0.7.5.tar.gz", hash = "sha256:f3cee6c0cd29fd239a1e9868c3b719c574cc56204dbf7e658ba10f3fd93dce98", size = 2830534, upload-time = "2025-06-12T23:53:13.954Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/37/71/ff5fda9fa7191d4d5a308251eca6689a11935c6960bffff55a19755e67f3/cotengra-0.8.4.tar.gz", hash = "sha256:0237f6498071d5f88b67c1afd40e73a9103c15fd602c68c346f3e4ee0660c6bc", size = 2509630, upload-time = "2026-11-18T21:30:34.71Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/bd/0e/5356269a34f7860fb506b6690e74f4d0062e0e50bf6345fb5405e294b1ec/cotengra-0.7.5-py3-none-any.whl", hash = "sha256:0d269883ee87e4a08ce6c91ca38aafbd3d56e177a3b3b54d61e3fe314fe67e8b", size = 195379, upload-time = "2025-06-12T23:53:11.971Z" },
+    { url = "https://files.pythonhosted.org/packages/7b/d3/54feee9c30b208f2830c444951b75a45df8070b1522d42be6c0c06f87ef0/cotengra-0.8.4-py3-none-any.whl", hash = "sha256:bdef059e55d2b747bd93abf9c99c99fb2c13586bc61cc8b2b7421b721256a154", size = 255215, upload-time = "2026-11-18T21:30:32.797Z" },
 ]
 
 [[package]]
@@ -2282,7 +2282,7 @@ wheels = [
 
 [[package]]
 name = "quimb"
-version = "1.15.0"
+version = "1.16.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "autoray" },
@@ -2294,9 +2294,9 @@ dependencies = [
     { name = "scipy" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2b/e1/997d93d8e33652ef1a4b246ecee5b0a2d5515e13704e553095474e2a59ed/quimb-1.15.0.tar.gz", hash = "sha256:a8b4a11df89f50a8dcea6722c58d6077fa4133c9caaafba7412310877e51d81a", size = 13996382, upload-time = "2026-08-10T23:22:23.633Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/79/b2/f8e13532d534a4e670c8adb2f350b5a257f9674f9c406cc63721d93740d6/quimb-1.16.0.tar.gz", hash = "sha256:b5ba4b7172fb516d053ed52150f8b04196fb13f1f226e9e691f61cf2de4b67f1", size = 16980777, upload-time = "2026-11-10T05:29:14.396Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/bf/cb/0e758b4ad8bfb0bc1834d32264378f0f8cb70f852fbcde2d6c013e529d84/quimb-1.15.0-py3-none-any.whl", hash = "sha256:5ebe1679fbdd53d951ef5f47817f1639635a2f58f4cfcbefd636802066bebe46", size = 2093164, upload-time = "2026-08-10T23:22:21.132Z" },
+    { url = "https://files.pythonhosted.org/packages/b8/be/138d3b632c42ab0e92d98b519fd6eb26c4da7b6a37deaf0f0503137b0a0f/quimb-1.16.0-py3-none-any.whl", hash = "sha256:33ba6bf3296131db78547682e8b13e5fcafcc99d365f7d25c9433c6ab6328d8d", size = 2161415, upload-time = "2026-11-10T05:29:12.327Z" },
 ]
 
 [[package]]
