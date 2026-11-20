@@ -6,9 +6,13 @@
 #SBATCH --time=00:30:00
 #SBATCH --job-name=portc-probe
 #SBATCH --output=%x-%j.out
-# Node probes, the TF32 control and env.json.
+# Node probes, the TF32 control and env.json; with DT=c128 only the probe, its
+# CholeskyQR in complex128.
 set -euo pipefail
 source "$SLURM_SUBMIT_DIR/common.sh"
+run probe$S uv run python "$N/probe_env.py" --cqr-dtype $DTYPE
+grep '^{' "$N/logs/probe$S.log" > "$N/raw/probe$S.json"
+[ -z "$S" ] || exit 0
 nvidia-smi topo -m > "$N/node/topo.txt"
 nvidia-smi -q > "$N/node/nvidia-smi-q.txt"
 lscpu > "$N/node/lscpu.txt"
@@ -18,8 +22,6 @@ lsblk > "$N/node/lsblk.txt"
 nvcc --version > "$N/node/nvcc.txt"
 uname -a > "$N/node/uname.txt"
 df -B1 "$W" /dev/shm > "$N/node/df.txt"
-run probe uv run python "$N/probe_env.py"
-grep '^{' "$N/logs/probe.log" > "$N/raw/probe.json"
 : > "$N/logs/tf32-control.log"
 for t in 0 1; do
   CUPY_TF32=$t NVIDIA_TF32_OVERRIDE=$t uv run python -c "

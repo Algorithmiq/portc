@@ -13,7 +13,7 @@ Prints one JSON object with:
   `portc._group.DeviceGroup.alltoall`;
 - ``h2d_gbs`` / ``d2h_gbs``: pinned host copies per GPU, alone and all at once;
 - ``cholesky_qr``: seconds of `portc.utils.linalg.cholesky_qr` on GPU 0 for one
-  rank's ``1/G`` of a complex64 ``rows x n`` sketch, without communication, and
+  rank's ``1/G`` of a ``--cqr-dtype`` ``rows x n`` sketch, without communication, and
   the number of Gram matrices it formed;
 - ``matmul``: relative error of a complex64 ``4096 x 4096`` matmul against a
   complex128 reference, and the complex64 and complex128 GEMM rates.
@@ -71,6 +71,7 @@ def main() -> None:
     parser.add_argument("--reps", type=int, default=5)
     parser.add_argument("--cqr-rows", type=int, default=32000)
     parser.add_argument("--cqr-n", type=int, default=2000)
+    parser.add_argument("--cqr-dtype", default="complex64")
     args = parser.parse_args()
     n = cp.cuda.runtime.getDeviceCount()
     nbytes = int(args.block_gb * GB)
@@ -162,12 +163,18 @@ def main() -> None:
                 h = host[d][1].ctypes.data
                 if kind == "h2d":
                     runtime.memcpyAsync(
-                        dev[d].data.ptr, h, hbytes, runtime.memcpyHostToDevice,
+                        dev[d].data.ptr,
+                        h,
+                        hbytes,
+                        runtime.memcpyHostToDevice,
                         streams[d].ptr,
                     )
                 else:
                     runtime.memcpyAsync(
-                        h, dev[d].data.ptr, hbytes, runtime.memcpyDeviceToHost,
+                        h,
+                        dev[d].data.ptr,
+                        hbytes,
+                        runtime.memcpyDeviceToHost,
                         streams[d].ptr,
                     )
 
@@ -178,7 +185,9 @@ def main() -> None:
         ]
         together = {}
         for g in counts:
-            s = median(_timed(lambda g=g: host_copy(list(range(g)), kind), n, args.reps))
+            s = median(
+                _timed(lambda g=g: host_copy(list(range(g)), kind), n, args.reps)
+            )
             together[g] = {"per_gpu": hbytes / s / GB, "aggregate": g * hbytes / s / GB}
         out[f"{kind}_gbs"] = {"alone": alone, "together": together}
     del host, dev, send, recv
@@ -216,7 +225,7 @@ def main() -> None:
             block = cp.asarray(
                 rng.normal(size=(n_cols, args.cqr_rows // g))
                 + 1j * rng.normal(size=(n_cols, args.cqr_rows // g)),
-                cp.complex64,
+                args.cqr_dtype,
             )
             calls = []
 
@@ -230,7 +239,12 @@ def main() -> None:
             seconds = median(_timed(factor, 1, args.reps))
             cqr[g] = {"seconds": seconds, "grams": len(calls) // (args.reps + 1)}
             del block
-        out["cholesky_qr"] = {"rows": args.cqr_rows, "n": n_cols, "G": cqr}
+        out["cholesky_qr"] = {
+            "rows": args.cqr_rows,
+            "n": n_cols,
+            "dtype": args.cqr_dtype,
+            "G": cqr,
+        }
     print(json.dumps(out))
 
 
