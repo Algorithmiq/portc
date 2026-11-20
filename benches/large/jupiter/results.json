@@ -1,0 +1,463 @@
+{
+ "description": "Strong scaling of the 50-site SRC synthetic benchmark (paper Fig. 4 setup) on one Jupiter GH200 node, with the performance-model prediction. See HANDOFF.md.",
+ "provenance": {
+  "machine": "JUPITER Booster (JSC), 1 node, 4x GH200, NVLink (NV6 every pair), node jpbo-063-45.jupiter.internal",
+  "account": "e-dev-2026d11-370",
+  "partition": "booster",
+  "branch": "bench/jupiter-gh200 (local, not pushed)",
+  "code": "portc main 6d39db3 + benches/large changes only; runs at commits a37efa1 (probe, generate), 1ef4de6 (step3), 6d1ddc1 (step4 r1), fab79fe (step4 r2, traces)",
+  "jobs": {
+   "generate": 2978368,
+   "probe": 2978569,
+   "step3_trace_g1_and_prediction": 2978570,
+   "step4_r1": 2979643,
+   "step4_r2_and_traces": 2982618
+  },
+  "dates": "2026-11-18",
+  "versions": {
+   "portc": "0.6.1.dev1+g6d39db353",
+   "git": "1ef4de668e99885071c695ab4dd6fafd94bd05f8",
+   "cupy": "14.2.0",
+   "numpy": "2.4.4",
+   "opt_einsum": "3.4.0",
+   "python": "3.14.10",
+   "cuda_runtime": 13020,
+   "cuda_driver_api": 13030,
+   "driver": "610.57.04 [Deprecated; will be removed in CUDA 14.0. Use KMD Version instead]",
+   "nvcc": "Build cuda_13.0.r13.0/compiler.36260728_0"
+  },
+  "gpu": {
+   "model": "NVIDIA GH200 120GB",
+   "count": 4,
+   "memory_bytes": [
+    102005473280,
+    102005473280,
+    102005473280,
+    102005473280
+   ],
+   "nvlink": true
+  },
+  "precision": "complex64, CUPY_TF32=0 and NVIDIA_TF32_OVERRIDE=0 (as in the paper's Fig. 4)",
+  "stacks": "bench_large.py generate --dtype complex64, seed 0, unit-variance complex entries; staged to /dev/shm before each job"
+ },
+ "sizes": {
+  "m4000": {
+   "n_sites": 50,
+   "bond": 4,
+   "bond_m": 4000,
+   "chi_out": 2000,
+   "qr_path_G_gt_1": "distributed CholeskyQR (chi_out >= 1024)"
+  },
+  "m1000": {
+   "n_sites": 50,
+   "bond": 4,
+   "bond_m": 1000,
+   "chi_out": 500,
+   "qr_path_G_gt_1": "gather + Householder QR on rank 0 + scatter (chi_out < 1024)"
+  }
+ },
+ "probe": {
+  "allgather_gbs": {
+   "2": 132.0378998694106,
+   "4": 132.31706163558965
+  },
+  "gather_gbs": {
+   "2": 132.88176587010582,
+   "4": 133.06809588845368
+  },
+  "scatter_gbs": {
+   "2": 132.84559491014699,
+   "4": 132.50874000521307
+  },
+  "alltoall_gbs": {
+   "2": 131.3513983097408,
+   "4": 130.05549427934162
+  },
+  "h2d_gbs": {
+   "alone": [
+    88.81846376419745,
+    88.82919572958093,
+    88.83872666162895,
+    422.4995404298803
+   ],
+   "together": {
+    "2": {
+     "per_gpu": 88.82673191051869,
+     "aggregate": 177.65346382103738
+    },
+    "4": {
+     "per_gpu": 86.99528577919594,
+     "aggregate": 347.98114311678376
+    }
+   }
+  },
+  "gemm_tflops_8192": {
+   "complex64": 55.42502224829187,
+   "complex128": 64.10734025034184
+  },
+  "complex64_matmul_relative_error_tf32_off": 1.619963972877422e-06,
+  "complex64_matmul_relative_error_tf32_on": 0.0002943834697342867,
+  "cholesky_qr": {
+   "rows": 32000,
+   "n": 2000,
+   "G": {
+    "1": {
+     "seconds": 0.1217419229215011,
+     "grams": 3
+    },
+    "2": {
+     "seconds": 0.06655632494948804,
+     "grams": 3
+    },
+    "4": {
+     "seconds": 0.03717992804013193,
+     "grams": 3
+    }
+   }
+  },
+  "units": "GB/s per receiving GPU (1e9 B), TFLOP/s, seconds"
+ },
+ "prediction_m4000": {
+  "note": "predict.py, written before any multi-GPU run, from the 1-GPU trace (job 2978570) and the probe; models main's distributed CholeskyQR path",
+  "T1_traced_seconds": 1174.5149515860248,
+  "G": {
+   "2": {
+    "T_G": 589.9768064451679,
+    "speedup": 1.9907815676058844,
+    "efficiency": 0.9953907838029422,
+    "per_site_ms": {
+     "alltoall_and_cholesky_qr": 69.2323594186455,
+     "allgather_S": 15.510698080062864,
+     "cores_per_pass": 19.283468071568937
+    }
+   },
+   "4": {
+    "T_G": 296.82015027805204,
+    "speedup": 3.9569919713529393,
+    "efficiency": 0.9892479928382348,
+    "per_site_ms": {
+     "alltoall_and_cholesky_qr": 40.832810970023274,
+     "allgather_S": 23.216960549354557,
+     "cores_per_pass": 17.493909135141088
+    }
+   }
+  }
+ },
+ "measured": {
+  "m4000": {
+   "1": {
+    "r1": {
+     "seconds": 1138.0209883890348,
+     "efficiency": 1.0,
+     "distance": 0.0,
+     "qr_distance": 0.0,
+     "tiers": {
+      "device": 7,
+      "host": 43,
+      "disk": 0
+     },
+     "sketch_batches": [
+      544,
+      576,
+      1984
+     ],
+     "planned_device_peak": 91082766336,
+     "host_peak": 297875275776
+    },
+    "r2": {
+     "seconds": 1163.4145557499724,
+     "efficiency": 1.0,
+     "distance": 0.0,
+     "qr_distance": 0.0,
+     "tiers": {
+      "device": 7,
+      "host": 43,
+      "disk": 0
+     },
+     "sketch_batches": [
+      544,
+      576,
+      1984
+     ],
+     "planned_device_peak": 91082766336,
+     "host_peak": 297950773248
+    },
+    "median_seconds": 1150.7177720695036,
+    "speedup_of_medians": 1.0,
+    "efficiency_of_medians": 1.0
+   },
+   "2": {
+    "r1": {
+     "seconds": 585.5393921521027,
+     "efficiency": 0.9717715013214829,
+     "distance": 0.0,
+     "qr_distance": 0.0002742269911168456,
+     "tiers": {
+      "device": 15,
+      "host": 35,
+      "disk": 0
+     },
+     "sketch_batches": [
+      512,
+      992
+     ],
+     "planned_device_peak": 90654737408,
+     "host_peak": 310088105984
+    },
+    "r2": {
+     "seconds": 599.1839166389545,
+     "efficiency": 0.9708325970062726,
+     "distance": 0.0,
+     "qr_distance": 0.0002742269911168456,
+     "tiers": {
+      "device": 15,
+      "host": 35,
+      "disk": 0
+     },
+     "sketch_batches": [
+      512,
+      992
+     ],
+     "planned_device_peak": 90654737408,
+     "host_peak": 310192832512
+    },
+    "median_seconds": 592.3616543955286,
+    "speedup_of_medians": 1.942593284914341,
+    "efficiency_of_medians": 0.9712966424571705
+   },
+   "4": {
+    "r1": {
+     "seconds": 301.8429009880638,
+     "efficiency": 0.9425606703551703,
+     "distance": 0.0,
+     "qr_distance": 0.00018649452342791323,
+     "tiers": {
+      "device": 33,
+      "host": 17,
+      "disk": 0
+     },
+     "sketch_batches": [
+      480
+     ],
+     "planned_device_peak": 90752015872,
+     "host_peak": 310088105984
+    },
+    "r2": {
+     "seconds": 304.65617837791797,
+     "efficiency": 0.9546947003867974,
+     "distance": 0.0,
+     "qr_distance": 0.00018649452342791323,
+     "tiers": {
+      "device": 33,
+      "host": 17,
+      "disk": 0
+     },
+     "sketch_batches": [
+      480
+     ],
+     "planned_device_peak": 90752015872,
+     "host_peak": 310192832512
+    },
+    "median_seconds": 303.24953968299087,
+    "speedup_of_medians": 3.7946233101373665,
+    "efficiency_of_medians": 0.9486558275343416
+   }
+  },
+  "m1000": {
+   "1": {
+    "r1": {
+     "seconds": 23.228263433091342,
+     "efficiency": 1.0,
+     "distance": 0.0,
+     "qr_distance": 0.0,
+     "tiers": {
+      "device": 50,
+      "host": 0,
+      "disk": 0
+     },
+     "sketch_batches": [
+      480
+     ],
+     "planned_device_peak": 25171214336,
+     "host_peak": 8455716864
+    },
+    "r2": {
+     "seconds": 23.48468310094904,
+     "efficiency": 1.0,
+     "distance": 0.0,
+     "qr_distance": 0.0,
+     "tiers": {
+      "device": 50,
+      "host": 0,
+      "disk": 0
+     },
+     "sketch_batches": [
+      480
+     ],
+     "planned_device_peak": 25171214336,
+     "host_peak": 8493465600
+    },
+    "median_seconds": 23.356473267020192,
+    "speedup_of_medians": 1.0,
+    "efficiency_of_medians": 1.0
+   },
+   "2": {
+    "r1": {
+     "seconds": 11.418081067036837,
+     "efficiency": 1.017170192465599,
+     "distance": 0.0002592263214738259,
+     "qr_distance": 6.566583729705423e-05,
+     "tiers": {
+      "device": 50,
+      "host": 0,
+      "disk": 0
+     },
+     "sketch_batches": [
+      224
+     ],
+     "planned_device_peak": 12511377408,
+     "host_peak": 10046144512
+    },
+    "r2": {
+     "seconds": 11.601478876080364,
+     "efficiency": 1.012141786051482,
+     "distance": 0.0002592263214738259,
+     "qr_distance": 6.566583729705423e-05,
+     "tiers": {
+      "device": 50,
+      "host": 0,
+      "disk": 0
+     },
+     "sketch_batches": [
+      224
+     ],
+     "planned_device_peak": 12511377408,
+     "host_peak": 10046144512
+    },
+    "median_seconds": 11.5097799715586,
+    "speedup_of_medians": 2.029271916990205,
+    "efficiency_of_medians": 1.0146359584951026
+   },
+   "4": {
+    "r1": {
+     "seconds": 6.390163170057349,
+     "efficiency": 0.9087507945780232,
+     "distance": 0.0,
+     "qr_distance": 8.510046417362752e-05,
+     "tiers": {
+      "device": 50,
+      "host": 0,
+      "disk": 0
+     },
+     "sketch_batches": [
+      96
+     ],
+     "planned_device_peak": 6117455872,
+     "host_peak": 10046144512
+    },
+    "r2": {
+     "seconds": 6.4678895300021395,
+     "efficiency": 0.9077413502508164,
+     "distance": 0.0,
+     "qr_distance": 8.510046417362752e-05,
+     "tiers": {
+      "device": 50,
+      "host": 0,
+      "disk": 0
+     },
+     "sketch_batches": [
+      96
+     ],
+     "planned_device_peak": 6117455872,
+     "host_peak": 10046144512
+    },
+    "median_seconds": 6.429026350029744,
+    "speedup_of_medians": 3.6329720855650454,
+    "efficiency_of_medians": 0.9082430213912613
+   }
+  },
+  "m4000_partial_r2_excluded": {
+   "gpus": 1,
+   "seconds": 1127.4741664520698,
+   "why": "job 2979643 hit its time limit during r2; its G=2 run (583.7 s, log only) was not recorded"
+  }
+ },
+ "traces_m4000": {
+  "1": {
+   "run_seconds": 1174.5149515860248,
+   "rank0_right_to_left_seconds": {
+    "sketch": 424.336,
+    "gather": 0.0,
+    "qr": 4.386,
+    "scatter": 0.0,
+    "project": 420.154,
+    "allgather_s": 0.0,
+    "span": 852.642,
+    "first": 0.01
+   },
+   "rank0_right_to_left_flops": 3.678241611921152e+16
+  },
+  "2": {
+   "run_seconds": 596.588324207929,
+   "rank0_right_to_left_seconds": {
+    "allgather_cores": 0.471,
+    "sketch": 208.036,
+    "gather": 0.008,
+    "qr": 0.179,
+    "scatter": 0.005,
+    "project": 206.059,
+    "allgather_s": 5.868,
+    "span": 431.77,
+    "alltoall": 5.796,
+    "allgather_gram": 0.168,
+    "cholesky_qr": 3.369,
+    "first": 0.01
+   },
+   "rank0_right_to_left_flops": 1.8392302003136e+16
+  },
+  "4": {
+   "run_seconds": 303.741381144966,
+   "rank0_right_to_left_seconds": {
+    "allgather_cores": 0.625,
+    "sketch": 104.639,
+    "gather": 0.011,
+    "qr": 0.177,
+    "scatter": 0.003,
+    "project": 103.225,
+    "allgather_s": 4.376,
+    "span": 219.677,
+    "alltoall": 3.242,
+    "allgather_gram": 0.244,
+    "cholesky_qr": 2.214,
+    "first": 0.01
+   },
+   "rank0_right_to_left_flops": 9204673057908224.0
+  }
+ },
+ "paper_rtx_fig4_reference": {
+  "source": "multi_gpu_src.pdf Sec. 6.6 / Fig. 4",
+  "machine": "8x RTX PRO 6000 Blackwell, PCIe, complex64 TF32 off",
+  "T1_seconds": 847.0,
+  "TG_seconds": {
+   "2": 448.7,
+   "4": 252.4,
+   "8": 145.5
+  },
+  "speedup": {
+   "2": 1.89,
+   "4": 3.36,
+   "8": 5.82
+  },
+  "efficiency": {
+   "2": 0.94,
+   "4": 0.84,
+   "8": 0.73
+  },
+  "predicted_efficiency": {
+   "2": 0.98,
+   "4": 0.92,
+   "8": 0.8
+  },
+  "qr_path": "gather + Householder QR on rank 0 + scatter (code before #85)"
+ }
+}

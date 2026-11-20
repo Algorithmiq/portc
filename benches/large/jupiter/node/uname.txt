@@ -1,0 +1,1 @@
+Linux jpbo-063-45.jupiter.internal 5.14.0-687.66.1.el9_8.0.1.aarch64+64k #1 SMP PREEMPT_DYNAMIC Sat Nov 7 16:50:03 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux

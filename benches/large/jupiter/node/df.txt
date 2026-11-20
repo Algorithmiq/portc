@@ -1,0 +1,3 @@
+Filesystem             1B-blocks             Used        Available Use% Mounted on
+exa_project1   11261041946132480 5350827858329600 5910214087802880  48% /e/project1
+tmpfs               256594870272          3866624     256591003648   1% /dev/shm
