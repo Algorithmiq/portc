@@ -17,12 +17,22 @@ if [ "${STAGE:-1}" = 1 ]; then
 else
   D=$STACKS
 fi
-B="uv run python benches/large/bench_large.py --debug scaling"
+# One process per GPU count, so no run inherits the host pages of another: on the
+# GH200 those pages land in GPU memory once the CPU memory is full.
+B="uv run python benches/large/bench_large.py --debug"
 for rep in ${REPS:-1 2}; do
-  run step4-m4000-r$rep$S $B "$D/m4000-$DT" --chi-out 2000 --devices 1 2 4 \
-    --scratch-dir "$SPILL" --results "$N/raw/step4_m4000$S.jsonl"
-  run step4-m1000-r$rep$S $B "$D/m1000-$DT" --chi-out 500 --devices 1 2 4 \
-    --scratch-dir "$SPILL" --results "$N/raw/step4_m1000$S.jsonl"
+  for m in 4000:2000 1000:500; do
+    size=${m%:*} chi=${m#*:}
+    for g in 1 2 4; do
+      run step4-m$size-r$rep-g$g$S $B run "$D/m$size-$DT" --chi-out $chi --devices $g \
+        --scratch-dir "$SPILL" --results "$N/raw/step4_m$size$S.jsonl" --save "$SPILL/out-m$size-g$g.npz"
+    done
+    for g in 2 4; do
+      run step4-m$size-r$rep-distance-g$g$S $B distance "$SPILL/out-m$size-g1.npz" \
+        "$SPILL/out-m$size-g$g.npz" --results "$N/raw/step4_m$size$S-distance.jsonl"
+    done
+    rm -f "$SPILL"/out-m$size-g*.npz
+  done
 done
 for g in ${TRACES:-2 4}; do
   run step4-trace-g$g-m4000$S uv run python "$N/trace.py" "$D/m4000-$DT" \

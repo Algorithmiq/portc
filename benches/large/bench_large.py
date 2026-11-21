@@ -327,6 +327,34 @@ def _qr_distance(a: list[np.ndarray], b: list[np.ndarray]) -> float:
 
 
 @app.command
+def distance(reference: Path, output: Path, *, results: Path | None = None) -> None:
+    """Report the distance of an output to a reference output, both saved by ``run``.
+
+    Args:
+        reference: The ``.npz`` file of the reference output.
+        output: The ``.npz`` file of the output to compare.
+        results: A JSON-lines file to append the record to.
+    """
+    a, b = (
+        [f[k] for k in sorted(f.files)] for f in (np.load(reference), np.load(output))
+    )
+    record = {
+        "reference": str(reference),
+        "output": str(output),
+        "distance": _distance(a, b),
+        "qr_distance": _qr_distance(a, b),
+        "eps": float(np.finfo(a[0].dtype).eps),
+    }
+    logger.info(
+        "Distance %.3e, QR distance %.3e (eps %.1e)",
+        record["distance"],
+        record["qr_distance"],
+        record["eps"],
+    )
+    _append(results, record)
+
+
+@app.command
 def scaling(
     directory: Path,
     *,
