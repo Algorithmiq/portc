@@ -73,10 +73,15 @@ def main(
         pcie_gb: Size in GB of the host-device copies.
         reps: Timed repetitions; the best is kept.
     """
+    props = cp.cuda.runtime.getDeviceProperties(0)
     out: dict[str, object] = {
-        "device": cp.cuda.runtime.getDeviceProperties(0)["name"].decode(),
+        "device": props["name"].decode(),
         "cuda_runtime": cp.cuda.runtime.runtimeGetVersion(),
         "cuda_driver": cp.cuda.runtime.driverGetVersion(),
+        "sm_count": props["multiProcessorCount"],
+        "sm_clock_max_mhz": props["clockRate"] // 1000,
+        "memory_clock_mhz": props["memoryClockRate"] // 1000,
+        "memory_bus_bits": props["memoryBusWidth"],
         "reps": reps,
     }
 

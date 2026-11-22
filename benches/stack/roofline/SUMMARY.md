@@ -35,6 +35,25 @@ Fusion wins because of **QR and per-sweep fixed costs**, not kernel efficiency.
 The last row is first-touch page faulting on the fresh host array. It shows up in
 the sweeps below.
 
+**The part.** The Leonardo A100-SXM-64GB has **124 SMs** (the stock A100 has
+108), a 4096-bit HBM2e bus (four stacks) and these clocks (`nvidia-smi -q -d
+CLOCK` and CuPy device properties on lrdn1690):
+
+| clock | idle | application (default) | max |
+|---|---|---|---|
+| SM / graphics | 210 MHz | 1245 MHz | 1395 MHz |
+| memory | 1593 MHz | 1593 MHz | 1593 MHz |
+
+| | peak from the clocks | measured | fraction |
+|---|---|---|---|
+| FP64 tensor-core ZGEMM: 124 SMs × 128 flop/clock × 1.395 GHz | 22.1 TFLOP/s | 21.2 (best of 5); 21.7 sustained over 15 s | 96–98% |
+| HBM: 4096 bit × 2 × 1593 MHz | 1631 GB/s | 1406 copy, 1454 triad | 86–89% |
+
+So the measured ceilings sit close to the hardware peaks. The ZGEMM above the
+stock A100's 19.5 TFLOP/s comes from the extra SMs, not from the clocks. The
+sustained ZGEMM implies the SM clock stays at or near its 1395 MHz maximum under
+load. nvidia-smi was not sampled during the GEMM, so that is inferred.
+
 ## 1. Old against new table
 
 The `n = 50` command ran twice (jobs 65154250, "new" and "repeat"). `n = 100` and
@@ -293,6 +312,21 @@ explained above.
   The quimb row matches the old one within 1%.
 - Not done: no profiling at `n = 100`; `chi = 64, 128` not profiled; the
   old-stack regression not bisected; the paper figure.
+
+## 6. Bisect of the slowdown (`bisect/`)
+
+All nine commits from 7631ceb (the old table) to 4485588 ran in today's
+environment. None slows `k = 1`: 7631ceb itself is as slow as `main`. Two
+things explain the slowdown against the old table:
+
+- **Environment.** `TMPDIR` on Lustre makes the `shutil.disk_usage` that every
+  `src` call runs cost 25–290 ms. With `TMPDIR=/tmp`, `chi = 64, k = 1` drops
+  from about 11 s to 8.3 s. This per-sweep fixed cost also inflates the fusion
+  speedups.
+- **d2287df** (`dp` paths). It is the only commit above +15%, and only for
+  `k = 4`: +18% at `chi = 512`.
+
+See `bisect/README.md`.
 
 ## Files
 

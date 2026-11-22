@@ -18,5 +18,15 @@
   "pcie_d2h_pageable_gbs": 10.459137409691785,
   "pcie_d2h_get_new_gbs": 2.0894635779867685,
   "pcie_bytes": 1000000000,
-  "ridge_flop_per_byte": 15.068826405027503
+  "ridge_flop_per_byte": 15.068826405027503,
+  "sm_count": 124,
+  "sm_clock_max_mhz": 1395,
+  "sm_clock_application_mhz": 1245,
+  "memory_clock_mhz": 1593,
+  "memory_bus_bits": 4096,
+  "zgemm_peak_tflops": 22.14144,
+  "hbm_peak_gbs": 1631.232,
+  "zgemm_fraction_of_peak": 0.9571489389097588,
+  "hbm_copy_fraction_of_peak": 0.8621646703393173,
+  "clocks_source": "nvidia-smi -q -d CLOCK and cupy getDeviceProperties on lrdn1690, 2026-11-22; peaks assume 128 FP64 tensor-core flop per SM per clock at the max SM clock, and DDR HBM"
 }

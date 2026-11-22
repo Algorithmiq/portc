@@ -1,0 +1,9 @@
+# srun on lrdn2741, one A100, --exclusive, main (4485588) bench_depth.py from the repository,
+# evolve --n-sites 50 --chis 64 --steps-per-sweep 1 --steps-per-sweep 4 --reference-chi 64 --quimb-max-chi 0
+# 50 x shutil.disk_usage on each directory, then the evolve alternating TMPDIR.
+/tmp statvfs median 0.00 ms, max 0.0 ms
+/leonardo_scratch/large/userexternal/rpanades/tmp statvfs median 24.58 ms, max 287.6 ms
+TMPDIR=/tmp      reference 8.5 s | k=1 8.19 s | k=4 4.57 s
+TMPDIR=Lustre    reference 10.9 s | k=1 11.03 s | k=4 4.85 s
+TMPDIR=/tmp      reference 8.5 s | k=1 8.45 s | k=4 4.28 s
+TMPDIR=Lustre    reference 10.9 s | k=1 10.75 s | k=4 4.84 s

@@ -1,0 +1,32 @@
+n=50 chi=64 k=1 steps=80: warm-up 14.01 s, profiled 23.03 s (under cProfile)
+         7131135 function calls (7119130 primitive calls) in 23.013 seconds
+
+   Ordered by: cumulative time
+   List reduced from 487 to 25 due to restriction <25>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.001    0.001   23.032   23.032 /leonardo_work/ALQ_prod2526/rpanades/bisect-wt/4485588/benches/stack/bench_depth.py:378(_evolve_src)
+       80    0.000    0.000   23.030    0.288 /leonardo_work/ALQ_prod2526/rpanades/bisect-wt/4485588/benches/stack/bench_depth.py:146(one_shot)
+       80    0.006    0.000   23.030    0.288 /leonardo_work/ALQ_prod2526/rpanades/bisect-wt/4485588/src/portc/stack.py:47(src)
+       80    0.004    0.000   23.010    0.288 /leonardo_work/ALQ_prod2526/rpanades/bisect-wt/4485588/src/portc/_sweep.py:174(sweep)
+    11840    0.042    0.000   16.306    0.001 /leonardo_work/ALQ_prod2526/rpanades/bisect-wt/4485588/src/portc/_sweep.py:139(_split)
+    11840    0.049    0.000   12.554    0.001 /leonardo_work/ALQ_prod2526/rpanades/bisect-wt/4485588/src/portc/_kernels.py:86(__call__)
+     3920    0.005    0.000   12.272    0.003 /leonardo_work/ALQ_prod2526/rpanades/bisect-wt/4485588/src/portc/_sweep.py:112(sketch)
+     3920    0.018    0.000   12.021    0.003 /leonardo_work/ALQ_prod2526/rpanades/bisect-wt/4485588/src/portc/_sweep.py:117(<lambda>)
+       80    0.002    0.000   11.730    0.147 /leonardo_work/ALQ_prod2526/rpanades/bisect-wt/4485588/src/portc/_plan.py:186(resolve_budgets)
+       80    0.000    0.000   11.715    0.146 /leonardo_work/ALQ_prod2526/rpanades/src-method/.uv-python/cpython-3.14.2-linux-x86_64-gnu/lib/python3.14/shutil.py:1443(disk_usage)
+       80   11.714    0.146   11.714    0.146 {built-in method posix.statvfs}
+    11840    0.375    0.000   11.461    0.001 /leonardo_work/ALQ_prod2526/rpanades/src-method/.venv/lib/python3.14/site-packages/opt_einsum/contract.py:852(__call__)
+       80    0.005    0.000   10.832    0.135 /leonardo_work/ALQ_prod2526/rpanades/bisect-wt/4485588/src/portc/_sites.py:178(__exit__)
+      240    0.001    0.000   10.789    0.045 /leonardo_work/ALQ_prod2526/rpanades/src-method/.uv-python/cpython-3.14.2-linux-x86_64-gnu/lib/python3.14/concurrent/futures/thread.py:254(shutdown)
+       80    0.001    0.000   10.788    0.135 /leonardo_work/ALQ_prod2526/rpanades/src-method/.uv-python/cpython-3.14.2-linux-x86_64-gnu/lib/python3.14/threading.py:1097(join)
+       80    0.002    0.000   10.785    0.135 {method 'join' of '_thread._ThreadHandle' objects}
+       80    0.000    0.000   10.781    0.135 /leonardo_work/ALQ_prod2526/rpanades/src-method/.uv-python/cpython-3.14.2-linux-x86_64-gnu/lib/python3.14/threading.py:1030(_bootstrap)
+       80    0.000    0.000   10.781    0.135 /leonardo_work/ALQ_prod2526/rpanades/src-method/.uv-python/cpython-3.14.2-linux-x86_64-gnu/lib/python3.14/threading.py:1065(_bootstrap_inner)
+       80    0.008    0.000   10.778    0.135 /leonardo_work/ALQ_prod2526/rpanades/bisect-wt/4485588/src/portc/_group.py:114(run)
+       80    0.002    0.000   10.769    0.135 /leonardo_work/ALQ_prod2526/rpanades/bisect-wt/4485588/src/portc/_sweep.py:259(<lambda>)
+       80    0.002    0.000   10.766    0.135 /leonardo_work/ALQ_prod2526/rpanades/bisect-wt/4485588/src/portc/_sweep.py:384(run)
+       80    0.016    0.000   10.753    0.134 /leonardo_work/ALQ_prod2526/rpanades/bisect-wt/4485588/src/portc/_sweep.py:442(_right_to_left)
+     3920    0.010    0.000    9.319    0.002 /leonardo_work/ALQ_prod2526/rpanades/bisect-wt/4485588/src/portc/_kernels.py:123(sketch)
+    11840    0.033    0.000    4.544    0.000 /leonardo_work/ALQ_prod2526/rpanades/src-method/.venv/lib/python3.14/site-packages/opt_einsum/contract.py:806(_contract)
+    11840    0.378    0.000    4.507    0.000 /leonardo_work/ALQ_prod2526/rpanades/src-method/.venv/lib/python3.14/site-packages/opt_einsum/contract.py:631(_core_contract)
