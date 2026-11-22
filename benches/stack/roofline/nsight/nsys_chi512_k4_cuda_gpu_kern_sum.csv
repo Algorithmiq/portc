@@ -1,0 +1,26 @@
+Time (%),Total Time (ns),Instances,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Name
+38.3,65220322,40,1630508.1,1629056.0,1626432,1635104,2906.9,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x32_16x4_nt_align1>(T1::Params)
+27.9,47382529,467,101461.5,14784.0,1888,488000,145670.3,cupy_copy__complex128_complex128
+24.2,41101569,176,233531.6,250176.0,5632,251712,58501.2,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_16x32_16x3_nt_align1>(T1::Params)
+6.2,10605376,40,265134.4,265216.0,263360,267104,816.1,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_16x32_16x3_nn_align1>(T1::Params)
+1.9,3172768,4,793192.0,452880.0,445728,1821280,685404.8,"void geqr2_smem_domino_fast<double2, double, (int)8, (int)1024>(int, int, T1 *, int, T1 *, int *, int *)"
+0.7,1162464,5,232492.8,67136.0,13408,832064,345206.6,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x32_16x4_tt_align1>(T1::Params)
+0.3,474176,83,5713.0,4992.0,4672,64640,6548.5,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x16_16x3_nt_align1>(T1::Params)
+0.2,290048,8,36256.0,15920.0,7680,128800,42920.6,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x16_16x3_nn_align1>(T1::Params)
+0.1,215936,48,4498.7,4448.0,4384,4864,136.2,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x16_16x3_tn_align1>(T1::Params)
+0.1,154496,54,2861.0,2880.0,2432,4288,261.4,"void zgemm1x1_kernel_core<(bool)0, (bool)0, (bool)0, (bool)1, (bool)1>(cublasZgemm1x1Params)"
+0.1,89024,3,29674.7,29664.0,29664,29696,18.5,"void larft_T_64<double2>(int, T1 *, long, long, const T1 *, long)"
+0.0,68320,4,17080.0,17248.0,12448,21376,3659.3,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x32_16x4_nn_align1>(T1::Params)
+0.0,51680,3,17226.7,17024.0,16384,18272,960.2,"void gemmcn_skinny_kernel<double2, (int)2, (int)4>(int, int, int, const T1 *, long, long, const T1 *, long, long, T1 *, long, long)"
+0.0,39680,3,13226.7,12288.0,11488,15904,2352.9,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x32_16x4_hn_align1>(T1::Params)
+0.0,20480,3,6826.7,6784.0,6784,6912,73.9,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x16_16x3_hn_align1>(T1::Params)
+0.0,10528,3,3509.3,3680.0,3136,3712,323.7,"void cublasLt::splitKreduce_kernel<(int)32, (int)16, int, double2, double2, double2, double2, (bool)0, double2, double2, double2, (bool)1, (bool)0, (bool)0, (bool)0>(cublasLt::cublasSplitKParams<T6>, const T4 *, const T10 *, T9 *, T5 *, const T6 *, const T6 *, const T11 *, const T4 *, T11 *, void *, long, T6 *, int *, T6 *, T6 *, const T6 *, const T6 *, const T6 *, const T6 *, const T6 *)"
+0.0,7808,4,1952.0,1952.0,1920,1984,26.1,"void larfb_restore_v1_R_kernel<double2, (int)16>(long, T1 *, long, long, T1 *, long, long)"
+0.0,7424,3,2474.7,2464.0,2400,2560,80.5,"void zgemm1x1_kernel_core<(bool)0, (bool)0, (bool)0, (bool)1, (bool)0>(cublasZgemm1x1Params)"
+0.0,6656,1,6656.0,6656.0,6656,6656,0.0,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x16_16x3_tt_align1>(T1::Params)
+0.0,6080,3,2026.7,2016.0,2016,2048,18.5,"void larfb_set_v1_R_kernel<double2, (int)16>(long, T1 *, long, long, T1 *, long, long)"
+0.0,3904,1,3904.0,3904.0,3904,3904,0.0,"void zgemm1x1_kernel_core<(bool)0, (bool)0, (bool)0, (bool)0, (bool)1>(cublasZgemm1x1Params)"
+0.0,3616,2,1808.0,1808.0,1728,1888,113.1,cupy_fill
+0.0,2528,1,2528.0,2528.0,2528,2528,0.0,cupy_multiply__complex128_complex128_complex128
+0.0,2400,1,2400.0,2400.0,2400,2400,0.0,"void zgemm1x1_kernel_core<(bool)0, (bool)0, (bool)0, (bool)0, (bool)0>(cublasZgemm1x1Params)"
+0.0,2208,1,2208.0,2208.0,2208,2208,0.0,"void gemmk1_kernel<int, double2, (int)256, (int)5, (bool)1, (bool)0, (bool)0, (bool)0, cublasGemvTensorStridedBatched<const double2>, cublasGemvTensorStridedBatched<const double2>, cublasGemvTensorStridedBatched<double2>, double2, (int)0>(cublasGemmk1Params<T2, T9, T10, T11, T12, biasType<T11::value_type, T12>::type>)"

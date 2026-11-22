@@ -1,0 +1,22 @@
+Time (%),Total Time (ns),Instances,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Name
+50.6,9772031,40,244300.8,244320.0,243936,244672,168.0,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x32_16x4_nt_align1>(T1::Params)
+16.5,3174655,4,793663.8,452783.5,447744,1821344,685130.1,"void geqr2_smem_domino_fast<double2, double, (int)8, (int)1024>(int, int, T1 *, int, T1 *, int *, int *)"
+15.0,2902432,270,10749.7,7520.0,1888,36448,11200.3,cupy_copy__complex128_complex128
+13.9,2692032,40,67300.8,67312.0,66944,67744,153.3,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_16x32_16x3_nn_align1>(T1::Params)
+0.9,175360,3,58453.3,41440.0,7616,126304,61145.7,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x32_16x4_tt_align1>(T1::Params)
+0.7,132096,51,2590.1,2592.0,2528,2944,56.3,"void zgemm1x1_kernel_core<(bool)0, (bool)0, (bool)0, (bool)1, (bool)1>(cublasZgemm1x1Params)"
+0.5,102656,8,12832.0,8096.0,7456,33504,9234.9,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x16_16x3_nn_align1>(T1::Params)
+0.5,89024,3,29674.7,29696.0,29632,29696,37.0,"void larft_T_64<double2>(int, T1 *, long, long, const T1 *, long)"
+0.4,68544,4,17136.0,17360.0,12384,21440,3725.4,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x32_16x4_nn_align1>(T1::Params)
+0.3,51552,3,17184.0,17056.0,16384,18112,871.1,"void gemmcn_skinny_kernel<double2, (int)2, (int)4>(int, int, int, const T1 *, long, long, const T1 *, long, long, T1 *, long, long)"
+0.2,40192,4,10048.0,9328.0,4256,17280,6261.5,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x16_16x3_tt_align1>(T1::Params)
+0.2,39872,3,13290.7,12256.0,11584,16032,2397.7,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x32_16x4_hn_align1>(T1::Params)
+0.1,20448,3,6816.0,6784.0,6752,6912,84.7,void cutlass::Kernel2<cutlass_80_tensorop_z884gemm_32x16_16x3_hn_align1>(T1::Params)
+0.1,10464,3,3488.0,3616.0,3104,3744,338.7,"void cublasLt::splitKreduce_kernel<(int)32, (int)16, int, double2, double2, double2, double2, (bool)0, double2, double2, double2, (bool)1, (bool)0, (bool)0, (bool)0>(cublasLt::cublasSplitKParams<T6>, const T4 *, const T10 *, T9 *, T5 *, const T6 *, const T6 *, const T11 *, const T4 *, T11 *, void *, long, T6 *, int *, T6 *, T6 *, const T6 *, const T6 *, const T6 *, const T6 *, const T6 *)"
+0.0,7776,4,1944.0,1936.0,1920,1984,30.6,"void larfb_restore_v1_R_kernel<double2, (int)16>(long, T1 *, long, long, T1 *, long, long)"
+0.0,6144,3,2048.0,2048.0,2016,2080,32.0,"void larfb_set_v1_R_kernel<double2, (int)16>(long, T1 *, long, long, T1 *, long, long)"
+0.0,3584,2,1792.0,1792.0,1728,1856,90.5,cupy_fill
+0.0,2624,1,2624.0,2624.0,2624,2624,0.0,"void zgemm1x1_kernel_core<(bool)0, (bool)0, (bool)0, (bool)0, (bool)1>(cublasZgemm1x1Params)"
+0.0,2464,1,2464.0,2464.0,2464,2464,0.0,"void zgemm1x1_kernel_core<(bool)0, (bool)0, (bool)0, (bool)1, (bool)0>(cublasZgemm1x1Params)"
+0.0,2400,1,2400.0,2400.0,2400,2400,0.0,cupy_multiply__complex128_complex128_complex128
+0.0,2144,1,2144.0,2144.0,2144,2144,0.0,"void gemmk1_kernel<int, double2, (int)256, (int)5, (bool)1, (bool)0, (bool)0, (bool)0, cublasGemvTensorStridedBatched<const double2>, cublasGemvTensorStridedBatched<const double2>, cublasGemvTensorStridedBatched<double2>, double2, (int)0>(cublasGemmk1Params<T2, T9, T10, T11, T12, biasType<T11::value_type, T12>::type>)"

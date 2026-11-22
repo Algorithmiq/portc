@@ -1,0 +1,33 @@
+job 65154251 on lrdn1515.leonardo.local, stage n100, commit 44855882bf096a4abe256965659e09f95adf262e
+name, driver_version, memory.total [MiB]
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
++ benches/stack/bench_depth.py evolve --n-sites 100 --quimb-max-chi 0 --output benches/stack/roofline/quench_n100.md
+reference: chi=1024, 327.0 s, <Z>=0.667891
+done: {'n_sites': 100, 'chi': 64, 'method': 'src gpu k=1', 'seconds': 21.196308337152004, 'infidelity': 0.1356267330409523, 'z_error': 0.012618180788488753}
+done: {'n_sites': 100, 'chi': 64, 'method': 'src gpu k=2', 'seconds': 12.66263030655682, 'infidelity': 0.13663492180770143, 'z_error': 0.015122156351345617}
+done: {'n_sites': 100, 'chi': 64, 'method': 'src gpu k=4', 'seconds': 7.87225953489542, 'infidelity': 0.13816995945575272, 'z_error': 0.014127674647397837}
+done: {'n_sites': 100, 'chi': 128, 'method': 'src gpu k=1', 'seconds': 21.286100778728724, 'infidelity': 0.04989325555530866, 'z_error': 0.005920579350285227}
+done: {'n_sites': 100, 'chi': 128, 'method': 'src gpu k=2', 'seconds': 11.904891123995185, 'infidelity': 0.05092744315525022, 'z_error': 0.006398354943176976}
+done: {'n_sites': 100, 'chi': 128, 'method': 'src gpu k=4', 'seconds': 8.575289245694876, 'infidelity': 0.05120520819689833, 'z_error': 0.006251898917549181}
+done: {'n_sites': 100, 'chi': 256, 'method': 'src gpu k=1', 'seconds': 33.34274322167039, 'infidelity': 0.013125090629603764, 'z_error': 0.0016792798145276455}
+done: {'n_sites': 100, 'chi': 256, 'method': 'src gpu k=2', 'seconds': 18.301398240029812, 'infidelity': 0.01344560946933282, 'z_error': 0.00166435485941141}
+done: {'n_sites': 100, 'chi': 256, 'method': 'src gpu k=4', 'seconds': 15.466883784160018, 'infidelity': 0.013731984082151483, 'z_error': 0.0017869552392461019}
+done: {'n_sites': 100, 'chi': 512, 'method': 'src gpu k=1', 'seconds': 76.12800065986812, 'infidelity': 0.001752331475857738, 'z_error': 0.00024527354214698427}
+done: {'n_sites': 100, 'chi': 512, 'method': 'src gpu k=2', 'seconds': 45.01956897974014, 'infidelity': 0.0018407681059410264, 'z_error': 0.0002543728000319323}
+done: {'n_sites': 100, 'chi': 512, 'method': 'src gpu k=4', 'seconds': 49.898972533643246, 'infidelity': 0.001882481590904872, 'z_error': 0.00024705433237781627}
+result: {'n_sites': 100, 'chi': 64, 'method': 'src gpu k=1', 'seconds': 21.196308337152004, 'infidelity': 0.1356267330409523, 'z_error': 0.012618180788488753}
+result: {'n_sites': 100, 'chi': 64, 'method': 'src gpu k=2', 'seconds': 12.66263030655682, 'infidelity': 0.13663492180770143, 'z_error': 0.015122156351345617}
+result: {'n_sites': 100, 'chi': 64, 'method': 'src gpu k=4', 'seconds': 7.87225953489542, 'infidelity': 0.13816995945575272, 'z_error': 0.014127674647397837}
+result: {'n_sites': 100, 'chi': 128, 'method': 'src gpu k=1', 'seconds': 21.286100778728724, 'infidelity': 0.04989325555530866, 'z_error': 0.005920579350285227}
+result: {'n_sites': 100, 'chi': 128, 'method': 'src gpu k=2', 'seconds': 11.904891123995185, 'infidelity': 0.05092744315525022, 'z_error': 0.006398354943176976}
+result: {'n_sites': 100, 'chi': 128, 'method': 'src gpu k=4', 'seconds': 8.575289245694876, 'infidelity': 0.05120520819689833, 'z_error': 0.006251898917549181}
+result: {'n_sites': 100, 'chi': 256, 'method': 'src gpu k=1', 'seconds': 33.34274322167039, 'infidelity': 0.013125090629603764, 'z_error': 0.0016792798145276455}
+result: {'n_sites': 100, 'chi': 256, 'method': 'src gpu k=2', 'seconds': 18.301398240029812, 'infidelity': 0.01344560946933282, 'z_error': 0.00166435485941141}
+result: {'n_sites': 100, 'chi': 256, 'method': 'src gpu k=4', 'seconds': 15.466883784160018, 'infidelity': 0.013731984082151483, 'z_error': 0.0017869552392461019}
+result: {'n_sites': 100, 'chi': 512, 'method': 'src gpu k=1', 'seconds': 76.12800065986812, 'infidelity': 0.001752331475857738, 'z_error': 0.00024527354214698427}
+result: {'n_sites': 100, 'chi': 512, 'method': 'src gpu k=2', 'seconds': 45.01956897974014, 'infidelity': 0.0018407681059410264, 'z_error': 0.0002543728000319323}
+result: {'n_sites': 100, 'chi': 512, 'method': 'src gpu k=4', 'seconds': 49.898972533643246, 'infidelity': 0.001882481590904872, 'z_error': 0.00024705433237781627}
+elapsed 739.17 s

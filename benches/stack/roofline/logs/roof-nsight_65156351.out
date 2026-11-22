@@ -1,0 +1,122 @@
+job 65156351 on lrdn2169.leonardo.local, stage nsight, commit 44855882bf096a4abe256965659e09f95adf262e
+name, driver_version, memory.total [MiB]
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
+saturated after 1 sweeps of 1 steps
+Capture range started in the application.
+Capture range ended in the application.
+Generating '/leonardo_scratch/large/userexternal/rpanades/tmp/nsys-report-1d75.qdstrm'
+[1/1] [0%                          ] sweep_chi512_k1.nsys-repProcessing events...
+[1/1] [0%                          ] sweep_chi512_k1.nsys-rep[1/1] [=====32%                    ] sweep_chi512_k1.nsys-rep[1/1] [6%                          ] sweep_chi512_k1.nsys-rep[1/1] [5%                          ] sweep_chi512_k1.nsys-rep[1/1] [13%                         ] sweep_chi512_k1.nsys-rep[1/1] [14%                         ] sweep_chi512_k1.nsys-rep[1/1] [=16%                        ] sweep_chi512_k1.nsys-rep[1/1] [==19%                       ] sweep_chi512_k1.nsys-rep[1/1] [==20%                       ] sweep_chi512_k1.nsys-rep[1/1] [==21%                       ] sweep_chi512_k1.nsys-rep[1/1] [====25%                     ] sweep_chi512_k1.nsys-rep[1/1] [========================100%] sweep_chi512_k1.nsys-rep
+Importer error status: Importation succeeded with non-fatal errors.
+**** Analysis failed with:
+Status: TargetProfilingFailed
+Props {
+  Items {
+    Type: DeviceId
+    Value: "Local (CLI)"
+  }
+}
+Error {
+  Type: RuntimeError
+  SubError {
+    Type: ProcessEventsError
+    Props {
+      Items {
+        Type: ErrorText
+        Value: "/dvs/p4/build/sw/devtools/Agora/Rel/QuadD_Main/QuadD/Host/Analysis/Modules/TraceProcessEvent.cpp(53): Throw in function const std::string& {anonymous}::GetAPICallbackName(bool, bool, uint32_t, const QuadDAnalysis::MoreInjection&)\nDynamic exception type: boost::wrapexcept<QuadDCommon::InvalidArgumentException>\nstd::exception::what: InvalidArgumentException\n[QuadDCommon::tag_message*] = Unknown runtime API function index: 536\n"
+      }
+    }
+  }
+}
+Status: TargetProfilingFailed
+Props {
+  Items {
+    Type: DeviceId
+    Value: "Local (CLI)"
+  }
+}
+Error {
+  Type: RuntimeError
+  SubError {
+    Type: ProcessEventsError
+    Props {
+      Items {
+        Type: ErrorText
+        Value: "/dvs/p4/build/sw/devtools/Agora/Rel/QuadD_Main/QuadD/Host/Analysis/Modules/TraceProcessEvent.cpp(53): Throw in function const std::string& {anonymous}::GetAPICallbackName(bool, bool, uint32_t, const QuadDAnalysis::MoreInjection&)\nDynamic exception type: boost::wrapexcept<QuadDCommon::InvalidArgumentException>\nstd::exception::what: InvalidArgumentException\n[QuadDCommon::tag_message*] = Unknown runtime API function index: 536\n"
+      }
+    }
+  }
+}
+
+
+**** Errors occurred while processing the raw events. ****
+**** Please see the Diagnostics Summary page after opening the report file in GUI. ****
+profiled sweep: 6.441 s
+Generated:
+	/leonardo_scratch/large/userexternal/rpanades/tmp/nsight/sweep_chi512_k1.qdstrm
+	/leonardo_scratch/large/userexternal/rpanades/tmp/nsight/sweep_chi512_k1.nsys-rep
+saturated after 1 sweeps of 4 steps
+Capture range started in the application.
+Capture range ended in the application.
+Generating '/leonardo_scratch/large/userexternal/rpanades/tmp/nsys-report-8e23.qdstrm'
+[1/1] [0%                          ] sweep_chi512_k4.nsys-repProcessing events...
+[1/1] [0%                          ] sweep_chi512_k4.nsys-rep[1/1] [=======37%                  ] sweep_chi512_k4.nsys-rep[1/1] [10%                         ] sweep_chi512_k4.nsys-rep[1/1] [6%                          ] sweep_chi512_k4.nsys-rep[1/1] [==18%                       ] sweep_chi512_k4.nsys-rep[1/1] [==20%                       ] sweep_chi512_k4.nsys-rep[1/1] [===22%                      ] sweep_chi512_k4.nsys-rep[1/1] [===23%                      ] sweep_chi512_k4.nsys-rep[1/1] [===24%                      ] sweep_chi512_k4.nsys-rep[1/1] [=====29%                    ] sweep_chi512_k4.nsys-rep[1/1] [========================100%] sweep_chi512_k4.nsys-rep
+Importer error status: Importation succeeded with non-fatal errors.
+**** Analysis failed with:
+Status: TargetProfilingFailed
+Props {
+  Items {
+    Type: DeviceId
+    Value: "Local (CLI)"
+  }
+}
+Error {
+  Type: RuntimeError
+  SubError {
+    Type: ProcessEventsError
+    Props {
+      Items {
+        Type: ErrorText
+        Value: "/dvs/p4/build/sw/devtools/Agora/Rel/QuadD_Main/QuadD/Host/Analysis/Modules/TraceProcessEvent.cpp(53): Throw in function const std::string& {anonymous}::GetAPICallbackName(bool, bool, uint32_t, const QuadDAnalysis::MoreInjection&)\nDynamic exception type: boost::wrapexcept<QuadDCommon::InvalidArgumentException>\nstd::exception::what: InvalidArgumentException\n[QuadDCommon::tag_message*] = Unknown runtime API function index: 536\n"
+      }
+    }
+  }
+}
+Status: TargetProfilingFailed
+Props {
+  Items {
+    Type: DeviceId
+    Value: "Local (CLI)"
+  }
+}
+Error {
+  Type: RuntimeError
+  SubError {
+    Type: ProcessEventsError
+    Props {
+      Items {
+        Type: ErrorText
+        Value: "/dvs/p4/build/sw/devtools/Agora/Rel/QuadD_Main/QuadD/Host/Analysis/Modules/TraceProcessEvent.cpp(53): Throw in function const std::string& {anonymous}::GetAPICallbackName(bool, bool, uint32_t, const QuadDAnalysis::MoreInjection&)\nDynamic exception type: boost::wrapexcept<QuadDCommon::InvalidArgumentException>\nstd::exception::what: InvalidArgumentException\n[QuadDCommon::tag_message*] = Unknown runtime API function index: 536\n"
+      }
+    }
+  }
+}
+
+
+**** Errors occurred while processing the raw events. ****
+**** Please see the Diagnostics Summary page after opening the report file in GUI. ****
+profiled sweep: 5.570 s
+Generated:
+	/leonardo_scratch/large/userexternal/rpanades/tmp/nsight/sweep_chi512_k4.qdstrm
+	/leonardo_scratch/large/userexternal/rpanades/tmp/nsight/sweep_chi512_k4.nsys-rep
+saturated after 1 sweeps of 1 steps
+profiled ade,ahj,dfhi,egij->afg [(512, 2, 512), (512, 2, 1), (2, 2, 2, 2), (512, 512, 2, 1)]
+profiled ade,dfhi,egij,bfg->bhja [(512, 2, 512), (2, 2, 2, 2), (512, 512, 2, 1), (512, 2, 512)]
+profiled cbhj,dfhi,egij,bfg->cde [(512, 512, 2, 1), (2, 2, 2, 2), (512, 512, 2, 1), (512, 2, 512)]
+saturated after 1 sweeps of 4 steps
+profiled adefgh,ans,dino,ejop,fkpq,glqr,hmrs->aijklm [(512, 2, 2, 2, 2, 512), (512, 2, 1), (2, 2, 2, 2), (2, 2, 2, 2), (2, 2, 2, 2), (2, 2, 2, 2), (512, 512, 2, 1)]
+profiled adefgh,dino,ejop,fkpq,glqr,hmrs,bijklm->bnsa [(512, 2, 2, 2, 2, 512), (2, 2, 2, 2), (2, 2, 2, 2), (2, 2, 2, 2), (2, 2, 2, 2), (512, 512, 2, 1), (512, 2, 2, 2, 2, 512)]
+profiled cbns,dino,ejop,fkpq,glqr,hmrs,bijklm->cdefgh [(512, 512, 2, 1), (2, 2, 2, 2), (2, 2, 2, 2), (2, 2, 2, 2), (2, 2, 2, 2), (512, 512, 2, 1), (512, 2, 2, 2, 2, 512)]

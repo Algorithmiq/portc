@@ -1,0 +1,153 @@
+job 65157282 on lrdn2379.leonardo.local, stage nsight, commit 44855882bf096a4abe256965659e09f95adf262e
+name, driver_version, memory.total [MiB]
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
+saturated after 1 sweeps of 1 steps
+Capture range started in the application.
+Capture range ended in the application.
+Generating '/leonardo_scratch/large/userexternal/rpanades/tmp/nsys-report-85b6.qdstrm'
+[1/1] [0%                          ] sweep_chi512_k1.nsys-repProcessing events...
+[1/1] [0%                          ] sweep_chi512_k1.nsys-rep[1/1] [=====31%                    ] sweep_chi512_k1.nsys-rep[1/1] [6%                          ] sweep_chi512_k1.nsys-rep[1/1] [5%                          ] sweep_chi512_k1.nsys-rep[1/1] [13%                         ] sweep_chi512_k1.nsys-rep[1/1] [14%                         ] sweep_chi512_k1.nsys-rep[1/1] [=17%                        ] sweep_chi512_k1.nsys-rep[1/1] [==20%                       ] sweep_chi512_k1.nsys-rep[1/1] [===22%                      ] sweep_chi512_k1.nsys-rep[1/1] [====25%                     ] sweep_chi512_k1.nsys-rep[1/1] [========================100%] sweep_chi512_k1.nsys-rep
+Importer error status: Importation succeeded with non-fatal errors.
+**** Analysis failed with:
+Status: TargetProfilingFailed
+Props {
+  Items {
+    Type: DeviceId
+    Value: "Local (CLI)"
+  }
+}
+Error {
+  Type: RuntimeError
+  SubError {
+    Type: ProcessEventsError
+    Props {
+      Items {
+        Type: ErrorText
+        Value: "/dvs/p4/build/sw/devtools/Agora/Rel/QuadD_Main/QuadD/Host/Analysis/Modules/TraceProcessEvent.cpp(53): Throw in function const std::string& {anonymous}::GetAPICallbackName(bool, bool, uint32_t, const QuadDAnalysis::MoreInjection&)\nDynamic exception type: boost::wrapexcept<QuadDCommon::InvalidArgumentException>\nstd::exception::what: InvalidArgumentException\n[QuadDCommon::tag_message*] = Unknown runtime API function index: 536\n"
+      }
+    }
+  }
+}
+Status: TargetProfilingFailed
+Props {
+  Items {
+    Type: DeviceId
+    Value: "Local (CLI)"
+  }
+}
+Error {
+  Type: RuntimeError
+  SubError {
+    Type: ProcessEventsError
+    Props {
+      Items {
+        Type: ErrorText
+        Value: "/dvs/p4/build/sw/devtools/Agora/Rel/QuadD_Main/QuadD/Host/Analysis/Modules/TraceProcessEvent.cpp(53): Throw in function const std::string& {anonymous}::GetAPICallbackName(bool, bool, uint32_t, const QuadDAnalysis::MoreInjection&)\nDynamic exception type: boost::wrapexcept<QuadDCommon::InvalidArgumentException>\nstd::exception::what: InvalidArgumentException\n[QuadDCommon::tag_message*] = Unknown runtime API function index: 536\n"
+      }
+    }
+  }
+}
+
+
+**** Errors occurred while processing the raw events. ****
+**** Please see the Diagnostics Summary page after opening the report file in GUI. ****
+profiled sweep: 8.044 s
+Generated:
+	/leonardo_scratch/large/userexternal/rpanades/tmp/nsight/sweep_chi512_k1.qdstrm
+	/leonardo_scratch/large/userexternal/rpanades/tmp/nsight/sweep_chi512_k1.nsys-rep
+saturated after 1 sweeps of 4 steps
+Capture range started in the application.
+Capture range ended in the application.
+Generating '/leonardo_scratch/large/userexternal/rpanades/tmp/nsys-report-1267.qdstrm'
+[1/1] [0%                          ] sweep_chi512_k4.nsys-repProcessing events...
+[1/1] [0%                          ] sweep_chi512_k4.nsys-rep[1/1] [=======37%                  ] sweep_chi512_k4.nsys-rep[1/1] [10%                         ] sweep_chi512_k4.nsys-rep[1/1] [6%                          ] sweep_chi512_k4.nsys-rep[1/1] [==18%                       ] sweep_chi512_k4.nsys-rep[1/1] [==20%                       ] sweep_chi512_k4.nsys-rep[1/1] [===22%                      ] sweep_chi512_k4.nsys-rep[1/1] [===23%                      ] sweep_chi512_k4.nsys-rep[1/1] [===24%                      ] sweep_chi512_k4.nsys-rep[1/1] [=====29%                    ] sweep_chi512_k4.nsys-rep[1/1] [========================100%] sweep_chi512_k4.nsys-rep
+Importer error status: Importation succeeded with non-fatal errors.
+**** Analysis failed with:
+Status: TargetProfilingFailed
+Props {
+  Items {
+    Type: DeviceId
+    Value: "Local (CLI)"
+  }
+}
+Error {
+  Type: RuntimeError
+  SubError {
+    Type: ProcessEventsError
+    Props {
+      Items {
+        Type: ErrorText
+        Value: "/dvs/p4/build/sw/devtools/Agora/Rel/QuadD_Main/QuadD/Host/Analysis/Modules/TraceProcessEvent.cpp(53): Throw in function const std::string& {anonymous}::GetAPICallbackName(bool, bool, uint32_t, const QuadDAnalysis::MoreInjection&)\nDynamic exception type: boost::wrapexcept<QuadDCommon::InvalidArgumentException>\nstd::exception::what: InvalidArgumentException\n[QuadDCommon::tag_message*] = Unknown runtime API function index: 536\n"
+      }
+    }
+  }
+}
+Status: TargetProfilingFailed
+Props {
+  Items {
+    Type: DeviceId
+    Value: "Local (CLI)"
+  }
+}
+Error {
+  Type: RuntimeError
+  SubError {
+    Type: ProcessEventsError
+    Props {
+      Items {
+        Type: ErrorText
+        Value: "/dvs/p4/build/sw/devtools/Agora/Rel/QuadD_Main/QuadD/Host/Analysis/Modules/TraceProcessEvent.cpp(53): Throw in function const std::string& {anonymous}::GetAPICallbackName(bool, bool, uint32_t, const QuadDAnalysis::MoreInjection&)\nDynamic exception type: boost::wrapexcept<QuadDCommon::InvalidArgumentException>\nstd::exception::what: InvalidArgumentException\n[QuadDCommon::tag_message*] = Unknown runtime API function index: 536\n"
+      }
+    }
+  }
+}
+
+
+**** Errors occurred while processing the raw events. ****
+**** Please see the Diagnostics Summary page after opening the report file in GUI. ****
+profiled sweep: 5.026 s
+Generated:
+	/leonardo_scratch/large/userexternal/rpanades/tmp/nsight/sweep_chi512_k4.qdstrm
+	/leonardo_scratch/large/userexternal/rpanades/tmp/nsight/sweep_chi512_k4.nsys-rep
+saturated after 1 sweeps of 1 steps
+profiled ade,ahj,dfhi,egij->afg [(512, 2, 512), (512, 2, 1), (2, 2, 2, 2), (512, 512, 2, 1)]
+profiled ade,dfhi,egij,bfg->bhja [(512, 2, 512), (2, 2, 2, 2), (512, 512, 2, 1), (512, 2, 512)]
+profiled cbhj,dfhi,egij,bfg->cde [(512, 512, 2, 1), (2, 2, 2, 2), (512, 512, 2, 1), (512, 2, 512)]
+Traceback (most recent call last):
+  File "/leonardo_work/ALQ_prod2526/rpanades/src-method/.venv/lib/python3.14/site-packages/cupy/__init__.py", line 18, in <module>
+    from cupy import _core  # NOQA
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo_work/ALQ_prod2526/rpanades/src-method/.venv/lib/python3.14/site-packages/cupy/_core/__init__.py", line 5, in <module>
+    from cupy._core import core  # NOQA
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ImportError: cannot import name 'core' from partially initialized module 'cupy._core' (most likely due to a circular import) (/leonardo_work/ALQ_prod2526/rpanades/src-method/.venv/lib/python3.14/site-packages/cupy/_core/__init__.py)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/leonardo_work/ALQ_prod2526/rpanades/src-method/benches/stack/roofline/one_sweep.py", line 20, in <module>
+    import cupy as cp
+  File "/leonardo_work/ALQ_prod2526/rpanades/src-method/.venv/lib/python3.14/site-packages/cupy/__init__.py", line 20, in <module>
+        raise ImportError(f'''
+    ...<6 lines>...
+    ''') from exc
+ImportError: 
+================================================================
+Failed to import CuPy.
+
+If you installed CuPy via wheels (cupy-cudaXXX or cupy-rocm-X-X), make sure that the package matches with the version of CUDA or ROCm installed.
+
+On Linux, you may need to set LD_LIBRARY_PATH environment variable depending on how you installed CUDA/ROCm.
+On Windows, try setting CUDA_PATH environment variable.
+
+Check the Installation Guide for details:
+  https://docs.cupy.dev/en/latest/install.html
+
+Original error:
+  ImportError: cannot import name 'core' from partially initialized module 'cupy._core' (most likely due to a circular import) (/leonardo_work/ALQ_prod2526/rpanades/src-method/.venv/lib/python3.14/site-packages/cupy/_core/__init__.py)
+================================================================
+
+ncu k=4 failed with status 1

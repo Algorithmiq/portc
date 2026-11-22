@@ -1,0 +1,22 @@
+{
+  "device": "NVIDIA A100-SXM-64GB",
+  "cuda_runtime": 13020,
+  "cuda_driver": 13040,
+  "reps": 5,
+  "zgemm": {
+    "n": 8192,
+    "seconds": 0.20752691650390626,
+    "flops": 4398046511104
+  },
+  "zgemm_tflops": 21.19265580193409,
+  "hbm_copy_gbs": 1406.3905995269452,
+  "hbm_triad_gbs": 1453.5784468261854,
+  "hbm_bytes_per_array": 4000000000,
+  "pcie_h2d_pinned_gbs": 24.753939335592065,
+  "pcie_d2h_pinned_gbs": 25.951299064854283,
+  "pcie_h2d_pageable_gbs": 10.661643805148053,
+  "pcie_d2h_pageable_gbs": 10.459137409691785,
+  "pcie_d2h_get_new_gbs": 2.0894635779867685,
+  "pcie_bytes": 1000000000,
+  "ridge_flop_per_byte": 15.068826405027503
+}

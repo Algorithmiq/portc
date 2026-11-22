@@ -1,0 +1,17 @@
+job 65155361 on lrdn1515.leonardo.local, stage quimb, commit 44855882bf096a4abe256965659e09f95adf262e
+name, driver_version, memory.total [MiB]
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
+NVIDIA A100-SXM-64GB, 535.274.02, 65536 MiB
++ benches/stack/bench_depth.py evolve --n-sites 50 --chis 64 --quimb-max-chi 64 --output benches/stack/roofline/quench_quimb.md
+reference: chi=1024, 143.3 s, <Z>=0.667890
+done: {'n_sites': 50, 'chi': 64, 'method': 'src gpu k=1', 'seconds': 10.678244421258569, 'infidelity': 0.061554403950953795, 'z_error': 0.013416889091476314}
+done: {'n_sites': 50, 'chi': 64, 'method': 'src gpu k=2', 'seconds': 6.256497608497739, 'infidelity': 0.06207873278862808, 'z_error': 0.012000585370862793}
+done: {'n_sites': 50, 'chi': 64, 'method': 'src gpu k=4', 'seconds': 4.94568551145494, 'infidelity': 0.06313201831238302, 'z_error': 0.013466906151153868}
+done: {'n_sites': 50, 'chi': 64, 'method': 'quimb cpu', 'seconds': 739.1273810323328, 'infidelity': 0.036828963286207106, 'z_error': 0.004079586034434812}
+result: {'n_sites': 50, 'chi': 64, 'method': 'src gpu k=1', 'seconds': 10.678244421258569, 'infidelity': 0.061554403950953795, 'z_error': 0.013416889091476314}
+result: {'n_sites': 50, 'chi': 64, 'method': 'src gpu k=2', 'seconds': 6.256497608497739, 'infidelity': 0.06207873278862808, 'z_error': 0.012000585370862793}
+result: {'n_sites': 50, 'chi': 64, 'method': 'src gpu k=4', 'seconds': 4.94568551145494, 'infidelity': 0.06313201831238302, 'z_error': 0.013466906151153868}
+result: {'n_sites': 50, 'chi': 64, 'method': 'quimb cpu', 'seconds': 739.1273810323328, 'infidelity': 0.036828963286207106, 'z_error': 0.004079586034434812}
+elapsed 995.91 s
