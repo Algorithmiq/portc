@@ -1,7 +1,7 @@
 # Handoff: SRC strong scaling on Jupiter GH200 (paper Fig. 4)
 
-Status 2026-11-23: complex64 and complex128 runs done; the figure proposal is outside
-the repo, the paper is not edited.
+Status 2026-11-18: complex64 runs done. The complex128 runs (2026-11-20 to 23) have their
+own handoff, `HANDOFF-c128.md`, and results, `results-c128.json`.
 Numbers below come from `results.json` in this folder. That file is built from
 `raw/`, `logs/`, `node/` and `env.json`, copied back from Jupiter.
 
@@ -29,9 +29,8 @@ unchanged. Commits:
 | `1ef4de6` | Same `.git` fix in `make_env.py` |
 | `6d1ddc1` | Start and end timestamps of each command in the Slurm output |
 | `fab79fe` | Step 4 walltime raised to 4 h; `REPS` and `TRACES` select repetitions and traces |
-| `1cab278` | `DT=c128` runs the pipeline on complex128 stacks |
-| `24a9510` | `STAGE=0` memory-maps the stacks from `/e/project1` instead of `/dev/shm` |
-| `9ce1e3b`-`ed24168` | complex128 memory fixes, see "complex128" below |
+
+Later commits are for complex128; see `HANDOFF-c128.md`.
 
 Commits from `0d19187` on are unsigned; they were pushed unsigned on request.
 
@@ -135,51 +134,6 @@ m4000 and 6.6-8.5e-5 at m1000. The paper reports about 2.0e-4 on RTX.
 `measured.m4000_partial_r2_excluded` holds one G = 1 record (1127.5 s) from the job that
 hit its time limit. It is excluded from the medians.
 
-## complex128 (`results.json` → `complex128`)
-
-Ramon asked for complex128 on the FP64 tensor cores: cuBLAS ZGEMM uses DMMA by default,
-nothing to switch on. Same sizes, seed and TF32 setting as above. Job 3073006
-(`G4_GPU_MEMORY=60GB G4_HOST_MEMORY=520GB DT=c128 STAGE=0 sbatch step4.sbatch`), commit
-`ed24168`; stacks, probe and 1-GPU trace from jobs 3024984-3024986 at `1cab278`.
-
-**Memory on GH200.** Each GPU's HBM is also a host NUMA node, and `MemAvailable` counts it.
-Host pages, page cache included, fill the CPU memory (about 487 GB) and then spill into
-HBM. complex128 m4000 plans a 496 GB host peak, so it depends on that spill:
-
-- At G = 1 and 2 the idle GPUs take it. At G = 4 no GPU is idle, and the spill plus
-  page cache left over by earlier runs pushed the sweep out of GPU memory (MemoryError,
-  device OOM, `CUSOLVER_STATUS_INTERNAL_ERROR`; jobs 3028888-3072405, logs on Jupiter
-  only).
-- Fixes, all runs: one process per run; CuPy pools freed and the page cache of the stacks
-  and scratch files evicted at each start (`bench_large.py` `_release`); stacks
-  memory-mapped from `/e/project1` (`STAGE=0`).
-- Fixes, m4000 G = 4 only (`step4.sbatch` `budget`): `--gpu-memory 60GB`; `--reserve`
-  takes that budget plus margin (70.2 GB) per GPU before the timer starts; and
-  `--host-memory 520GB`, because the reserved HBM no longer counts as available and the
-  default budget spilled 8.2 GB to disk.
-
-**Times** exclude stack reads: wall time minus the largest per-rank site stall.
-Environment stalls stay in. Disk tier 0 in every run.
-
-**m4000**, medians of r1 and r2 (`measured.m4000`):
-
-| G | Wall r1 / r2 (s) | Max site stall r1 / r2 (s) | Median minus stall (s) | Speed-up | Efficiency | Predicted `T_G` (s) | Predicted efficiency | QR distance r1 / r2 |
-|---|---|---|---|---|---|---|---|---|
-| 1 | 1356.1 / 1357.6 | 0.0 / 0.0 | 1356.8 | 1.00 | 100% | 1395.9 (traced T1) | -- | -- |
-| 2 | 707.9 / 709.9 | 0.0 / 0.1 | 708.9 | 1.91 | 95.7% | 702.6 | 99.3% | 6.0e-13 / 4.1e-13 |
-| 4 | 384.1 / 387.1 | 8.4 / 15.5 | 373.7 | 3.63 | 90.8% | 354.7 | 98.4% | 7.5e-13 / 7.5e-13 |
-
-- Prediction against the measured medians: 0.9% low at G = 2, 5.1% low at G = 4.
-- G = 4 site stalls: with the GPU memory reserved, the stack pages no longer fit in
-  memory and are re-read from `/e/project1`.
-- G = 4 environment stall per GPU is 219-235 s, 1.17-1.25x the G = 1 stall over 4; at
-  G = 2 it is 0.83-0.90x over 2. Consistent with the 60 GB cap (plan peak 59.6 GB), not
-  measured.
-
-**m1000** (`measured.m1000`), medians minus site stall: 23.7, 12.6 and 7.7 s; efficiencies
-94.2% and 77.2%. Site stalls are 13-21 s of the 37-45 s G = 1 wall time, so these runs
-mostly measure `/e/project1` reads. QR distances 3.9e-13.
-
 ## Open items
 
 1. **Figure 4.** Add the GH200 measured and predicted curves, plus one sentence: the RTX
@@ -191,7 +145,5 @@ mostly measure `/e/project1` reads. QR distances 3.9e-13.
 3. **About 37 min of each m4000 scaling command is spent outside the timed runs**
    (71 min of wall time against 34.5 min of runs). Probably the output comparisons on
    the CPU; not checked. It may also be what hung job 2978570.
-4. **complex128 G = 4 ran with a 60 GB GPU budget** (G = 1, 2: about 90 GB). Its cost is
-   not measured; G = 1 and 2 with the same `--gpu-memory 60GB --reserve --host-memory
-   520GB` would give a like-for-like curve.
+4. **complex128:** done, see `HANDOFF-c128.md`.
 5. `logs/` is not committed (git-ignored); `raw/` is.

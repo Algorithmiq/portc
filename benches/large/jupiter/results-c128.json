@@ -1,0 +1,715 @@
+{
+ "description": "complex128 strong scaling of the 50-site SRC synthetic benchmark (paper Fig. 4 setup) on one Jupiter GH200 node, FP64 tensor cores, with the performance-model prediction. Companion of HANDOFF-c128.md; complex64 results are in results.json.",
+ "provenance": {
+  "machine": "JUPITER Booster (JSC), 1 node, 4x GH200 120GB, NVLink NV6 between every pair",
+  "account": "e-dev-2026d11-370",
+  "branch": "bench/jupiter-gh200 (github.com/Algorithmiq/portc)",
+  "code": "portc main 6d39db3, src/ unchanged; benches/large changes only",
+  "versions": {
+   "portc": "0.6.1.dev1+g6d39db353",
+   "git": "1ef4de668e99885071c695ab4dd6fafd94bd05f8",
+   "cupy": "14.2.0",
+   "numpy": "2.4.4",
+   "opt_einsum": "3.4.0",
+   "python": "3.14.10",
+   "cuda_runtime": 13020,
+   "cuda_driver_api": 13030,
+   "driver": "610.57.04 [Deprecated; will be removed in CUDA 14.0. Use KMD Version instead]",
+   "nvcc": "Build cuda_13.0.r13.0/compiler.36260728_0"
+  },
+  "precision": "complex128; cuBLAS ZGEMM uses the FP64 tensor cores (DMMA) by default. CUPY_TF32=0, NVIDIA_TF32_OVERRIDE=0 (no effect on FP64).",
+  "stacks": "bench_large.py generate --dtype complex128, seed 0 (job 3024984); memory-mapped from /e/project1 (STAGE=0), not copied to /dev/shm",
+  "jobs": {
+   "generate": 3024984,
+   "probe": 3024985,
+   "trace_g1_and_prediction": 3024986,
+   "step4_both_sizes_and_traces_g2_g4": 3073006,
+   "g4_full_memory": 3077865,
+   "g1_g2_60GB": 3077925
+  }
+ },
+ "timing_rule": "Reported time = wall time minus the largest per-rank site stall (time waiting for stack reads from the file system). Environment stalls (host-to-device transfers) are kept. Every run has disk tier 0. Raw wall times are kept alongside.",
+ "sizes": {
+  "m4000": {
+   "n_sites": 50,
+   "bond": 4,
+   "bond_m": 4000,
+   "chi_out": 2000,
+   "qr_path_G_gt_1": "distributed CholeskyQR"
+  },
+  "m1000": {
+   "n_sites": 50,
+   "bond": 4,
+   "bond_m": 1000,
+   "chi_out": 500,
+   "qr_path_G_gt_1": "gather + Householder QR on rank 0 + scatter"
+  }
+ },
+ "probe": {
+  "allgather_gbs": {
+   "2": 132.0473340570115,
+   "4": 132.31699233761714
+  },
+  "gather_gbs": {
+   "2": 132.87152560550473,
+   "4": 133.02895149648515
+  },
+  "scatter_gbs": {
+   "2": 132.85569145124185,
+   "4": 132.51880176111578
+  },
+  "alltoall_gbs": {
+   "2": 131.30055785583792,
+   "4": 129.9782307553331
+  },
+  "h2d_gbs": {
+   "alone": [
+    418.43048292688945,
+    88.82220902608958,
+    88.83578089881878,
+    88.84228434696404
+   ],
+   "together": {
+    "2": {
+     "per_gpu": 88.82258765676715,
+     "aggregate": 177.6451753135343
+    },
+    "4": {
+     "per_gpu": 87.10945942386019,
+     "aggregate": 348.43783769544075
+    }
+   }
+  },
+  "matmul": {
+   "relative_error_complex64": 1.619963972877422e-06,
+   "eps_complex64": 1.1920928955078125e-07,
+   "tflops": {
+    "complex64": 55.868447881653985,
+    "complex128": 64.59012501693023
+   },
+   "CUPY_TF32": "0",
+   "NVIDIA_TF32_OVERRIDE": "0"
+  },
+  "cholesky_qr": {
+   "rows": 32000,
+   "n": 2000,
+   "dtype": "complex128",
+   "G": {
+    "1": {
+     "seconds": 0.11306819098535925,
+     "grams": 2
+    },
+    "2": {
+     "seconds": 0.058949617901816964,
+     "grams": 2
+    },
+    "4": {
+     "seconds": 0.0322450939565897,
+     "grams": 2
+    }
+   }
+  }
+ },
+ "prediction_m4000": {
+  "note": "predict.py from the traced 1-GPU run (job 3024986) and the probe, written before any multi-GPU run. Efficiencies are relative to the traced T1.",
+  "T1_traced_seconds": 1395.942852644017,
+  "G": {
+   "2": {
+    "T_G": 702.605597072663,
+    "speedup": 1.9868086141927637,
+    "efficiency": 0.9934043070963818
+   },
+   "4": {
+    "T_G": 354.65903415847447,
+    "speedup": 3.9360137997225224,
+    "efficiency": 0.9840034499306306
+   }
+  }
+ },
+ "m4000": {
+  "full_gpu_memory": {
+   "note": "Each G at the full GPU memory the run fits in: planner default at G = 1, 2 (~90 GB); 90 GB with --reserve at G = 4.",
+   "G": {
+    "1": {
+     "median_seconds_minus_site_stall": 1356.8399861794207,
+     "speedup": 1.0,
+     "efficiency": 1.0,
+     "median_seconds": 1356.8409861794207,
+     "efficiency_raw_wall": 1.0,
+     "runs": [
+      {
+       "log": "logs/step4-m4000-r1-g1-c128.log",
+       "job": 3073006,
+       "commit": "ed24168",
+       "gpu_budget": "planner default",
+       "seconds": 1356.0987701858394,
+       "max_site_stall": 0.001,
+       "seconds_minus_site_stall": 1356.0977701858394,
+       "max_environment_stall": 750.487,
+       "planned_device_peak": 89497628672,
+       "planned_host_peak": 496378404864,
+       "host_peak": 491828281344,
+       "disk_bytes": 0,
+       "tiers": {
+        "device": 1,
+        "host": 49,
+        "disk": 0
+       },
+       "sketch_batches": [
+        352,
+        1984
+       ]
+      },
+      {
+       "log": "logs/step4-m4000-r2-g1-c128.log",
+       "job": 3073006,
+       "commit": "ed24168",
+       "gpu_budget": "planner default",
+       "seconds": 1357.583202173002,
+       "max_site_stall": 0.001,
+       "seconds_minus_site_stall": 1357.582202173002,
+       "max_environment_stall": 749.334,
+       "planned_device_peak": 89497628672,
+       "planned_host_peak": 496378404864,
+       "host_peak": 488053407744,
+       "disk_bytes": 0,
+       "tiers": {
+        "device": 1,
+        "host": 49,
+        "disk": 0
+       },
+       "sketch_batches": [
+        352,
+        1984
+       ]
+      }
+     ]
+    },
+    "2": {
+     "median_seconds_minus_site_stall": 708.849352535992,
+     "speedup": 1.9141443542625325,
+     "efficiency": 0.9570721771312662,
+     "median_seconds": 708.8768525359919,
+     "efficiency_raw_wall": 0.9570357540420108,
+     "runs": [
+      {
+       "log": "logs/step4-m4000-r1-g2-c128.log",
+       "job": 3073006,
+       "commit": "ed24168",
+       "gpu_budget": "planner default",
+       "seconds": 707.8909003590234,
+       "max_site_stall": 0.001,
+       "seconds_minus_site_stall": 707.8899003590234,
+       "max_environment_stall": 324.376,
+       "planned_device_peak": 91033634816,
+       "planned_host_peak": 496378404864,
+       "host_peak": 641653014528,
+       "disk_bytes": 0,
+       "tiers": {
+        "device": 1,
+        "host": 49,
+        "disk": 0
+       },
+       "sketch_batches": [
+        352,
+        992
+       ],
+       "qr_distance_to_g1": 5.985074413053421e-13
+      },
+      {
+       "log": "logs/step4-m4000-r2-g2-c128.log",
+       "job": 3073006,
+       "commit": "ed24168",
+       "gpu_budget": "planner default",
+       "seconds": 709.8628047129605,
+       "max_site_stall": 0.054,
+       "seconds_minus_site_stall": 709.8088047129605,
+       "max_environment_stall": 336.05,
+       "planned_device_peak": 91033634816,
+       "planned_host_peak": 496378404864,
+       "host_peak": 641653014528,
+       "disk_bytes": 0,
+       "tiers": {
+        "device": 1,
+        "host": 49,
+        "disk": 0
+       },
+       "sketch_batches": [
+        352,
+        992
+       ],
+       "qr_distance_to_g1": 4.1378759909570204e-13
+      }
+     ]
+    },
+    "4": {
+     "median_seconds_minus_site_stall": 338.4203774315426,
+     "speedup": 4.009332997253953,
+     "efficiency": 1.0023332493134882,
+     "median_seconds": 429.9458774315426,
+     "efficiency_raw_wall": 0.7889603421046067,
+     "runs": [
+      {
+       "log": "logs/g4budget-m4000-90gb-r1-c128.log",
+       "job": 3077865,
+       "commit": "ac3e463",
+       "gpu_budget": "90GB, --reserve, --host-memory 520GB",
+       "seconds": 458.14898270508274,
+       "max_site_stall": 120.494,
+       "seconds_minus_site_stall": 337.6549827050827,
+       "max_environment_stall": 58.206,
+       "planned_device_peak": 89753631744,
+       "planned_host_peak": 495329828864,
+       "host_peak": 499680018432,
+       "disk_bytes": 0,
+       "tiers": {
+        "device": 1,
+        "host": 49,
+        "disk": 0
+       },
+       "sketch_batches": [
+        352,
+        480
+       ]
+      },
+      {
+       "log": "logs/g4budget-m4000-90gb-r2-c128.log",
+       "job": 3077865,
+       "commit": "bf59ccc",
+       "gpu_budget": "90GB, --reserve, --host-memory 520GB",
+       "seconds": 401.7427721580025,
+       "max_site_stall": 62.557,
+       "seconds_minus_site_stall": 339.18577215800246,
+       "max_environment_stall": 78.213,
+       "planned_device_peak": 89753631744,
+       "planned_host_peak": 495329828864,
+       "host_peak": 497566089216,
+       "disk_bytes": 0,
+       "tiers": {
+        "device": 1,
+        "host": 49,
+        "disk": 0
+       },
+       "sketch_batches": [
+        352,
+        480
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "gpu_budget_60GB": {
+   "note": "Every G with the same 60 GB GPU budget, --reserve and 520 GB host budget. G = 1 and 2 have one run each: job 3077925 was cancelled during the second G = 1 run.",
+   "G": {
+    "1": {
+     "median_seconds_minus_site_stall": 1405.3375083690053,
+     "speedup": 1.0,
+     "efficiency": 1.0,
+     "median_seconds": 1413.0385083690053,
+     "efficiency_raw_wall": 1.0,
+     "runs": [
+      {
+       "log": "logs/capped-m4000-60GB-r1-g1-c128.log",
+       "job": 3077925,
+       "commit": "bf59ccc",
+       "gpu_budget": "60GB, --reserve, --host-memory 520GB",
+       "seconds": 1413.0385083690053,
+       "max_site_stall": 7.701,
+       "seconds_minus_site_stall": 1405.3375083690053,
+       "max_environment_stall": 935.207,
+       "planned_device_peak": 57139228672,
+       "planned_host_peak": 496378404864,
+       "host_peak": 481220886528,
+       "disk_bytes": 0,
+       "tiers": {
+        "device": 1,
+        "host": 49,
+        "disk": 0
+       },
+       "sketch_batches": [
+        192,
+        1984
+       ]
+      }
+     ]
+    },
+    "2": {
+     "median_seconds_minus_site_stall": 711.578691313997,
+     "speedup": 1.974957268287387,
+     "efficiency": 0.9874786341436935,
+     "median_seconds": 734.6526913139969,
+     "efficiency_raw_wall": 0.9617051193548684,
+     "runs": [
+      {
+       "log": "logs/capped-m4000-60GB-r1-g2-c128.log",
+       "job": 3077925,
+       "commit": "bf59ccc",
+       "gpu_budget": "60GB, --reserve, --host-memory 520GB",
+       "seconds": 734.6526913139969,
+       "max_site_stall": 23.074,
+       "seconds_minus_site_stall": 711.578691313997,
+       "max_environment_stall": 532.633,
+       "planned_device_peak": 58265634816,
+       "planned_host_peak": 496378404864,
+       "host_peak": 641728512000,
+       "disk_bytes": 0,
+       "tiers": {
+        "device": 1,
+        "host": 49,
+        "disk": 0
+       },
+       "sketch_batches": [
+        192,
+        992
+       ]
+      }
+     ]
+    },
+    "4": {
+     "median_seconds_minus_site_stall": 373.6729713860182,
+     "speedup": 3.760875460583524,
+     "efficiency": 0.940218865145881,
+     "median_seconds": 385.6084713860182,
+     "efficiency_raw_wall": 0.9161096119660098,
+     "runs": [
+      {
+       "log": "logs/step4-m4000-r1-g4-c128.log",
+       "job": 3073006,
+       "commit": "ed24168",
+       "gpu_budget": "60GB, --reserve, --host-memory 520GB",
+       "seconds": 384.1167952560354,
+       "max_site_stall": 8.375,
+       "seconds_minus_site_stall": 375.7417952560354,
+       "max_environment_stall": 234.759,
+       "planned_device_peak": 59607071744,
+       "planned_host_peak": 487137828864,
+       "host_peak": 572723822592,
+       "disk_bytes": 0,
+       "tiers": {
+        "device": 2,
+        "host": 48,
+        "disk": 0
+       },
+       "sketch_batches": [
+        192,
+        480
+       ],
+       "qr_distance_to_g1": 7.466099390062036e-13
+      },
+      {
+       "log": "logs/step4-m4000-r2-g4-c128.log",
+       "job": 3073006,
+       "commit": "ed24168",
+       "gpu_budget": "60GB, --reserve, --host-memory 520GB",
+       "seconds": 387.100147516001,
+       "max_site_stall": 15.496,
+       "seconds_minus_site_stall": 371.60414751600104,
+       "max_environment_stall": 227.429,
+       "planned_device_peak": 59607071744,
+       "planned_host_peak": 487137828864,
+       "host_peak": 573554294784,
+       "disk_bytes": 0,
+       "tiers": {
+        "device": 2,
+        "host": 48,
+        "disk": 0
+       },
+       "sketch_batches": [
+        192,
+        480
+       ],
+       "qr_distance_to_g1": 7.466099390062036e-13
+      }
+     ]
+    }
+   }
+  }
+ },
+ "m1000": {
+  "note": "Planner default budgets at every G.",
+  "G": {
+   "1": {
+    "median_seconds_minus_site_stall": 23.65410699099302,
+    "speedup": 1.0,
+    "efficiency": 1.0,
+    "median_seconds": 40.75410699099302,
+    "efficiency_raw_wall": 1.0,
+    "runs": [
+     {
+      "log": "logs/step4-m1000-r1-g1-c128.log",
+      "job": 3073006,
+      "commit": "ed24168",
+      "gpu_budget": "planner default",
+      "seconds": 37.01932227099314,
+      "max_site_stall": 13.216,
+      "seconds_minus_site_stall": 23.803322270993142,
+      "max_environment_stall": 0.0,
+      "planned_device_peak": 50342428672,
+      "planned_host_peak": 3904164864,
+      "host_peak": 16798187520,
+      "disk_bytes": 0,
+      "tiers": {
+       "device": 50,
+       "host": 0,
+       "disk": 0
+      },
+      "sketch_batches": [
+       480
+      ]
+     },
+     {
+      "log": "logs/step4-m1000-r2-g1-c128.log",
+      "job": 3073006,
+      "commit": "ed24168",
+      "gpu_budget": "planner default",
+      "seconds": 44.4888917109929,
+      "max_site_stall": 20.984,
+      "seconds_minus_site_stall": 23.5048917109929,
+      "max_environment_stall": 0.0,
+      "planned_device_peak": 50342428672,
+      "planned_host_peak": 3904164864,
+      "host_peak": 16873684992,
+      "disk_bytes": 0,
+      "tiers": {
+       "device": 50,
+       "host": 0,
+       "disk": 0
+      },
+      "sketch_batches": [
+       480
+      ]
+     }
+    ]
+   },
+   "2": {
+    "median_seconds_minus_site_stall": 12.551244814911858,
+    "speedup": 1.8846024708951656,
+    "efficiency": 0.9423012354475828,
+    "median_seconds": 17.072744814911857,
+    "efficiency_raw_wall": 1.1935429080916484,
+    "runs": [
+     {
+      "log": "logs/step4-m1000-r1-g2-c128.log",
+      "job": 3073006,
+      "commit": "ed24168",
+      "gpu_budget": "planner default",
+      "seconds": 16.313487418927252,
+      "max_site_stall": 3.861,
+      "seconds_minus_site_stall": 12.452487418927252,
+      "max_environment_stall": 0.0,
+      "planned_device_peak": 25022754816,
+      "planned_host_peak": 3904164864,
+      "host_peak": 16722690048,
+      "disk_bytes": 0,
+      "tiers": {
+       "device": 50,
+       "host": 0,
+       "disk": 0
+      },
+      "sketch_batches": [
+       224
+      ],
+      "qr_distance_to_g1": 3.872573083451108e-13
+     },
+     {
+      "log": "logs/step4-m1000-r2-g2-c128.log",
+      "job": 3073006,
+      "commit": "ed24168",
+      "gpu_budget": "planner default",
+      "seconds": 17.832002210896462,
+      "max_site_stall": 5.182,
+      "seconds_minus_site_stall": 12.650002210896462,
+      "max_environment_stall": 0.0,
+      "planned_device_peak": 25022754816,
+      "planned_host_peak": 3904164864,
+      "host_peak": 16760438784,
+      "disk_bytes": 0,
+      "tiers": {
+       "device": 50,
+       "host": 0,
+       "disk": 0
+      },
+      "sketch_batches": [
+       224
+      ],
+      "qr_distance_to_g1": 3.872573083451108e-13
+     }
+    ]
+   },
+   "4": {
+    "median_seconds_minus_site_stall": 7.656717055610381,
+    "speedup": 3.089327556339661,
+    "efficiency": 0.7723318890849152,
+    "median_seconds": 11.462217055610381,
+    "efficiency_raw_wall": 0.888879236740793,
+    "runs": [
+     {
+      "log": "logs/step4-m1000-r1-g4-c128.log",
+      "job": 3073006,
+      "commit": "ed24168",
+      "gpu_budget": "planner default",
+      "seconds": 11.166686763055623,
+      "max_site_stall": 3.542,
+      "seconds_minus_site_stall": 7.624686763055623,
+      "max_environment_stall": 0.0,
+      "planned_device_peak": 12234911744,
+      "planned_host_peak": 3904164864,
+      "host_peak": 16684941312,
+      "disk_bytes": 0,
+      "tiers": {
+       "device": 50,
+       "host": 0,
+       "disk": 0
+      },
+      "sketch_batches": [
+       96
+      ],
+      "qr_distance_to_g1": 3.885745180532593e-13
+     },
+     {
+      "log": "logs/step4-m1000-r2-g4-c128.log",
+      "job": 3073006,
+      "commit": "ed24168",
+      "gpu_budget": "planner default",
+      "seconds": 11.75774734816514,
+      "max_site_stall": 4.069,
+      "seconds_minus_site_stall": 7.68874734816514,
+      "max_environment_stall": 0.0,
+      "planned_device_peak": 12234911744,
+      "planned_host_peak": 3904164864,
+      "host_peak": 16760438784,
+      "disk_bytes": 0,
+      "tiers": {
+       "device": 50,
+       "host": 0,
+       "disk": 0
+      },
+      "sketch_batches": [
+       96
+      ],
+      "qr_distance_to_g1": 3.885745180532593e-13
+     }
+    ]
+   }
+  }
+ },
+ "traces_m4000": {
+  "1": {
+   "file": "raw/trace_g1_m4000-c128.json",
+   "gpu_budget_planned_device_peak": 89497628672,
+   "run_seconds": 1395.942852644017,
+   "rank0_right_to_left_seconds": {
+    "allgather_s": 0.0,
+    "first": 0.017,
+    "gather": 0.0,
+    "project": 494.551,
+    "qr": 6.626,
+    "scatter": 0.0,
+    "sketch": 499.618,
+    "span": 1012.333
+   },
+   "rank0_right_to_left_flops": 3.706415590749952e+16
+  },
+  "2": {
+   "file": "raw/trace_g2_m4000-c128.json",
+   "gpu_budget_planned_device_peak": 91033634816,
+   "run_seconds": 813.7387818160933,
+   "rank0_right_to_left_seconds": {
+    "allgather_cores": 1.187,
+    "allgather_gram": 0.212,
+    "allgather_s": 3.703,
+    "alltoall": 5.104,
+    "cholesky_qr": 4.445,
+    "first": 0.016,
+    "gather": 0.163,
+    "project": 244.581,
+    "qr": 0.836,
+    "scatter": 0.008,
+    "sketch": 243.593,
+    "span": 621.501
+   },
+   "rank0_right_to_left_flops": 1.8467644285888e+16
+  },
+  "4": {
+   "file": "raw/trace_g4_m4000-c128.json",
+   "gpu_budget_planned_device_peak": 59607071744,
+   "run_seconds": 388.75715090706944,
+   "rank0_right_to_left_seconds": {
+    "allgather_cores": 1.188,
+    "allgather_gram": 0.395,
+    "allgather_s": 6.42,
+    "alltoall": 6.837,
+    "cholesky_qr": 3.322,
+    "first": 0.016,
+    "gather": 0.019,
+    "project": 122.947,
+    "qr": 0.741,
+    "scatter": 0.006,
+    "sketch": 124.288,
+    "span": 273.373
+   },
+   "rank0_right_to_left_flops": 9266220274804224.0
+  }
+ },
+ "paper_csv_strong_scaling_gh200_c128": {
+  "columns": "gpus,seconds,pred_seconds,efficiency,pred_efficiency",
+  "full_gpu_memory": [
+   [
+    1,
+    1356.84,
+    1395.94,
+    100.0,
+    100.0
+   ],
+   [
+    2,
+    708.85,
+    702.61,
+    95.71,
+    99.34
+   ],
+   [
+    4,
+    338.42,
+    354.66,
+    100.23,
+    98.4
+   ]
+  ],
+  "gpu_budget_60GB": [
+   [
+    1,
+    1405.34,
+    1395.94,
+    100.0,
+    100.0
+   ],
+   [
+    2,
+    711.58,
+    702.61,
+    98.75,
+    99.34
+   ],
+   [
+    4,
+    373.67,
+    354.66,
+    94.02,
+    98.4
+   ]
+  ]
+ },
+ "failed_attempts_m4000": {
+  "jobs": [
+   3028888,
+   3035084,
+   3037856,
+   3070431,
+   3072127,
+   3072405
+  ],
+  "cause": "Host pages, page cache included, overflow the CPU memory into GPU memory (each GH200's HBM is a host NUMA node). With every GPU busy at G = 4 the sweep ran out of GPU memory (MemoryError, device OOM, CUSOLVER_STATUS_INTERNAL_ERROR). Logs on Jupiter only."
+ }
+}
