@@ -22,10 +22,12 @@ fi
 B="uv run python benches/large/bench_large.py --debug"
 # G4_GPU_MEMORY caps the GPU budget of the m4000 runs on 4 GPUs and takes that memory
 # before the sweep. complex128 m4000 overflows the CPU memory into GPU memory, and with
-# every GPU busy that overflow has to fit beside the sweep.
+# every GPU busy that overflow has to fit beside the sweep. G4_HOST_MEMORY sets their
+# host budget: the reserved GPU memory no longer counts as available host memory.
 budget() {
-  if [ "$1" = 4000 ] && [ "$2" = 4 ] && [ -n "${G4_GPU_MEMORY:-}" ]; then
-    echo "--gpu-memory $G4_GPU_MEMORY --reserve"
+  if [ "$1" = 4000 ] && [ "$2" = 4 ]; then
+    [ -z "${G4_GPU_MEMORY:-}" ] || echo "--gpu-memory $G4_GPU_MEMORY --reserve"
+    [ -z "${G4_HOST_MEMORY:-}" ] || echo "--host-memory $G4_HOST_MEMORY"
   fi
 }
 for rep in ${REPS:-1 2}; do
