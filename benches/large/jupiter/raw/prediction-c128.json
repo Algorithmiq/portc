@@ -1,0 +1,52 @@
+{
+ "T1": 1395.942852644017,
+ "passes_1": {
+  "left_to_right": 376.02083251953127,
+  "right_to_left": 1012.3327080078125
+ },
+ "qr_total": 6.625535040855408,
+ "qr_per_site": 0.13521500083378385,
+ "upload_1": 0.959321131233492,
+ "rtl_per_site": 20.659851183832906,
+ "rtl_tflops_kernels": 37.28154138422809,
+ "rtl_tflops_span": 36.61262311719507,
+ "ltr_tflops_kernels": 36.985195797498896,
+ "rtl_flops": 3.706415590749952e+16,
+ "ltr_flops": 1.2734376026693632e+16,
+ "payload_gb": {
+  "gather_M_total": 1.024,
+  "scatter_Gamma_total": 1.024,
+  "S_total": 8.192,
+  "cores_K": 4.096012288
+ },
+ "G": {
+  "2": {
+   "per_site_ms": {
+    "alltoall_and_cholesky_qr": 63.81841757334769,
+    "allgather_S": 31.01917982101441,
+    "cores_per_pass": 38.56690371811384
+   },
+   "distributed_qr": true,
+   "qr_and_its_comm_s": 3.127102461094037,
+   "comm_s": 1.519939811229706,
+   "upload_s": 3.7795565643751563,
+   "T_G": 702.605597072663,
+   "speedup": 1.9868086141927637,
+   "efficiency": 0.9934043070963818
+  },
+  "4": {
+   "per_site_ms": {
+    "alltoall_and_cholesky_qr": 38.10155642032623,
+    "allgather_S": 46.43394541740417,
+    "cores_per_pass": 34.972402555547625
+   },
+   "distributed_qr": true,
+   "qr_and_its_comm_s": 1.8669762645959855,
+   "comm_s": 2.2752633254528045,
+   "upload_s": 3.427295450443667,
+   "T_G": 354.65903415847447,
+   "speedup": 3.9360137997225224,
+   "efficiency": 0.9840034499306306
+  }
+ }
+}
