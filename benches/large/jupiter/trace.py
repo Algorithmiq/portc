@@ -209,6 +209,9 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     logging.getLogger("portc").setLevel(logging.DEBUG)
     _install()
+    scratch = [] if args.scratch_dir is None else [args.scratch_dir]
+    bench_large._release([args.directory, *scratch], "gpu")
+    bench_large._log_free("gpu")
     resources = Resources(
         args.gpu_memory, args.host_memory, args.scratch_dir, devices=args.devices
     )

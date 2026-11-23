@@ -235,8 +235,8 @@ def _release(directories: list[Path], device: str) -> None:
     """Return the memory a run leaves behind, so the next run starts on a clean node.
 
     On the GH200 the GPU memory is also a host NUMA node, so host pages left over
-    from a run, including the page cache of the memory-mapped files, take memory
-    from the GPUs of the next one.
+    from a run, including the page cache of the files in ``directories``, take
+    memory from the GPUs of the next one, also when that run is a new process.
     """
     gc.collect()
     if device == "gpu":
@@ -247,9 +247,10 @@ def _release(directories: list[Path], device: str) -> None:
                 cupy.get_default_memory_pool().free_all_blocks()
         cupy.get_default_pinned_memory_pool().free_all_blocks()
     ctypes.CDLL("libc.so.6").malloc_trim(0)
-    for path in (p for d in directories for p in d.rglob("*.npy")):
+    for path in (p for d in directories for p in d.rglob("*") if p.is_file()):
         fd = os.open(path, os.O_RDONLY)
         try:
+            os.fdatasync(fd)  # only clean pages are dropped
             os.posix_fadvise(fd, 0, 0, os.POSIX_FADV_DONTNEED)
         finally:
             os.close(fd)
@@ -307,6 +308,8 @@ def run(
         reserve: Take the GPU memory before the sweep starts; see `_reserved`.
             Needs ``gpu_memory``.
     """
+    _release([directory] if scratch_dir is None else [directory, scratch_dir], "gpu")
+    _log_free("gpu")
     resources = Resources(gpu_memory, host_memory, scratch_dir, devices=devices)
     out, _, record = _run(directory, chi_out, resources, seed, reserve=reserve)
     _append(results, {"gpus": devices, "seed": seed, **record})
