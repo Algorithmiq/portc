@@ -26,16 +26,21 @@ import os
 import re
 import resource
 import tempfile
+from contextlib import contextmanager, nullcontext
 from pathlib import Path
 from time import perf_counter
-from typing import Annotated, Literal
+from typing import TYPE_CHECKING, Annotated, Literal
 
 import cyclopts
 import numpy as np
 
 import portc._sweep as sweep_module
 from portc import Resources, src
-from portc._plan import make_plan
+from portc._group import DeviceGroup
+from portc._plan import GPU_MARGIN_FRACTION, GPU_MARGIN_MIN, make_plan, parse_size
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Iterator
 
 logger = logging.getLogger(__name__)
 app = cyclopts.App(help="Benchmark out-of-core SRC of N.V.M.U with a large M.")
@@ -109,12 +114,55 @@ def _load(directory: Path) -> list[list[np.ndarray]]:
     ]
 
 
+@contextmanager
+def _reserved(resources: Resources) -> Iterator[None]:
+    """Take the GPU memory of the sweep before host pages can.
+
+    On the GH200 the GPU memory is also a host NUMA node, and host pages that overflow
+    the CPU memory land there during the sweep. Each device's pool is grown to the
+    sweep's cap, the margin of `portc._plan.resolve_budgets` included, and each device
+    thread creates its cuBLAS and cuSOLVER handles when it starts, so neither needs
+    new GPU memory later.
+    """
+    import cupy  # noqa: PLC0415  (optional dependency)
+
+    if resources.gpu_memory is None:
+        msg = "Reserving needs an explicit GPU budget."
+        raise ValueError(msg)
+    devices = resources.devices or 1
+    for gpu in range(devices) if isinstance(devices, int) else devices:
+        with cupy.cuda.Device(gpu):
+            total = cupy.cuda.runtime.memGetInfo()[1]
+            margin = max(int(GPU_MARGIN_FRACTION * total), GPU_MARGIN_MIN)
+            # Freed blocks stay in the pool.
+            cupy.get_default_memory_pool().malloc(
+                parse_size(resources.gpu_memory) + margin
+            )
+    run = DeviceGroup.run
+
+    def warm_run(group: DeviceGroup, fn: Callable[[int], object]) -> list[object]:
+        def warm(rank: int) -> object:
+            cupy.cuda.device.get_cublas_handle()
+            cupy.cuda.device.get_cusolver_handle()
+            return fn(rank)
+
+        return run(group, warm)
+
+    DeviceGroup.run = warm_run
+    try:
+        yield
+    finally:
+        DeviceGroup.run = run
+
+
 def _run(
     directory: Path,
     chi_out: int,
     resources: Resources,
     seed: int,
     device: str = "gpu",
+    *,
+    reserve: bool = False,
 ) -> tuple[list[np.ndarray], float, dict[str, object]]:
     """Compress the stack once; return the output, the wall time and a run record."""
     layers = _load(directory)
@@ -126,16 +174,17 @@ def _run(
 
     sweep_module.make_plan = spy  # record the plan of the run
     try:
-        start = perf_counter()
-        out = src(
-            *layers,
-            chi_out=chi_out,
-            dtype=layers[0][0].dtype,
-            seed=seed,
-            device=device,
-            resources=resources,
-        )
-        seconds = perf_counter() - start
+        with _reserved(resources) if reserve else nullcontext():
+            start = perf_counter()
+            out = src(
+                *layers,
+                chi_out=chi_out,
+                dtype=layers[0][0].dtype,
+                seed=seed,
+                device=device,
+                resources=resources,
+            )
+            seconds = perf_counter() - start
     finally:
         sweep_module.make_plan = make_plan
     (plan,) = plans
@@ -241,6 +290,7 @@ def run(
     seed: int = 0,
     results: Path | None = None,
     save: Path | None = None,
+    reserve: bool = False,
 ) -> None:
     """Compress the stack written by ``generate`` on the GPU.
 
@@ -254,9 +304,11 @@ def run(
         seed: Seed of the sketch.
         results: A JSON-lines file to append the run record to.
         save: An ``.npz`` file to save the output sites to, ``site_0000``, ...
+        reserve: Take the GPU memory before the sweep starts; see `_reserved`.
+            Needs ``gpu_memory``.
     """
     resources = Resources(gpu_memory, host_memory, scratch_dir, devices=devices)
-    out, _, record = _run(directory, chi_out, resources, seed)
+    out, _, record = _run(directory, chi_out, resources, seed, reserve=reserve)
     _append(results, {"gpus": devices, "seed": seed, **record})
     if save is not None:
         np.savez(save, **{f"site_{j:04d}": site for j, site in enumerate(out)})

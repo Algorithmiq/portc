@@ -20,12 +20,12 @@ fi
 # One process per GPU count, so no run inherits the host pages of another: on the
 # GH200 those pages land in GPU memory once the CPU memory is full.
 B="uv run python benches/large/bench_large.py --debug"
-# G4_GPU_MEMORY caps the GPU budget of the m4000 runs on 4 GPUs. complex128 m4000
-# overflows the CPU memory into GPU memory, and with every GPU busy that overflow has
-# to fit beside the sweep.
+# G4_GPU_MEMORY caps the GPU budget of the m4000 runs on 4 GPUs and takes that memory
+# before the sweep. complex128 m4000 overflows the CPU memory into GPU memory, and with
+# every GPU busy that overflow has to fit beside the sweep.
 budget() {
   if [ "$1" = 4000 ] && [ "$2" = 4 ] && [ -n "${G4_GPU_MEMORY:-}" ]; then
-    echo "--gpu-memory $G4_GPU_MEMORY"
+    echo "--gpu-memory $G4_GPU_MEMORY --reserve"
   fi
 }
 for rep in ${REPS:-1 2}; do

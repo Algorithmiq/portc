@@ -89,7 +89,12 @@ def _flops(eq: str, shapes: tuple, optimize: object, complex_: bool) -> float:
 def _install() -> None:
     contract = kernels_module._Contractions.__call__
     eqs = kernels_module.equations(4)
-    names = {eqs.ltr: "env", eqs.rtl_m: "sketch", eqs.rtl_s: "project", eqs.first: "first"}
+    names = {
+        eqs.ltr: "env",
+        eqs.rtl_m: "sketch",
+        eqs.rtl_s: "project",
+        eqs.first: "first",
+    }
 
     def traced_contract(self, eq, *operands):  # noqa: ANN001, ANN202
         shapes = tuple(op.shape for op in operands)
@@ -146,7 +151,14 @@ def _install() -> None:
         cores = next_site(self, rank)
         _local.site = getattr(_local, "site", -1) + 1
         _records[cp.cuda.Device().id].append(
-            (getattr(_local, "pass_", "?"), _local.site, "boundary", _event(), None, 0.0)
+            (
+                getattr(_local, "pass_", "?"),
+                _local.site,
+                "boundary",
+                _event(),
+                None,
+                0.0,
+            )
         )
         return cores
 
@@ -189,6 +201,7 @@ def main() -> None:
     parser.add_argument("--host-memory")
     parser.add_argument("--scratch-dir", type=Path)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--reserve", action="store_true")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     import logging  # noqa: PLC0415
@@ -199,7 +212,9 @@ def main() -> None:
     resources = Resources(
         args.gpu_memory, args.host_memory, args.scratch_dir, devices=args.devices
     )
-    _, _, record = bench_large._run(args.directory, args.chi_out, resources, args.seed)
+    _, _, record = bench_large._run(
+        args.directory, args.chi_out, resources, args.seed, reserve=args.reserve
+    )
     record = {"gpus": args.devices, "seed": args.seed, **record, "trace": _summarize()}
     args.out.write_text(json.dumps(record))
 
