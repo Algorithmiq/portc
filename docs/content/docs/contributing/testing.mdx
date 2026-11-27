@@ -12,6 +12,8 @@ uv run pytest -k cutoff -x      # select by name, stop at the first failure
 ```
 
 Always run tests through `pytest`, never as `python tests/test_<name>.py`.
+CI also runs the test matrix on the `gpu-t4-4-core-cuda13` runner with the
+`gpu-nvidia` extra.
 
 | File | Covers |
 |---|---|

@@ -40,7 +40,7 @@ jobs:
       matrix:
         runner:
           - ubuntu-latest
-          - t4-4-core-custom
+          - gpu-t4-4-core-cuda13
         python-version:
           - "3.11"
           - "3.14"
@@ -90,7 +90,7 @@ jobs:
 
       - name: Install package
         run: |
-          if [[ "${{ matrix.runner }}" == "t4-4-core-custom" ]]; then
+          if [[ "${{ matrix.runner }}" == "gpu-t4-4-core-cuda13" ]]; then
             extras="--extra gpu-nvidia"
           else
             extras=""
@@ -106,12 +106,12 @@ jobs:
           uv run python -c "import portc; print(portc.__version__)"
 
       - name: CuPy configuration
-        if: ${{ matrix.runner == 't4-4-core-custom' }}
+        if: ${{ matrix.runner == 'gpu-t4-4-core-cuda13' }}
         run: |
           uv run python -c 'import cupy; cupy.show_config()'
 
       - name: GPU diagnostics
-        if: ${{ matrix.runner == 't4-4-core-custom' }}
+        if: ${{ matrix.runner == 'gpu-t4-4-core-cuda13' }}
         run: |
           nvidia-smi
 
